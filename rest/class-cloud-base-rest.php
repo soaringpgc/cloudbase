@@ -64,136 +64,13 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 			$this->rest_version = '1';
 		}	
 		// you may want base path name to be different from plugin name. 	
-//		$this->resource_base_path = '/cloud_base';
+
 		$this->namespace = $this->plugin_name. '/v' .  $this->rest_version; 			
 	}
 
+// register routes must be overridden for each endpoint. 
 	public function register_routes() {
-	
-	  $this->resource_path = '/aircraft' . '(?:/(?P<id>[\d]+))?';
-
-      register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_aircraft_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),
-         	'args' => array('id'=> array('type'=>'integer', 'required'=> false, 'sanitize_callback'=> 'absint'))), 
-          array(
-      	    'methods'  => \WP_REST_Server::CREATABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_aircraft_post_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_aircraft_put_edit_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
-          array (
-         	 'methods'  => \WP_REST_Server::DELETABLE,
-              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_aircraft_delete_callback' ),
-             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-      	  )
-      	)
-      );	
-      
-     $this->resource_path = '/fees' . '(?:/(?P<id>[\d]+))?';
-    
-     register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_fees_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
-          array(
-      	    'methods'  => \WP_REST_Server::CREATABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_fees_post_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_fees_put_edit_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
-          array (
-         	 'methods'  => \WP_REST_Server::DELETABLE,
-              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_fees_delete_callback' ),
-             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-      	  )
-      	)
-      );	 
-    $this->resource_path = '/squawks' . '(?:/(?P<id>[\d]+))?'; 
-       
-    register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_squawks_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
-          array(
-      	    'methods'  => \WP_REST_Server::CREATABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_squawks_post_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_squawks_put_edit_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
-          array (
-         	 'methods'  => \WP_REST_Server::DELETABLE,
-              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_squawks_delete_callback' ),
-             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-      	  )
-      	)
-      );	              
-     $this->resource_path = '/flights' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_flights_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
-          array(
-      	    'methods'  => \WP_REST_Server::CREATABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_flights_post_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_flights_put_edit_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
-          array (
-         	 'methods'  => \WP_REST_Server::DELETABLE,
-              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_flights_delete_callback' ),
-             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-      	  )
-      	)
-      );	                
+	                         
              
     }
  
@@ -258,111 +135,11 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	return true;	
 	}
 	
-// call back for fees:	
-	public function cloud_base_fees_get_callback( \WP_REST_Request $request) {
-			 return rest_ensure_response( 'Hello World, this is the Cloud Based Fees REST API ' . $request['id']);
-
-		/* 
-			Process your GET request here.	
-				
-		*/
-	}	
-	public function cloud_base_fees_post_callback( \WP_REST_Request $request) {
-		/* 
-			Process your POST request here.
-		*/
-	}
-	public function cloud_base_fees_put_callback( \WP_REST_Request $request) {
-		/* 
-			Process your PUT request here.
-		*/
-	}
-	public function cloud_base_fees_delete_callback( \WP_REST_Request $request) {
-		/* 
-			Process your DELETE request here.			
-		*/
-	}
-// call back for aircraft:	
-	public function cloud_base_aircraft_get_callback( \WP_REST_Request $request) {
-	  global $wpdb;
-	    if ( isset($request['id']) ){
-	       return rest_ensure_response( 'Hello World, this is the Cloud Based Aircraft REST API ' . $request['id']);
-	  
-	    } elseif (isset($request['type'])) {
-	  		return rest_ensure_response( 'Read aircraft tabe and list of of type= ' . $request['type']);
-	    }
-		/* 
-			Process your GET request here.		
-		*/
-	}	
-	public function cloud_base_aircraft_post_callback( \WP_REST_Request $request) {
-	
-	  return rest_ensure_response( 'Hello World, this is the POST Cloud Based Aircraft REST API ' . $request['id']);
-		/* 
-			Process your POST request here.
-		*/
-	}
-	public function cloud_base_aircraft_put_callback( \WP_REST_Request $request) {
-		/* 
-			Process your PUT request here.
-		*/
-	}
-	public function cloud_base_aircraft_delete_callback( \WP_REST_Request $request) {
-		/* 
-			Process your DELETE request here.			
-		*/
-	}	
-// call back for squawks:	
-	public function cloud_base_squawks_get_callback( \WP_REST_Request $request) {
-	
-	 return rest_ensure_response( 'Hello World, this is the Cloud Based Squawk REST API ' . $request['id']);
-		/* 
-			Process your GET request here.		
-		*/
-	}	
-	public function cloud_base_squawks_post_callback( \WP_REST_Request $request) {
-		/* 
-			Process your POST request here.
-		*/
-	}
-	public function cloud_base_squawks_put_callback( \WP_REST_Request $request) {
-		/* 
-			Process your PUT request here.
-		*/
-	}
-	public function cloud_base_squawks_delete_callback( \WP_REST_Request $request) {
-		/* 
-			Process your DELETE request here.			
-		*/
-	}	
-// call back for flights:	
-	public function cloud_base_flights_get_callback( \WP_REST_Request $request) {
-	
-	 return rest_ensure_response( 'Hello World, this is the Cloud Based flilght REST API ' . $request['id']);
-		/* 
-			Process your GET request here.		
-		*/
-	}	
-	public function cloud_base_flights_post_callback( \WP_REST_Request $request) {
-		/* 
-			Process your POST request here.
-		*/
-	}
-	public function cloud_base_flights_put_callback( \WP_REST_Request $request) {
-		/* 
-			Process your PUT request here.
-		*/
-	}
-	public function cloud_base_flights_delete_callback( \WP_REST_Request $request) {
-		/* 
-			Process your DELETE request here.			
-		*/
-	}	
-		
-	
-	
 }
-
-	
-	
+include 'aircraft-rest.php';
+include 'fees-rest.php';
+include 'types-rest.php';
+include 'squawks-rest.php';
+include 'flights-rest.php';
+include 'pilots-rest.php';
 

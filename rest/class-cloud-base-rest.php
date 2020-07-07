@@ -6,18 +6,18 @@
  * @since      1.0.0
  *
  * @package    Cloud_Base
- * @subpackage Cloud_Base/public
+ * @subpackage Cloud_Base/rest
  */
 
 /**
- * The public-facing functionality of the plugin.
+ * The REST functionality of the plugin.
  *
  * Defines the plugin name, version, and examples to create your REST access
  * methods. Don't forget to validate and sanatize incoming data!
  *
  * @package    Cloud_Base
- * @subpackage Cloud_Base/public
- * @author     Your Name <email@example.com>
+ * @subpackage Cloud_Base/rest
+ * @author     Dave Johnson <johnson.s.david@pm.me>
  */
 class Cloud_Base_Rest extends WP_REST_Controller {
 	/**
@@ -138,8 +138,13 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 }
 include 'aircraft-rest.php';
 include 'fees-rest.php';
-include 'types-rest.php';
+include 'aircraft_types-rest.php';
 include 'squawks-rest.php';
 include 'flights-rest.php';
+include 'flight_types-rest.php';
 include 'pilots-rest.php';
+include 'status-rest.php';
+include 'sign_offs-rest.php';
+include 'sign_offs_types-rest.php';
+
 

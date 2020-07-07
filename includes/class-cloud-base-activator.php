@@ -54,11 +54,12 @@ function create_cb_database(){
 				// create aircraft table
 				$sql = "CREATE TABLE ". $table_name . " (
 					id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					aircraft_id smallint(6),
 					make text NOT NULL,
 					model text NOT NULL,
-					aircraft_id tinytext NOT NULL,
+					registration tinyint NOT NULL,
 					compitition_id tinytext,
-					type int(4),
+					aircraft_type int(4),
 					status varchar(20),
 					captian_id int(10),
 					valid_until datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -84,7 +85,7 @@ function create_cb_database(){
 				$table_name = $wpdb->prefix . "cloud_base_equipment";
 				// create aircraft table
 				$sql = "CREATE TABLE ". $table_name . " (
-        			ID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        			id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
         			catagory int(10) UNSIGNED NOT NULL,
         			short_name varchar(10),
             		long_name varchar(30),
@@ -104,7 +105,7 @@ function create_cb_database(){
 				$table_name = $wpdb->prefix . "cloud_base_squawk";
 				// create squawk table
 				$sql = "CREATE TABLE ". $table_name . " (
-        			ID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        			id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
         			squawk_id int(10) NOT NULL,
         			equipment int(10) UNSIGNED NOT NULL,
 					date_entered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -120,12 +121,22 @@ function create_cb_database(){
 				$table_name = $wpdb->prefix . "cloud_base_aircraft_type";
 				// create aircraft type table
 				$sql = "CREATE TABLE ". $table_name . " (
-        			ID int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        			id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
         			title text NOT NULL,
-					valid_until datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+        			active bit(1) DEFAULT 1,
 					PRIMARY KEY  (id)
 				);" . $charset_collate  . ";";
-				dbDelta($sql);				
+				dbDelta($sql);		
+				
+				$table_name = $wpdb->prefix . "cloud_base_aircraft_status";
+				// create aircraft type table
+				$sql = "CREATE TABLE ". $table_name . " (
+        			id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        			title text NOT NULL,
+        			active bit(1) DEFAULT 1,
+					PRIMARY KEY  (id)
+				);" . $charset_collate  . ";";
+				dbDelta($sql);									
 				
 				$table_name = $wpdb->prefix . "cloud_base_tow_fees";
 				// create tow fee table
@@ -166,8 +177,9 @@ function create_cb_database(){
 				// create audit table for flight sheet
 				$sql = "CREATE TABLE ". $table_name . " (
 					id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-					flight_type char(10),
+					title char(10),
  			        discription varchar(40) NOT NULL,
+ 			        active bit(1) DEFAULT 1,
           			PRIMARY KEY (ID)
 				);" . $charset_collate  . ";";
 				dbDelta($sql);
@@ -223,7 +235,7 @@ function create_cb_roles(){
 	}
 // add Tow Pilot role
 	if(!role_exists('tow_pilot')){
-		add_role('tow-pilot' , 'Tow Pilot', array('edit_cb_tow'));
+		add_role('tow_pilot' , 'Tow Pilot', array('edit_cb_tow'));
 	} else {
 		//add capability to existing tow pilot
 		$role_object = get_role('tow_pilot' );

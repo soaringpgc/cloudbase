@@ -19,72 +19,66 @@
  * @subpackage Cloud_Base/public
  * @author     Your Name <email@example.com>
  */
-class Cloud_Base_Types extends Cloud_Base_Rest {
+class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 
 	public function register_routes() {
-	   
-     $this->resource_path = '/types' . '(?:/(?P<id>[\d]+))?';
-    
-     register_rest_route( $this->namespace, $this->resource_path, 
+	              
+     $this->resource_path = '/sign_offs' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_types_get_callback' ),
+            'callback' => array( $this, 'cloud_base_signoffs_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_types_post_callback' ),
+            'callback' => array( $this, 'cloud_base_signoffs_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_types_put_edit_callback' ),
+            'callback' => array( $this, 'cloud_base_signoffs_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_types_delete_callback' ),
+             'callback' => array( $this, 'cloud_base_signoffs_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
       	  )
       	)
-      );	 
-                
+      );	                
              
     }
- 
 
-// call back for types:	
-	public function cloud_base_types_get_callback( \WP_REST_Request $request) {
-			 return rest_ensure_response( 'Hello World, this is the Cloud Based Types REST API ' . $request['id']);
 
+// call back for signoffs:	
+	public function cloud_base_signoffs_get_callback( \WP_REST_Request $request) {
+	
+	 return rest_ensure_response( 'Hello World, this is the Cloud Based sign off REST API ' . $request['id']);
 		/* 
-			Process your GET request here.	
-				
+			Process your GET request here.		
 		*/
 	}	
-	public function cloud_base_types_post_callback( \WP_REST_Request $request) {
+	public function cloud_base_signoffs_post_callback( \WP_REST_Request $request) {
 		/* 
 			Process your POST request here.
 		*/
 	}
-	public function cloud_base_types_put_callback( \WP_REST_Request $request) {
+	public function cloud_base_signoffs_callback( \WP_REST_Request $request) {
 		/* 
 			Process your PUT request here.
 		*/
 	}
-	public function cloud_base_types_delete_callback( \WP_REST_Request $request) {
+	public function cloud_base_signoffs_delete_callback( \WP_REST_Request $request) {
 		/* 
 			Process your DELETE request here.			
 		*/
 	}	
-	
-	
+			
 }
-	
 

@@ -154,17 +154,16 @@ function create_cb_database(){
 				// create flight sheet table
 				$sql = "CREATE TABLE ". $table_name ." (
 					id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-					flight_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-					flight_type int(10) UNSIGNED NOT NULL,
-					equipment_id int(10) UNSIGNED NOT NULL,
-					pilot_id int(10) UNSIGNED,
-					member_charged_id int(10) UNSIGNED NOT NULL,
-					flight_fee_id int(10) UNSIGNED NOT NULL,
-					flight_quanity decimal(5,2) NOT NULL,
-					start_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-					end_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-					valid_until datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-					instructor_id int(10) UNSIGNED NOT NULL,
+					flight_number INT(10) UNSIGNED NOT NULL,
+					flight_type int(10) UNSIGNED,
+					equipment_id int(10) UNSIGNED,
+					pilot_id int(10) UNSIGNED NOT NULL,
+					flight_fee_id int(10) UNSIGNED,
+					total_charge decimal(5,2),
+					start_time datetime DEFAULT '0000-00-00 00:00:00' ,
+					end_time datetime DEFAULT '0000-00-00 00:00:00' ,
+					valid_until datetime DEFAULT '0000-00-00 00:00:00',
+					instructor_id int(10) UNSIGNED,
 					tow_plane_id int(10) UNSIGNED,
 					tow_pilot_id int(10) UNSIGNED,
 					notes varchar(250),
@@ -266,17 +265,28 @@ function create_cb_roles(){
 	}
 // Add Chief Operations role	
 	if(!role_exists('chief_of_ops')){
-		add_role('chief_of_ops' , 'Chief Of Ops', array('edit_gc_operations', 'edit_gc_tow', 'edit_gc_instruction', 'edit_gc_dues'));
+		add_role('chief_of_ops' , 'Chief Of Ops', array('edit_cb_operations', 'edit_cb_tow', 'edit_cb_instruction', 'edit_cb_dues'));
 	} else {
 		//add capability to existing operations
-		$role_object = get_role('operations' );
-		if ( !$role_object->has_cap('edit_gc_operations')){
-			$role_object->add_cap('edit_gc_operations', true);
+		$role_object = get_role('chief_of_ops' );
+		if ( !$role_object->has_cap('edit_cb_operations')){
+			$role_object->add_cap('edit_cb_operations', true);
+		}	
+	}	
+// Add flight editor role	
+	if(!role_exists('flight_edit')){
+		add_role('flight_edit' , 'Flight Editor', array('edit_flights'));
+	} else {
+		//add capability to existing operations
+		$role_object = get_role('flight_edit' );
+		if ( !$role_object->has_cap('edit_flights')){
+			$role_object->add_cap('edit_flights', true);
 		}	
 	}		
+		
 	// update admin to have all roles - this may change later.
 	$role_object = get_role('administrator' );
-	$cb_roles = array('edit_cb_instruction', 'edit_cb_dues', 'edit_cb_tow', 'edit_cb_operations', 'chief_tow', 'chief_flight' );
+	$cb_roles = array('edit_cb_instruction', 'edit_cb_dues', 'edit_cb_tow', 'edit_cb_operations', 'chief_tow', 'chief_flight', 'flight_edit' );
 	foreach ($cb_roles as $cb_role ){
 			if ( !$role_object->has_cap($cb_role)){
 			$role_object->add_cap($cb_role , true);

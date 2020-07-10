@@ -23,7 +23,7 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 
 	public function register_routes() {
 	              
-     $this->resource_path = '/sign_offs' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
+     $this->resource_path = '/sign_offs_types' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,

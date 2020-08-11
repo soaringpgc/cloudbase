@@ -166,6 +166,7 @@ function create_cb_database(){
 					instructor_id int(10) UNSIGNED,
 					tow_plane_id int(10) UNSIGNED,
 					tow_pilot_id int(10) UNSIGNED,
+					date_entered datetime DEFAULT CURRENT_TIMESTAMP ,
 					notes varchar(250),
 					ip char (20),
 					PRIMARY KEY  (id)

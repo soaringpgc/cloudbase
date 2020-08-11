@@ -63,44 +63,23 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  global $wpdb;
 	  $table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
-	  
-	  $no_audit = "WHERE s.valid_until = 0 ";
-	  
-	  if (!empty($request['audit'])){
-		 $no_audit = "WHERE s.valid_until > -1";
-	  } 
 
-	  $aircraft_id = '';
-	  if (!empty($request['aircraft_id'])){
-		$aircraft_id = $wpdb->prepare(' AND aircraft_id = %s ' , $request['aircraft_id']);
-	  } 
+// fields to return. 
+ 	  $valid_fields = array('aircraft'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'captian_id', 'captian'=>'a.display_name',
+ 	  	'compitition_id'=>'s.compitition_id', 'status'=>'s.status', 't.title'=>'t.title  AS type' );
+ 	  $select_string = $this->select_fields($request, $valid_fields); 
+// process filters.  	  
+ 	  $valid_filters = array('aircraft_id'=>'aircraft_id' , 'type'=>'t.title', 'captian_id'=>'captian_id', 'compitition_id'=>'compitition_id' );
+	  $filter_string = $this->select_filters($request, $valid_filters);
 
-	  $type = '';
-	  if (!empty($request['type'])){
-		$type = $wpdb->prepare(' AND t.title = %s ' , $request['type']);
-	  } 
-
-	  $captian = '';
-	  if (!empty($request['captian'])){
-		$captian = $wpdb->prepare(' AND captian_id = %d ' , $request['captian']);
-	  } 
-	  $compitition = '';
-	  if (!empty($request['compitition'])){
-		$compitition = $wpdb->prepare('AND compitition_id = %s  ' , $request['compitition']);
-	  } 
-	  
-	  $sql = "SELECT s.aircraft_id, s.registration, s.compitition_id, s.status, t.title AS type FROM {$table_name}  s inner join 
-			{$table_type} t on s.aircraft_type=t.id " . $no_audit . $aircraft_id . $type . $captian .  $compitition ;
-
-	//	echo $sql; 
-				
+	  $sql = "SELECT {$select_string} FROM {$table_name} s inner join 
+			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
+ 				
 	  $sqlreturn = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
-	    wp_send_json($sqlreturn);
-
+	     wp_send_json($sqlreturn);
  	   } else {
-		// should not get here normally but if it happens.
-     	 	return rest_ensure_response( 'No Aircraft avaliable.' );
+    	  return new \WP_Error( 'rest_api_sad', esc_html__( 'no Aircraft avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 	   }
 	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 

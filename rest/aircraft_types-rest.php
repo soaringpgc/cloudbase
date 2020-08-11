@@ -61,22 +61,28 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$item_id =  $request['id'];
+// Associative aray of valid fields, Key is string passed in the _fileds varable
+// value is what need to be passed to mySQL. 
+ 		$valid_fields = array('id'=>'id' , 'list'=>'title');
+ 		$select_string = $this->select_fields($request, $valid_fields);
 
 		if ($item_id  != null){	
 		// return the current item for item requested
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );		
+			$sql = $wpdb->prepare("SELECT {$select_string} FROM {$table_name} WHERE `id` = %d " ,  $item_id );		
 		} else {
 		// return all current items. 
-	        $sql = "SELECT * FROM ". $table_name . "  ORDER BY title ASC ";	
+	        $sql = "SELECT {$select_string} FROM ". $table_name . "  ORDER BY title ASC ";	
 		}
+
 		$items = $wpdb->get_results( $sql, OBJECT);
 
 		if( $wpdb->num_rows > 0 ) {
 			wp_send_json($items);
  		 } else {
-		// should not get here normally but if it happens.
-     	 	return rest_ensure_response( 'no Types avaliable.' );
+ 		 			wp_send_json(array('message'=>'Record missing'), 201 );
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
+		// should not get here normally but if it happens.
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_types_post_callback( \WP_REST_Request $request) {
@@ -152,6 +158,6 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
 		}
 	}	
-}
-	
 
+
+}

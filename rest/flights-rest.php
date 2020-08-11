@@ -51,8 +51,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
       	  )
       	)
-      );	                
-             
+      );	                         
     }
  
 // call back for flights:	
@@ -65,15 +64,26 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
 		$flights_table = $wpdb->prefix . "cloud_base_flight_sheet";	
 		
-		
-
-		$sql = "SELECT * FROM ". $flights_table . " ORDER BY start_time DESC ";					
-
-	 return rest_ensure_response( 'Hello World, this is the Cloud Based flilght REST API ' . $request['id']);
-		/* 
-			Process your GET request here.		
-		*/
+	//	SELECT * FROM wp_cloud_base_flight_sheet WHERE date(start_time) LIKE DATE(now()) ORDER BY start_time DESC
+		if (empty($request['flight_id'])){
+			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until = 0 ORDER BY end_time DESC ";		
+			$items = $wpdb->get_results( $sql, OBJECT);		
+			if( $wpdb->num_rows > 0 ) {		
+				wp_send_json($items, 200 );
+			} else {
+	 			return rest_ensure_response( 'No flights today' );
+			}
+		} else {
+			$sql = $wpdb->prepare( "SELECT * FROM {$flights_table} WHERE  id =  %d ",  $request['flight_id']);
+			$items = $wpdb->get_row( $sql, OBJECT);		
+			if( $wpdb->num_rows > 0 ) {		
+				wp_send_json($items, 200 );
+			} else {
+	 			return rest_ensure_response( 'No such flight' );
+			}
+		}	
 	}	
+		
 	public function cloud_base_flights_post_callback( \WP_REST_Request $request) {
 	
 		global $wpdb;
@@ -84,7 +94,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
 		$flights_table = $wpdb->prefix . "cloud_base_flight_sheet";	
 		
-		$ip_address = $wpdb->prepare("%s", $_SERVER['REMOTE_ADDR']);	
+		$ip_address =  $_SERVER['REMOTE_ADDR'];	
 			
 		if (!empty($request['flight_type_id'])){
 		// validates and sanitizes 
@@ -103,7 +113,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 	  		$sql = $wpdb->prepare("SELECT * FROM {$aircraft_table} where aircraft_id = %d " , $request['aircraft_id']);
 	  		$sqlreturn = $wpdb->get_row( $sql, OBJECT);
 	  		if( $wpdb->num_rows > 0 ) {	
-	 			$aircraft_id = $sqlreturn->id;
+	 			$aircraft_id = $sqlreturn->aircraft_id;
 	 		} else {
 	  			return new \WP_Error( 'invalid type', esc_html__( 'That aircraft does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
 	  		}
@@ -190,21 +200,21 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 	  		
 	// this will select the maximum flight number for this year. If it returns nothing, HAPPY NEW YEAR! 
 		$sql = "SELECT * FROM {$flight_numbers} WHERE flight_number = (SELECT MAX(flight_number) FROM {$flight_numbers}  WHERE year = YEAR(now()))";
-
-
 	
 		$items = $wpdb->get_row( $sql, OBJECT);		
 		if( $wpdb->num_rows > 0 ) { 
-			$flight_number = $item->flightnumber +1; 
+			$flight_number = $items->flight_number + 1; 
 		} else {
 			$flight_number = 1; 
 		}
-	
-        $sql =	$wpdb->prepare("INSERT into {$flights_table} (flight_number, flight_type_id, aircraft_id, pilot_id, flight_fee_id, total_charge, instructor_id, 
-        	tow_plane_id, tow_pilot_id, start_time, end_time, ip, notes,  valid_until ) VALUES( %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %d,)", 
-        	$flight_number, $flight_type, $aircraft_id, $pilot, $altitude, $charge, $instructor_id, $tug_id, $tow_pilot, $start_time, $end_time, $ip_address, $flight_notes, '') ;
+		// add new flight number
+		$wpdb->insert($flight_numbers, array('year'=>date("Y"), 'flight_number'=>$flight_number));
+		 // add flight. 
+		$wpdb->insert($flights_table, array('flight_number'=> $flight_number, 'flight_type'=>$flight_type, 'aircraft_id'=>$aircraft_id,
+			'pilot_id'=>$pilot , 'flight_fee_id'=>$altitude ,'total_charge'=>$charge ,'instructor_id'=> $instructor_id ,'tow_plane_id'=>$tug_id,
+			'tow_pilot_id'=> $tow_pilot ,'start_time'=>$start_time,'end_time'=>$end_time ,'ip'=>$ip_address ,'notes'=>$flight_notes ,'valid_until'=>'' ));
 
-		  wp_send_json(array('flight_number'=>$flight_number), 201 );
+		wp_send_json(array('flight_number'=>$flight_number), 201 );
 	
 		/* 
 			Process your POST request here.

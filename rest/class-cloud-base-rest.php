@@ -144,6 +144,108 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	return true;	
 	}
 	
+	public function cb_expire_date($start_date, $period, $fixed_date ){
+	// function to calculate the expire date. 
+			switch($period ){
+			case "monthly":
+				$start_date->modify('+1 month');
+			break;
+			case "quarterly":
+				$start_date->modify('+3 month');
+			break;
+			case "yearly":
+				$start_date->modify('+1 year');
+			break;
+			case "biennial":
+				$start_date->modify('+2 year');
+			break;
+			case "fixed":
+				$start_date = new \DateTime($fixed_date );
+			break;
+			case "no_expire":
+				 $start_date = new \DateTime('2099-12-31');
+			break;
+			case "yearly-eom":
+				 $start_date->modify('+1 year');
+				 $start_date->modify('last day of this month');
+			break;
+			case "biennial-eom":
+				$start_date->modify('+2 year');
+				$start_date->modify('last day of this month');
+			break;
+			default:
+		}	
+		return($start_date);
+		}
+	 	function does_user_exist( int $user_id ) : bool {
+	 	  return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
+		}
+		public function cb_expire($start_date, $signoff_id){
+// do the database look up here. the call expire_date	
+		global $wpdb;
+	 	$table_signoffs = $wpdb->prefix . "pgc_signoffs_types";
+	 	$sql = $wpdb->prepare("SELECT * FROM {$table_signoffs} WHERE `id` = %d", $signoff_id);	 	
+  		$signoff_duration = $wpdb->get_row($sql);
+		$date_expire = $this->gc_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
+		return($date_expire);	
+	}	
+		
+	public  function select_fields( $request, $valid_fields){
+	// Associative aray of valid fields, Key is string passed in the "_fileds" varable
+	// value is what need to be passed to mySQL. 	
+	    $select_string = "";
+	    if (!empty($request['audit'])){
+		  $select_string =  "s.valid_until, " . $select_string;
+	    }	
+		$valid_keys = array_keys($valid_fields );		
+		if(!empty($request['_fields'])){
+			$field_array = explode(',' , $request['_fields']);			
+			foreach(array_reverse($field_array) as $field){
+			// get the last elemeint as we don't want a ',' after it. 
+				$last = array_pop($field_array);
+				if(in_array($last, $valid_keys)) {
+					$last = $valid_fields[$field];
+					break;
+				}
+			}						
+			foreach($field_array as $field){
+			// build up the SELECT list. 
+				if(in_array($field, $valid_keys)) {
+					$select_string = $select_string . $valid_fields[$field] . ', ';
+				}
+			}
+		} else {
+			$valid_values = array_values($valid_fields );
+			$last = array_pop($valid_values);
+			foreach($valid_values as $field){
+				$select_string = $select_string . $field . ', ';
+			}
+				
+		} 
+		return($select_string . $last);
+	}
+
+// request -- HTML  request string 
+// $valid-filters associative array of valid filters, Key is varable sent in the html string and 
+// value is the actual string that needs to be passed to sql 
+// if the audit flag is set the valid until field is added to the output. 
+//  note "s" must be a alias for table 'cloud_base_aircraft' in the SQL string. 
+
+	public function select_filters($request, $valid_filters){
+	  global $wpdb;
+	  $valid_keys = array_keys($valid_filters );		  
+	  if (!empty($request['audit'])){
+		 $filter_string = "s.valid_until > -1 ";
+	  } else {
+	  	$filter_string = "s.valid_until = 0 ";
+	  } 
+	  foreach($valid_keys as $key ){
+	  	if(!empty($request[$key]) ){
+	  		$filter_string = $filter_string . ' AND '. $valid_filters[$key] .'='.  $wpdb->prepare('%s' , $request[$key]);
+	  	}
+	  }
+	return($filter_string);
+	}	
 }
 include 'aircraft-rest.php';
 include 'fees-rest.php';

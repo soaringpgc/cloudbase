@@ -96,7 +96,7 @@ class Cloud_Base_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'jquery', 'wp-api' ), $this->version, false );
 
 	}
 

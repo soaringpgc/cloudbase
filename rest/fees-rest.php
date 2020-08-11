@@ -56,22 +56,24 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
     }
  	
 	public function cloud_base_fees_get_callback( \WP_REST_Request $request) {
+//		$params = $request->get_params();
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_tow_fees";	
-		$fee_id =  $request['id'];
-		$audit = $request['audit'];
-     // if audit is set return everything all currend and expired records
-		if ($audit == '1'){
-			$sql = "SELECT * FROM ". $table_name . " ORDER BY altitude DESC ";					
+// fields to return. 		
+		$valid_fields = array('id'=>'id' , 'altitude'=>'altitude', 'charge'=>'charge', 'hook_up'=>'hook_up');
+ 		$select_string = $this->select_fields($request, $valid_fields);
+// process filters.  	  
+ 	    $valid_filters = array('altitude'=>'altitude' , 'charge'=>'charge', 'hook_up'=>'hook_up' );
+	    $filter_string = $this->select_filters($request, $valid_filters);
+	
+		if ($request['id'] != null){	
+		// return the current fee for item requested
+			$sql = $wpdb->prepare("SELECT {$select_string} FROM {$table_name} s WHERE {$filter_string} AND `id` = %d" ,  $request['id'] );		
 		} else {
-			if ($fee_id  != null){	
-			// return the current fee for item requested
-				$sql = $wpdb->prepare("SELECT altitude, charge, hook_up FROM {$table_name} WHERE `id` = %d AND valid_until = 0 " ,  $fee_id );		
-			} else {
-			// return all current fees. 
-    	        $sql = "SELECT altitude, charge, hook_up FROM ". $table_name . " WHERE valid_until = 0 ORDER BY altitude ASC ";	
-			}
+		// return all current fees. 
+  	        $sql = "SELECT {$select_string} FROM {$table_name} s WHERE {$filter_string} ORDER BY altitude ASC ";	
 		}
+
 		$fees = $wpdb->get_results( $sql, OBJECT);
 
 		if( $wpdb->num_rows > 0 ) {
@@ -118,9 +120,6 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 	    }
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	
-		/* 
-			Process your POST request here.
-		*/
 	}
 	public function cloud_base_fees_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;

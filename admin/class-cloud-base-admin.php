@@ -95,9 +95,46 @@ class Cloud_Base_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
+		 'backforms'), $this->version, false );
 
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', array( 'jquery' ), $this->version, false );
+	//localize data for script
+		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(
+			'root' => esc_url_raw( rest_url() ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+			'current_user_id' => get_current_user_id()
+			)
+		);
 
 	}
+    public function add_settings_page() {
+
+		$this->plugin_screen_hook_suffix = add_options_page(	
+			'Cloud Base Settings', 'Cloud Base', 'manage_options', 'cloud_base',
+			array( $this, 'display_settings_page') );		
+	}
+	/**
+	 * Render the options page for plugin
+	 *
+	 * @since  1.0.0
+	 */
+	  
+	public function display_settings_page() {
+		include_once 'partials/cloud-base-admin-display.php';
+	}
+	public function the_config_page_response(){
+    	check_admin_referer('config_page');
+     	$glider_club_long_name = sanitize_text_field($_POST['long_name']);
+    	$glider_club_short_name = sanitize_text_field($_POST['short_name']);
+    	$glider_club_unit = sanitize_text_field($_POST['units']);
+    	update_option('glider_club_long_name', $glider_club_long_name  );
+    	update_option('glider_club_short_name', $glider_club_short_name  ); 	
+    	update_option('glider_club_tow_units', $glider_club_unit  ); 
+    	wp_redirect('options-general.php?page=cloud_base&tab=config_page');
+    	exit();    		
+    }  
 
 }

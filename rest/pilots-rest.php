@@ -330,51 +330,51 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 		*/
 	}	
 	
-	public function cb_expire_date($start_date, $period, $fixed_date ){
-	// function to calculate the expire date. 
-			switch($period ){
-			case "monthly":
-				$start_date->modify('+1 month');
-			break;
-			case "quarterly":
-				$start_date->modify('+3 month');
-			break;
-			case "yearly":
-				$start_date->modify('+1 year');
-			break;
-			case "biennial":
-				$start_date->modify('+2 year');
-			break;
-			case "fixed":
-				$start_date = new \DateTime($fixed_date );
-			break;
-			case "no_expire":
-				 $start_date = new \DateTime('2099-12-31');
-			break;
-			case "yearly-eom":
-				 $start_date->modify('+1 year');
-				 $start_date->modify('last day of this month');
-			break;
-			case "biennial-eom":
-				$start_date->modify('+2 year');
-				$start_date->modify('last day of this month');
-			break;
-			default:
-		}	
-		return($start_date);
-		}
-	 	function does_user_exist( int $user_id ) : bool {
-	 	 return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
-		}
-		public function cb_expire($start_date, $signoff_id){
-// do the database look up here. the call expire_date	
-		global $wpdb;
-	 	$table_signoffs = $wpdb->prefix . "pgc_signoffs_types";
-	 	$sql = $wpdb->prepare("SELECT * FROM {$table_signoffs} WHERE `id` = %d", $signoff_id);	 	
-  		$signoff_duration = $wpdb->get_row($sql);
-		$date_expire = $this->gc_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
-		return($date_expire);	
-	}	
+// 	public function cb_expire_date($start_date, $period, $fixed_date ){
+// 	// function to calculate the expire date. 
+// 			switch($period ){
+// 			case "monthly":
+// 				$start_date->modify('+1 month');
+// 			break;
+// 			case "quarterly":
+// 				$start_date->modify('+3 month');
+// 			break;
+// 			case "yearly":
+// 				$start_date->modify('+1 year');
+// 			break;
+// 			case "biennial":
+// 				$start_date->modify('+2 year');
+// 			break;
+// 			case "fixed":
+// 				$start_date = new \DateTime($fixed_date );
+// 			break;
+// 			case "no_expire":
+// 				 $start_date = new \DateTime('2099-12-31');
+// 			break;
+// 			case "yearly-eom":
+// 				 $start_date->modify('+1 year');
+// 				 $start_date->modify('last day of this month');
+// 			break;
+// 			case "biennial-eom":
+// 				$start_date->modify('+2 year');
+// 				$start_date->modify('last day of this month');
+// 			break;
+// 			default:
+// 		}	
+// 		return($start_date);
+// 		}
+// 	 	function does_user_exist( int $user_id ) : bool {
+// 	 	 return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
+// 		}
+// 		public function cb_expire($start_date, $signoff_id){
+// // do the database look up here. the call expire_date	
+// 		global $wpdb;
+// 	 	$table_signoffs = $wpdb->prefix . "pgc_signoffs_types";
+// 	 	$sql = $wpdb->prepare("SELECT * FROM {$table_signoffs} WHERE `id` = %d", $signoff_id);	 	
+//   		$signoff_duration = $wpdb->get_row($sql);
+// 		$date_expire = $this->gc_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
+// 		return($date_expire);	
+// 	}	
 	
 	
 }

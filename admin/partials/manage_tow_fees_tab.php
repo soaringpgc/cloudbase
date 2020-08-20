@@ -33,6 +33,25 @@
     }
 </style>
 
+<script type="text/template" id="feeitemtemplate">
+    <div class="Row">
+        <div class="Cell">
+            <%= altitude %>
+        </div>
+        <div class="Cell">
+            <%=  charge %>
+        </div>
+        <div class="Cell">
+            <%=  hook_up %>
+        </div>
+        <div class="Cell">
+            <button class="delete"></button> 
+        </div>
+    </div>
+</script>
+
+<!-- 
+
 
 <script type="text/template" id="feeitemtemplate">
     <div class="Row">
@@ -53,6 +72,7 @@
         </div>
     </div>
 </script>
+ -->
 
 
 <script type="text/template" id="feeitemtemplate_0">
@@ -67,11 +87,13 @@
     <form id="addTowFee" action="#" >
     	<div>
   	  <input type="hidden" >
+<!-- 
         <input type = "hidden"
             id = "record_id"
             size = "5"
             value = ""
             name = "record_id"/>
+ -->
         <label for="altitude">Altitude
         <?php 
     		  if (get_option("glider_club_tow_units") == "m"){
@@ -96,7 +118,7 @@
         <label for="hookup">Hook up fee: </label>
         <input type = "number"
             step="0.01"
-            id = "hookup"
+            id = "hook_up"
             size = "6"
             value ="0"
             title = "Charge for hookup." 
@@ -113,9 +135,11 @@
         <p>Tow Fees </p>
     </div>
     <div class="Heading">
+<!-- 
         <div class="Cell">
             <p>ID</p>
         </div>
+ -->
         <div class="Cell">
             <p>Alitude</p>
         </div>

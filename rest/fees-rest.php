@@ -43,14 +43,14 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
             'callback' => array( $this, 'cloud_base_fees_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
-//           array (
-//          	 'methods'  => \WP_REST_Server::DELETABLE,
-//               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-//              'callback' => array( $this, 'cloud_base_fees_delete_callback' ),
-//              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-//          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),          	 		      		
-//     	 		      		
-//       	  )
+          array (
+         	 'methods'  => \WP_REST_Server::DELETABLE,
+              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
+             'callback' => array( $this, 'cloud_base_fees_delete_callback' ),
+             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),          	 		      		
+    	 		      		
+      	  )
       	)
       );      	                         
     }
@@ -94,10 +94,10 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing altitude.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
 
-		if (!empty($request['fee'])){
-				$fee = $request['fee'];
+		if (!empty($request['charge'])){
+				$fee = $request['charge'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing fee.', 'my-text-domain' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing charge.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}		
 
 		if (!empty($request['hook_up'])){
@@ -107,16 +107,20 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		}		
 	
  	// check it does not exist. 
- 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
+ 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until = 0 " , $altitude  );	
 		$fees = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
 			return rest_ensure_response( 'Already exists id= '. $fees->id );
  		 } else {
-		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %d, %f, %f, %s) " , $altitude, $fee, $hook_up, "0");	
+		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %s, %f, %f, %s) " , $altitude, $fee, $hook_up, "0");	
 			$wpdb->query($sql);
-						
-			wp_send_json(array('message'=>'Record Added'), 201 );
-
+			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
+			$fees = $wpdb->get_row( $sql, OBJECT);	
+			if( $wpdb->num_rows > 0 ) {
+				wp_send_json($fees);
+ 		 	} else {
+     	 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not added.', 'my-text-domain' ), array( 'status' => 404 ) );
+			}
 	    }
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	
@@ -128,10 +132,9 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		$altitude = $request['altitude'];
 		$expire_date =	date('Y-m-d H:i:s');
 		$change = 0;
-
 		
 		if ($altitude  != null){	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " ,  $altitude);	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until = 0 " ,  $altitude);	
 
 			$fees = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {
@@ -155,7 +158,7 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 	       		$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $fees->id );
 			 	$wpdb->query($sql);
 		    // create new record with valid_until = 0. 
-				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %d, %f, %f, %s) " , 
+				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %s, %f, %f, %s) " , 
 				$altitude, $fee, $hook_up, "0");	
 				$wpdb->query($sql);			
 		 		wp_send_json(array('message'=>'Record Updated'), 201 );

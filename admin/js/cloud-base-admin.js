@@ -36,10 +36,11 @@
 //			console.log('the model has been initialized. ');
 		},
 	    defaults: {
-			id: '42',
-			altitude: '9000',
-			charge: '300',
-			hookup: '-3'
+// 			id: '42',
+// 			altitude: '9000',
+// 			charge: '300',
+// 			hookup: '-3'
+			wait: true
 		}		
 	} );
 // model view	
@@ -67,7 +68,7 @@
 // collection	
         app.TowFeesList = Backbone.Collection.extend({
     	model: app.Towfee,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees/',  	
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  	
    // 	sync : function(method, model, options){
    // 		return Backbone.sync(method, this, $.extend(options, 
    // 		{beforeSend : function (xhr) {
@@ -90,9 +91,11 @@
       // It's the first function called when this view it's instantiated.
       initialize: function( tow_fees ){
 //      	console.log('the view has been initialized. ');
-        this.collection = new app.TowFeesList(tow_fees);
+        this.collection = new app.TowFeesList();
+        this.collection.fetch({reset:true});
         this.render();
         this.listenTo(this.collection, 'add', this.renderTowFee);
+        this.listenTo(this.collection, 'reset', this.render);
       },
       render: function(){
       	this.collection.each(function(item){
@@ -111,7 +114,6 @@
       	'click #add' : 'addTowFee'
       },
       addTowFee: function(e){
-      console.log('addtf');
       	e.preventDefault();
       	var formData ={};
       	console.log('formdata');
@@ -120,19 +122,22 @@
       			formData[el.id] = $(el).val();
       		}
       	});
-      	this.collection.add( new app.Towfee(formData ))
+      	console.log(JSON.stringify(formData));
+      	this.collection.create( formData );
       },
     
     });
   
 // dummy data    
    $(function(){
+/* 
   	var tow_fees = [
    		{ id: '2',  altitude: 'SRB', charge: '15', hookup: '0' },
    		{ id: '3', altitude: '1000', charge: '25', hookup: '0' },
    		{ id: '4', altitude: '2000', charge: '30', hookup: '0' }
    		];
-   		new app.TowFeesView(tow_fees);
+ */
+   		new app.TowFeesView();
    });
       
 //     new app.TowFeesView(tow_fees);  

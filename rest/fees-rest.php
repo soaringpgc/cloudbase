@@ -139,8 +139,8 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 			$fees = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {
 // was a new value supplied and is it different than what we already have?			
-				if (!empty($request['fee']) && $request['fee'] != $fees->charge ){
-					$fee = $request['fee'];
+				if (!empty($request['charge']) && $request['charge'] != $fees->charge ){
+					$fee = $request['charge'];
 					$change = 1;
 				} else {
 					$fee = $fees->charge;
@@ -161,7 +161,15 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %s, %f, %f, %s) " , 
 				$altitude, $fee, $hook_up, "0");	
 				$wpdb->query($sql);			
-		 		wp_send_json(array('message'=>'Record Updated'), 201 );
+
+				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
+				$fees = $wpdb->get_row( $sql, OBJECT);	
+			    if( $wpdb->num_rows > 0 ) {
+				  wp_send_json($fees);
+ 		 		} else {
+     	 			return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not updated.', 'my-text-domain' ), array( 'status' => 404 ) );
+				}
+		 	//	wp_send_json(array('message'=>'Record Updated'), 201 );
 		    } else {
 		    	return new \WP_Error( 'nothing changed', esc_html__( 'Updates identical to existing record. ', 'my-text-domain' ), array( 'status' => 400 ) );
 		    }		    

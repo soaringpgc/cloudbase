@@ -46,37 +46,49 @@
 // model view	
 	app.TowFeeView = Backbone.View.extend({
 		tagName: 'div',
-        classname: 'TowFee',
-		template: _.template($('#feeitemtemplate').html()),
+        classname: 'Row',
+//		template: _.template($('#feeitemtemplate').html()),
+		template: _.template($('#edititemtemplate').html()),
+
 		render: function(){
 			this.$el.html( this.template(this.model.toJSON() ) );
 			this.$input = this.$('.edit');
 			return this;
 		},
 		events:{
-			'click .delete' : 'deleteTowFee'
+			'click .delete' : 'deleteTowFee',
+			'dblclick div': 'edit',
+			'keypress .edit': 'updateOnEnter',
+			'blur .edit': 'close'
 		},
 		deleteTowFee: function(){
 			this.model.destroy();
 			this.remove();
 		},
 		edit: function(){
-			this.$el.addClass('editing');
-			this.$input.focure();
+//			this.$el.addClass('editing');
+			this.$input.focus();
+		},
+		close: function(){
+			var value = this.$input.val().trim();
+			if ( value ) {
+			console.log(value);
+			console.log(JSON.stringify(this.model));
+				this.model.save({charge: value })
+			}	
+		},
+		updateOnEnter: function(e) {
+			if( e.key === "Enter" ){
+				this.close();
+			}
 		}
 	})
+	
+	
 // collection	
         app.TowFeesList = Backbone.Collection.extend({
     	model: app.Towfee,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  	
-   // 	sync : function(method, model, options){
-   // 		return Backbone.sync(method, this, $.extend(options, 
-   // 		{beforeSend : function (xhr) {
-   // 			xhr.setRequestHeader ('X-WP-NONCE', POST_SUBMITTER.nonce);
- //   			    console.log(POST_SUBMITTER.nonce);
- //   		}
-  //  	  }))	
- //    	}	
     }) ; 
 
 

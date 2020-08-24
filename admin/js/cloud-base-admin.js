@@ -30,6 +30,24 @@
 	 */
 	 $(function(){
 	 var app = app || {};
+
+//NTFS: need to use `` or get unexpected EOF error. 	 
+	 var feeitemtemplate = _.template(`
+	 <div class="Row">
+        <div class="Cell">
+            <%= altitude %>
+        </div>
+        <div class="Cell">
+            <%=  charge %>
+        </div>
+        <div class="Cell">
+            <%=  hook_up %>
+        </div>
+        <div class="Cell">
+            <button class="delete"></button> 
+        </div>
+    </div>`);
+	 
 //model 
 	app.Towfee = Backbone.Model.extend({
 		initialize: function(){
@@ -46,49 +64,38 @@
 // model view	
 	app.TowFeeView = Backbone.View.extend({
 		tagName: 'div',
-        classname: 'Row',
+        classname: 'TowFee',
+        template: feeitemtemplate,
 //		template: _.template($('#feeitemtemplate').html()),
-		template: _.template($('#edititemtemplate').html()),
-
 		render: function(){
 			this.$el.html( this.template(this.model.toJSON() ) );
 			this.$input = this.$('.edit');
 			return this;
 		},
 		events:{
-			'click .delete' : 'deleteTowFee',
-			'dblclick div': 'edit',
-			'keypress .edit': 'updateOnEnter',
-			'blur .edit': 'close'
+			'click .delete' : 'deleteTowFee'
 		},
 		deleteTowFee: function(){
 			this.model.destroy();
 			this.remove();
 		},
 		edit: function(){
-//			this.$el.addClass('editing');
-			this.$input.focus();
-		},
-		close: function(){
-			var value = this.$input.val().trim();
-			if ( value ) {
-			console.log(value);
-			console.log(JSON.stringify(this.model));
-				this.model.save({charge: value })
-			}	
-		},
-		updateOnEnter: function(e) {
-			if( e.key === "Enter" ){
-				this.close();
-			}
+			this.$el.addClass('editing');
+			this.$input.focure();
 		}
 	})
-	
-	
 // collection	
         app.TowFeesList = Backbone.Collection.extend({
     	model: app.Towfee,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  	
+   // 	sync : function(method, model, options){
+   // 		return Backbone.sync(method, this, $.extend(options, 
+   // 		{beforeSend : function (xhr) {
+   // 			xhr.setRequestHeader ('X-WP-NONCE', POST_SUBMITTER.nonce);
+ //   			    console.log(POST_SUBMITTER.nonce);
+ //   		}
+  //  	  }))	
+ //    	}	
     }) ; 
 
 
@@ -128,7 +135,7 @@
       addTowFee: function(e){
       	e.preventDefault();
       	var formData ={};
-      	console.log('formdata');
+//      	console.log('formdata');
       	$('#addTowFee div').children('input').each(function(i, el ){
       		if($(el).val() != ''){
       			formData[el.id] = $(el).val();

@@ -29,61 +29,32 @@
         border-width: thin;
         padding-left: 5px;
         padding-right: 5px;
-        width: 60px;
+        width: 50px;
     }
-/* 
-    #tow_fees div .edit 
-    {
-    	display: none;
-    }
- */
-    #tow_fees div.Cell.view 
-    {
-    	color: red;
-    }
-    #tow_fees div.Cell.editing.edit {
-		display: block;
-		width: 25px;
-		padding: 3px 3px 3px 3px;
-		margin: 0;
-    }
-    #tow_fees  div.Cell.view.editing {
-		display: none;
-	}
 </style>
-
-<script type="text/template" id="feeitemtemplate">
-        <div class="Cell">
-            <%= altitude %>
-        </div>
-        <div class="Cell  view" >
-            <%=  charge %>
-        </div> 
-        <input  class="edit" value=<%= charge %>>
-        <div class="Cell view">
-            <%=  hook_up %>
-        </div>  
-        <input  class="edit" value=<%= hook_up %>>
-        <div class="Cell">
-            <button class="delete"></button> 
-        </div>
-</script>
-
-<script type="text/template" id="edititemtemplate">
-        <div class="Cell">
-            <%= altitude %>
-        </div>
-         <div class="Cell" >
-        <input class="edit" id = "charge"  size = "5" value=<%= charge %>>
-        </div>
-        <div class="Cell">
-        <input id = "hook_up" size = "5" value=<%= hook_up %>>
-        </div>
-        <div class="Cell">
-            <button class="delete"></button> 
-        </div>
-</script>
 <!-- 
+moved to javascript file to keep wp_enquescripts from throwing an error. 
+<script type="text/template" id="feeitemtemplate">
+    <div class="Row">
+        <div class="Cell">
+            <%= altitude %>
+        </div>
+        <div class="Cell">
+            <%=  charge %>
+        </div>
+        <div class="Cell">
+            <%=  hook_up %>
+        </div>
+        <div class="Cell">
+            <button class="delete"></button> 
+        </div>
+    </div>
+</script>
+ -->
+
+<!-- 
+
+
 <script type="text/template" id="feeitemtemplate">
     <div class="Row">
         <div class="Cell">
@@ -105,7 +76,6 @@
 </script>
  -->
 
-<!-- 
 
 <script type="text/template" id="feeitemtemplate_0">
 	<div class="fee-view">
@@ -113,9 +83,8 @@
 		    <input type="hidden" id="fee_id" name="fee_id" value=<%= id %>> <button class="delete"></button> 
 	</div>
 </script>
- -->
 
-<div style="display:inline-block"  align:left  class="TowFee" >
+<div style="display:inline-block"  align:left id="tow_fees"  class="TowFee" >
     <h3>Tow Charges</h3>
     <form id="addTowFee" action="#" >
     	<div>
@@ -148,7 +117,7 @@
             size = "6"
             title = "Charge for given altitude." 
             name = "charge"/>
-        <label for="hookup">Hook up fee: </label>
+        <label for="hookup">Base fee: </label>
         <input type = "number"
             step="0.01"
             id = "hook_up"
@@ -163,26 +132,31 @@
        </div>
     </form>
 
-<div  class="TowFee, Table">
+<div  class="TowFee" class="Table">
     <div class="Title">
         <p>Tow Fees </p>
     </div>
-       <div class="Heading" >
-           <div class="Cell">
-               <p>Alitude</p>
-           </div>
-           <div class="Cell">
-               <p>Fee</p>
-           </div>
-            <div class="Cell">
-               <p>Hook Up</p>
-           </div>
-           <div class="Cell">
-               <p>Delete</p>
-           </div>
-       </div>
-	</div>
-	<div id="tow_fees" ></div>
+    <div class="Heading">
+<!-- 
+        <div class="Cell">
+            <p>ID</p>
+        </div>
+ -->
+        <div class="Cell">
+            <p>Alitude</p>
+        </div>
+        <div class="Cell">
+            <p>Fee</p>
+        </div>
+         <div class="Cell">
+            <p>Base</p>
+        </div>
+        <div class="Cell">
+            <p>Delete</p>
+        </div>
+    </div>
+</div>
+
 </div>
 
     

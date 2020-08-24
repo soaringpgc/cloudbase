@@ -164,12 +164,13 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 
 				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
 				$fees = $wpdb->get_row( $sql, OBJECT);	
-			    if( $wpdb->num_rows > 0 ) {
-				  wp_send_json($fees);
- 		 		} else {
-     	 			return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not updated.', 'my-text-domain' ), array( 'status' => 404 ) );
+				if( $wpdb->num_rows > 0 ) {
+					wp_send_json($fees);
+				} else {
+		    		return new \WP_Error( 'update Failes', esc_html__( 'Update failes. ', 'my-text-domain' ), array( 'status' => 400 ) );
 				}
-		 	//	wp_send_json(array('message'=>'Record Updated'), 201 );
+
+//		 		wp_send_json(array('message'=>'Record Updated'), 201 );
 		    } else {
 		    	return new \WP_Error( 'nothing changed', esc_html__( 'Updates identical to existing record. ', 'my-text-domain' ), array( 'status' => 400 ) );
 		    }		    

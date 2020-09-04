@@ -31,40 +31,43 @@
 	 $(function(){
 	 var app = app || {};
 
-//NTFS: need to use `` or get unexpected EOF error. 	 
-	 var feeitemtemplate = _.template(`
-	 <div class="Row">
-        <div class="Cell">
-            <%= altitude %>
-        </div>
-        <div class="Cell">
-            <%=  charge %>
-        </div>
-        <div class="Cell">
-            <%=  hook_up %>
-        </div>
-        <div class="Cell">
-            <button class="delete"></button> 
-        </div>
-    </div>`);
+//NTFS: need to use `` or get unexpected EOF error. 	
+// needs to be here rather than 'includes' because templates are compiled into 
+// functions and the way wordpress load-scripts works, if the template function is not
+// found we get an error.  templates moved to /js/templates.js file (and enqued with
+// wp_register_scripts, wp_enque_scripts )
 	 
-//model 
-	app.Towfee = Backbone.Model.extend({
+//models
+// aircraft type model 
+	app.AircraftType = Backbone.Model.extend({
 		initialize: function(){
-//			console.log('the model has been initialized. ');
 		},
 	    defaults: {
-// 			id: '42',
-// 			altitude: '9000',
-// 			charge: '300',
-// 			hookup: '-3'
 			wait: true
 		}		
 	} );
+	
+	app.Towfee = Backbone.Model.extend({
+		initialize: function(){
+		},
+	    defaults: {
+			wait: true
+		}		
+	} );
+// collections	
+    app.TowFeesList = Backbone.Collection.extend({
+    	model: app.Towfee,
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  		
+    }) ; 
+    app.AircraftTypeList = Backbone.Collection.extend({
+    	model: app.AircraftType,
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',  		
+    }) ; 
+    	
 // model view	
 	app.TowFeeView = Backbone.View.extend({
 		tagName: 'div',
-        classname: 'TowFee',
+        className: 'TowFee',
         template: feeitemtemplate,
 //		template: _.template($('#feeitemtemplate').html()),
 		render: function(){
@@ -72,43 +75,85 @@
 			this.$input = this.$('.edit');
 			return this;
 		},
+		initialize: function(){
+    		this.model.on('change', this.render, this);
+  		},
 		events:{
-			'click .delete' : 'deleteTowFee'
+			'click .delete' : 'deleteTowFee',
+			'click .edit' : 'edit',
+			'keypress .edit' : 'updateOnEnter',
+			'blur .edit' : 'close'
 		},
 		deleteTowFee: function(){
 			this.model.destroy();
 			this.remove();
 		},
+		edit: function(e){
+			this.$el.addClass('editing');
+      		this.$input.focus();
+		},
+		updateOnEnter: function(e){
+    		if(e.which == 13){
+      			this.close();
+    		}
+   		},
+   		close: function(){
+    		var value = this.input.val().trim();
+    		if(value) {
+    		alert(value);
+ //     			this.model.save({title: value});
+    		}
+    		this.$el.removeClass('editing');
+  		},
+	});
+	
+// model view	
+	app.AircraftTypeView = Backbone.View.extend({
+		tagName: 'div',
+        className: 'Row view',
+        template: actypetemplate,
+		render: function(){
+			this.$el.html( this.template(this.model.toJSON() ) );
+			this.$input = this.$('.edit');
+			return this;
+		},
+		initialize: function(){
+    		this.model.on('change', this.render, this);
+  		},
+		events:{
+			'click .delete' : 'deleteAircraftType',
+			'click .edit' : 'edit',
+			'keypress .edit' : 'updateOnEnter',
+			'blur .edit' : 'close'
+		},
+		deleteAircraftType: function(){
+			this.model.destroy();
+			this.remove();
+		},
 		edit: function(){
 			this.$el.addClass('editing');
-			this.$input.focure();
-		}
-	})
-// collection	
-        app.TowFeesList = Backbone.Collection.extend({
-    	model: app.Towfee,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  	
-   // 	sync : function(method, model, options){
-   // 		return Backbone.sync(method, this, $.extend(options, 
-   // 		{beforeSend : function (xhr) {
-   // 			xhr.setRequestHeader ('X-WP-NONCE', POST_SUBMITTER.nonce);
- //   			    console.log(POST_SUBMITTER.nonce);
- //   		}
-  //  	  }))	
- //    	}	
-    }) ; 
-
-
-//    app.towfee = new app.Towfee;
-//    console.log (JSON.stringify( app.towfee));
-
-//	app.TowFees = new TowFeesList;
-    
+//this.$('#inputcell').addClass('editing');
+      		this.$input.focus();
+		},
+		updateOnEnter: function(e){
+    		if(e.which == 13){
+      			this.close();
+    		}
+   		},
+   		close: function(){
+   			var title_value = this.$('#aircraft_type').val().trim();
+   			if(title_value){
+   				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(model))}});
+   			}
+  			this.$el.removeClass('editing');
+  		},
+	});	
+	    
 // view for the collection  . 
  	 app.TowFeesView = Backbone.View.extend({
       el: '#tow_fees',     
       // It's the first function called when this view it's instantiated.
-      initialize: function( tow_fees ){
+      initialize: function(){
 //      	console.log('the view has been initialized. ');
         this.collection = new app.TowFeesList();
         this.collection.fetch({reset:true});
@@ -121,8 +166,6 @@
   			this.renderTowFee(item);    	
       	}, this );
       },	
-// 		this.$el.html(this.template(this.model.toJSON() ));
-//        return this;
       renderTowFee: function(item){
       	var towfeeview = new app.TowFeeView({
       	  model: item
@@ -141,44 +184,82 @@
       			formData[el.id] = $(el).val();
       		}
       	});
-      	console.log(JSON.stringify(formData));
+//      	console.log(JSON.stringify(formData));
       	this.collection.create( formData );
       },
-    
     });
-  
-// dummy data    
+
+ 	 app.AircraftTypesView = Backbone.View.extend({
+      el: '#aircraft_types',     
+      // It's the first function called when this view it's instantiated.
+      initialize: function(){
+//      	console.log('the view has been initialized. ');
+        this.collection = new app.AircraftTypeList();
+        this.collection.fetch({reset:true});
+        this.render();
+        this.listenTo(this.collection, 'add', this.renderAircraftTypes);
+        this.listenTo(this.collection, 'reset', this.render);
+      },
+      render: function(){
+      	this.collection.each(function(item){
+  			this.renderAircraftTypes(item);    	
+      	}, this );
+      },	
+      renderAircraftTypes: function(item){
+      	var aircrafttypeview = new app.AircraftTypeView({
+      	  model: item
+      	})
+      	this.$el.append( aircrafttypeview.render().el);   
+      },
+      events:{
+      	'click #add' :  'addType'
+      },    
+      addType: function(e){
+      	e.preventDefault();      	
+      	var formData ={};
+      	$('#aircraft_type div').children('input').each(function(i, el ){
+      		if($(el).val() != ''){
+      			formData[el.id] = $(el).val();		
+      		}
+      	});
+      	 console.log(JSON.stringify(formData));
+       	this.collection.create( formData );
+      }
+    });  
+     
    $(function(){
-/* 
-  	var tow_fees = [
-   		{ id: '2',  altitude: 'SRB', charge: '15', hookup: '0' },
-   		{ id: '3', altitude: '1000', charge: '25', hookup: '0' },
-   		{ id: '4', altitude: '2000', charge: '30', hookup: '0' }
-   		];
- */
-   		new app.TowFeesView();
+   if (typeof cb_admin_tab !== 'undefined' ){
+   		switch(cb_admin_tab){
+   			case "tow_fee" : new app.TowFeesView();
+   			break;
+   			case "aircraft_types" : new app.AircraftTypesView();
+   			break;
+   		}
+   		   	console.log(cb_admin_tab);
+   	} else {
+   	console.log("not defined");}
    });
       
 //     new app.TowFeesView(tow_fees);  
    
-	app.towfeeform = new Backform.Form({
-		el: $("#tow_fees"),
-		model: app.Towfee,
-		events:{
-			"submit": function(e) {
-				e.preventDefault();
-				this.model.save()
-					.done(function(result){
-						alert("update Sucessful.");
-				})
-					.fail(function(error){
-						alert(error);
-				});
-				return false;
-			}
-		}
-	
-	});
+// 	app.towfeeform = new Backform.Form({
+// 		el: $("#tow_fees"),
+// 		model: app.Towfee,
+// 		events:{
+// 			"submit": function(e) {
+// 				e.preventDefault();
+// 				this.model.save()
+// 					.done(function(result){
+// 						alert("update Sucessful.");
+// 				})
+// 					.fail(function(error){
+// 						alert(error);
+// 				});
+// 				return false;
+// 			}
+// 		}
+// 	
+// 	});
 
   }) // $(function) close
 })( jQuery );

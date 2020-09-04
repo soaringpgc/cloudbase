@@ -23,7 +23,7 @@
 		$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'config_page';
 
 		// Build the Form
-		$page_tabs = array (  "tow_fees"=>"Tow Fees",  "aircraft"=>"Aircraft", "aircraft_types"=>"Aircraft Types", 
+		$page_tabs = array (  "tow_fees"=>"Tow Fees",  "aircraft"=>"Aircraft", "manage_aircraft_types"=>"Aircraft Types", 
 		"flight_types "=>"Flight Types",  "manage_tow_fees" =>  "Tow Fees", "config_page" =>  "Basic Configuration Page" );		
 		
 //		$page_tabs = apply_filters('pgc_signoffs/tab_header' , $page_tabs);		

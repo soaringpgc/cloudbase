@@ -2,3 +2,43 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+ 
+// table css  
+ .Table
+{
+    display: table;
+}
+.Title
+{
+    display: table-caption;
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+}
+.Heading
+{
+    display: table-row;
+    font-weight: bold;
+    text-align: center;
+}
+.Row
+{
+    display: table-row;
+}
+.Cell
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 60px;
+}
+// /table CSS 
+ul { 
+list-style-type: none;
+}
+.Cell .editing{
+	display: none;
+}

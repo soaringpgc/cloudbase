@@ -96,8 +96,12 @@ class Cloud_Base_Admin {
 		 * class.
 		 */
      	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
+     	wp_register_script( 'templates',  plugins_url('/Cloud-Base/admin/js/templates.js'));
+//     	wp_register_script( 'bb_models',  plugins_url('/Cloud-Base/admin/js/backbone_models.js'));
+
+
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
-		 'backforms'), $this->version, false );
+		 'backforms', 'templates'), $this->version, false );
 
 	//localize data for script
 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(

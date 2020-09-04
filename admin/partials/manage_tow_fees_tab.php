@@ -1,87 +1,6 @@
 <br>
-<style type="text/css">
-    .Table
-    {
-        display: table;
-    }
-    .Title
-    {
-        display: table-caption;
-        text-align: center;
-        font-weight: bold;
-        font-size: larger;
-    }
-    .Heading
-    {
-        display: table-row;
-        font-weight: bold;
-        text-align: center;
-    }
-    .Row
-    {
-        display: table-row;
-    }
-    .Cell
-    {
-        display: table-cell;
-         text-align: center;
-        border: solid;
-        border-width: thin;
-        padding-left: 5px;
-        padding-right: 5px;
-        width: 50px;
-    }
-</style>
-<!-- 
-moved to javascript file to keep wp_enquescripts from throwing an error. 
-<script type="text/template" id="feeitemtemplate">
-    <div class="Row">
-        <div class="Cell">
-            <%= altitude %>
-        </div>
-        <div class="Cell">
-            <%=  charge %>
-        </div>
-        <div class="Cell">
-            <%=  hook_up %>
-        </div>
-        <div class="Cell">
-            <button class="delete"></button> 
-        </div>
-    </div>
-</script>
- -->
-
-<!-- 
-
-
-<script type="text/template" id="feeitemtemplate">
-    <div class="Row">
-        <div class="Cell">
-           <%= id %>
-        </div>
-        <div class="Cell">
-            <%= altitude %>
-        </div>
-        <div class="Cell">
-            <%=  charge %>
-        </div>
-        <div class="Cell">
-            <%=  hookup %>
-        </div>
-        <div class="Cell">
-            <button class="delete"></button> 
-        </div>
-    </div>
-</script>
- -->
-
-
-<script type="text/template" id="feeitemtemplate_0">
-	<div class="fee-view">
-		<label><%= altitude %></label> <label><%=  charge %></label> <label><%=  hookup %></label> 
-		    <input type="hidden" id="fee_id" name="fee_id" value=<%= id %>> <button class="delete"></button> 
-	</div>
+<script language="JavaScript">
+	var cb_admin_tab = "tow_fee";
 </script>
 
 <div style="display:inline-block"  align:left id="tow_fees"  class="TowFee" >
@@ -107,24 +26,29 @@ moved to javascript file to keep wp_enquescripts from throwing an error.
         </label>
         <input type = "text"
             id = "altitude"
-            size = "12"
+            size = "8"
             title = "Rlease altitude Above Ground Level(AGL)." 
             name = "altitude"/>
         <label for="charge">Charge: </label>
         <input type = "number"
             step="0.01"
             id = "charge"
-            size = "6"
-            title = "Charge for given altitude." 
-            name = "charge"/>
+            style="width: 7em"
+            title = "Charge for given altitude." />
         <label for="hookup">Base fee: </label>
         <input type = "number"
             step="0.01"
             id = "hook_up"
-            size = "6"
+            style="width: 7em"
             value ="0"
-            title = "Charge for hookup." 
-            name = "charge"/>      
+            title = "base charge." />   
+        <label for="hourly">Hourly: </label>
+        <input type = "number"
+            step="0.01"
+            id = "hourly"
+            style="width: 7em"
+            value ="0"
+            title = "additional hourly charge." />          
         <button id="add">Add</button>
 <!-- 		 <?php wp_nonce_field('tow_charge' ) ?> 
        <?php    submit_button();	 ?>
@@ -132,7 +56,7 @@ moved to javascript file to keep wp_enquescripts from throwing an error.
        </div>
     </form>
 
-<div  class="TowFee" class="Table">
+<div  class="TowFee Table">
     <div class="Title">
         <p>Tow Fees </p>
     </div>
@@ -155,6 +79,9 @@ moved to javascript file to keep wp_enquescripts from throwing an error.
             <p>Delete</p>
         </div>
     </div>
+    <section >
+    <ul id="towfee-list"></ul>
+    </section>
 </div>
 
 </div>

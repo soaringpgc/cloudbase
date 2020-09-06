@@ -50,7 +50,7 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
              'callback' => array( $this, 'cloud_base_types_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),        	 		      		
       	  )
       	)
       );	              
@@ -102,8 +102,12 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 			return rest_ensure_response( 'Already exists id= '. $items->id );
  		 } else {
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
-			$wpdb->query($sql);						
-			wp_send_json(array('message'=>'Record Added'), 201 );
+			$wpdb->query($sql);	
+ 			// read it back to get id and send
+ 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+			$items = $wpdb->get_row( $sql, OBJECT);				
+			wp_send_json($items);				
+//			wp_send_json(array('message'=>'Record Added'), 201 );
 	    }
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}

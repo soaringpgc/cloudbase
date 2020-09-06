@@ -42,17 +42,19 @@
 	app.AircraftType = Backbone.Model.extend({
 		initialize: function(){
 		},
-	    defaults: {
-			wait: true
-		}		
+		
+	    defaults: {	
+	
+		}
 	} );
 	
 	app.Towfee = Backbone.Model.extend({
 		initialize: function(){
 		},
 	    defaults: {
-			wait: true
-		}		
+	    	base_charge: "0",
+		},
+		wait: true		
 	} );
 // collections	
     app.TowFeesList = Backbone.Collection.extend({
@@ -184,7 +186,7 @@
       		}
       	});
 //      	console.log(JSON.stringify(formData));
-      	this.collection.create( formData );
+      	this.collection.create( formData, {wait: true});
       },
     });
 
@@ -221,8 +223,8 @@
       			formData[el.id] = $(el).val();		
       		}
       	});
-      	 console.log(JSON.stringify(formData));
-       	this.collection.create( formData );
+//      	 console.log(JSON.stringify(formData));
+       	this.collection.create( formData, {wait: true});
       }
     });  
      

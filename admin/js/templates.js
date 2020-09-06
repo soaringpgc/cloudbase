@@ -14,6 +14,9 @@
      <div class="Cell ">
          <input value = <%=  hook_up %> size=6>
      </div>
+     <div class="Cell ">
+         <input value = <%=  base_charge %> size=6>
+     </div>
      <div class="Cell">
         <button class="delete"></button> 
      </div>
@@ -23,7 +26,7 @@
    <div class="Cell" > <%= id %></div>
    <div class="view">
      <label class="Cell"><%=  title %></label>
-     <div class="Cell"><button class="destroy" ">Delete</button></div>
+     <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
    <input class="edit" value = <%=  title %> size=11 id="aircraft_type" >
 `);

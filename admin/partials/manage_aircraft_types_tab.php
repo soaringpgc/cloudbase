@@ -28,7 +28,7 @@
         <div class="Cell"  >
             <p>ID</p>
         </div>
-        <div class="Cell"  style="width: 10.5em">
+        <div class="Cell"  style="width: 13.3em">
             <p>Title</p>
         </div>
     </div>
@@ -42,7 +42,7 @@
     
     <h4>Instructions</h4>
     
-    Get it right the first time, no do overs here!
+    You can not delete a aircraft type if an aircraft is assigned to that type. 
 
 
 

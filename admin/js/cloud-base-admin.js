@@ -122,7 +122,7 @@
   		},
 		events:{
 			'click .delete' : 'deleteAircraftType',
-			'click .edit' : 'edit',
+			'dblclick label' : 'edit',
 			'keypress .edit' : 'updateOnEnter',
 			'blur .edit' : 'close'
 		},
@@ -132,7 +132,6 @@
 		},
 		edit: function(){
 			this.$el.addClass('editing');
-//this.$('#inputcell').addClass('editing');
       		this.$input.focus();
 		},
 		updateOnEnter: function(e){

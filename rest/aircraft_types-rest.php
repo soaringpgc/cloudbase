@@ -141,7 +141,7 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 			$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 			$sql =  $wpdb->prepare("SELECT * FROM  $table_aircraft  WHERE `aircraft_type` = %d " ,  $item_id );	
 			$aircraft = $wpdb->get_row( $sql, OBJECT);
-			if( $wpdb->num_rows == 0 ) {	
+			if( $wpdb->num_rows === 0 ) {	
 				$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );	
 				$items = $wpdb->get_row( $sql, OBJECT);
 				if( $wpdb->num_rows > 0 ) {

@@ -50,9 +50,10 @@
             value ="0"
             title = "additional hourly charge." />          
         <button id="add">Add</button>
-<!-- 		 <?php wp_nonce_field('tow_charge' ) ?> 
+<!-- 
+		 <?php wp_nonce_field('tow_charge' ) ?> 
        <?php    submit_button();	 ?>
--->
+ -->
        </div>
     </form>
 
@@ -61,11 +62,6 @@
         <p>Tow Fees </p>
     </div>
     <div class="Heading">
-<!-- 
-        <div class="Cell">
-            <p>ID</p>
-        </div>
- -->
         <div class="Cell">
             <p>Alitude</p>
         </div>
@@ -76,11 +72,14 @@
             <p>Base</p>
         </div>
         <div class="Cell">
+            <p>Hourly</p>
+        </div>
+        <div class="Cell">
             <p>Delete</p>
         </div>
     </div>
     <section >
-    <ul id="towfee-list"></ul>
+    <div id="towfee-list"></div>
     </section>
 </div>
 

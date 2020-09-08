@@ -39,13 +39,24 @@
 	 
 //models
 // aircraft type model 
-	app.AircraftType = Backbone.Model.extend({
+	app.Model = Backbone.Model.extend({
+	// over ride the sync function to include the Wordpress nonce. 
+	// going to need this for everything so do it once.  
+	  	sync: function( method, model, options ){
+    		return Backbone.sync(method, this, jQuery.extend( options, {
+      			beforeSend: function (xhr) {
+        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+      			},
+   			} ));	
+   		},	
+	});
+
+	app.AircraftType = app.Model.extend({
 		initialize: function(){
+		},	
+	    defaults: {		
 		},
-		
-	    defaults: {	
-	
-		}
+		wait: true	
 	} );
 	
 	app.Towfee = Backbone.Model.extend({
@@ -54,22 +65,29 @@
 	    defaults: {
 	    	base_charge: "0",
 		},
-		wait: true		
+		wait: true,	
+   		sync: function( method, model, options ){
+    		return Backbone.sync(method, this, jQuery.extend( options, {
+      			beforeSend: function (xhr) {
+        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+      			},
+   			} ));	
+   		},		
 	} );
 // collections	
     app.TowFeesList = Backbone.Collection.extend({
     	model: app.Towfee,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  		
-    }) ; 
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  
+   	 }) ; 
     app.AircraftTypeList = Backbone.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',  		
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',			
     }) ; 
     	
 // model view	
 	app.TowFeeView = Backbone.View.extend({
 		tagName: 'div',
-        className: 'TowFee',
+        className: 'Row view',
         template: feeitemtemplate,
 //		template: _.template($('#feeitemtemplate').html()),
 		render: function(){
@@ -102,13 +120,11 @@
    		close: function(){
     		var value = this.input.val().trim();
     		if(value) {
-    		alert(value);
- //     			this.model.save({title: value});
+     			this.model.save({title: value});
     		}
     		this.$el.removeClass('editing');
   		},
 	});
-	
 // model view	
 	app.AircraftTypeView = Backbone.View.extend({
 		tagName: 'div',
@@ -129,9 +145,20 @@
 			'blur .edit' : 'close'
 		},
 		deleteAircraftType: function(){
-			this.model.destroy();
-			this.remove();
-		},
+			this.model.destroy(
+			{
+    			wait: true,			
+    			error: function(model, response) {
+    				var parsedmessage = JSON.parse(response.responseText);
+    				alert(parsedmessage.data.message);
+    				var parsedmessage = JSON.parse(response.responseText);
+    				},	
+    			success: (function(model, response){
+            		this.remove();  
+    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
+    			}	
+			)
+ 		},
 		edit: function(){
 			this.$el.addClass('editing');
       		this.$input.focus();
@@ -236,7 +263,6 @@
    			case "aircraft_types" : new app.AircraftTypesView();
    			break;
    		}
-   		   	console.log(cb_admin_tab);
    	} else {
    	console.log("not defined");}
    });

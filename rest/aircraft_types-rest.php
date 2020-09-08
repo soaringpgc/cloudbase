@@ -50,7 +50,7 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
              'callback' => array( $this, 'cloud_base_types_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),        	 		      		
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
       	  )
       	)
       );	              
@@ -151,12 +151,15 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 				if( $wpdb->num_rows > 0 ) {
 			        $sql =  $wpdb->prepare("DELETE from {$table_name}  WHERE `id` = %d " , $items->id );
 					$wpdb->query($sql);
-					wp_send_json(array('message'=>'Deleted', 'id'=>$item_id), 202 );
+
+					wp_send_json_success(array('message'=>'Deleted', 'id'=>$item_id), 202 );
 				} else{
-				  return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+					wp_send_json_error(array('message'=>'Record not found.', 'id'=>$item_id), 404);
+//				  return new \WP_Error( 'not found', esc_html__( 'Record Note found.', 'my-text-domain' ), array( 'status' => 404 ) );
 				}	
 			} else {
-				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 404 ) );
+			wp_send_json_error(array('message'=>'Record found but is inuse, cannot delete.', 'id'=>$item_id), 405 );
+//				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 405) );
 			}	
 		} else{
 			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );

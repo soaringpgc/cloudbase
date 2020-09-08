@@ -14,9 +14,10 @@
             name = "type"/>
      
         <button id="add">Add</button>
-<!-- 		 <?php wp_nonce_field('tow_charge' ) ?> 
+<!-- 
+		 <?php wp_nonce_field('tow_charge' ) ?> 
        <?php    submit_button();	 ?>
--->
+ -->
        </div>
     </form></DIV>
 
@@ -32,9 +33,7 @@
             <p>Title</p>
         </div>
     </div>
-
     <div id="aircraftType-list"></div>
-
 </div>
 
 </div>

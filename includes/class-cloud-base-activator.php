@@ -145,6 +145,7 @@ function create_cb_database(){
         			altitude varchar(10) NOT NULL,
         			hook_up decimal(5,2),
         			charge decimal(5,2),
+        			hourly decimal(5,2),
 					valid_until datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,        			
 					PRIMARY KEY  (id)
 				);" . $charset_collate  . ";";

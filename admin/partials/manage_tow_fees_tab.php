@@ -42,10 +42,10 @@
             style="width: 7em"
             value ="0"
             title = "base charge." />   
-        <label for="hourly">Hourly: </label>
+        <label for="hourly_fee">Hourly: </label>
         <input type = "number"
             step="0.01"
-            id = "hourly"
+            id = "hourly_fee"
             style="width: 7em"
             value ="0"
             title = "additional hourly charge." />          

@@ -63,7 +63,9 @@
 		initialize: function(){
 		},
 	    defaults: {
-	    	base_charge: "0",
+	    	charge: "0",
+	    	hourly_fee: "0",
+	    	hook_up: "0",
 		},
 		wait: true,	
    		sync: function( method, model, options ){
@@ -89,7 +91,6 @@
 		tagName: 'div',
         className: 'Row view',
         template: feeitemtemplate,
-//		template: _.template($('#feeitemtemplate').html()),
 		render: function(){
 			this.$el.html( this.template(this.model.toJSON() ) );
 			this.$input = this.$('.edit');
@@ -100,7 +101,7 @@
   		},
 		events:{
 			'click .delete' : 'deleteTowFee',
-			'click .edit' : 'edit',
+			'dblclick label' : 'edit',
 			'keypress .edit' : 'updateOnEnter',
 			'blur .edit' : 'close'
 		},
@@ -118,11 +119,14 @@
     		}
    		},
    		close: function(){
-    		var value = this.input.val().trim();
-    		if(value) {
-     			this.model.save({title: value});
+   			var tow_fee = this.$('#tow_fee').val().trim();
+  			var base_charge = this.$('#hook_up').val().trim();
+   			var hourly_fee = this.$('#hourly').val().trim();  
+			
+    		if(tow_fee || base_charge || hourly_fee) {
+     			this.model.save({"charge": tow_fee, "hook_up": base_charge, "hourly": hourly_fee });
     		}
-    		this.$el.removeClass('editing');
+           this.$el.removeClass('editing');
   		},
 	});
 // model view	
@@ -206,13 +210,11 @@
       addTowFee: function(e){
       	e.preventDefault();
       	var formData ={};
-//      	console.log('formdata');
       	$('#addTowFee div').children('input').each(function(i, el ){
       		if($(el).val() != ''){
       			formData[el.id] = $(el).val();
       		}
       	});
-//      	console.log(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       },
     });

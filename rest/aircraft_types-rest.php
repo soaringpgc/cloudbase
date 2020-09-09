@@ -79,7 +79,7 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		if( $wpdb->num_rows > 0 ) {
 			wp_send_json($items);
  		 } else {
- 		 			wp_send_json(array('message'=>'Record missing'), 201 );
+ 		 	wp_send_json(array('message'=>'Record missing'), 201 );
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
 		// should not get here normally but if it happens.

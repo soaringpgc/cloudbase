@@ -60,10 +60,10 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_tow_fees";	
 // fields to return. 		
-		$valid_fields = array('id'=>'id' , 'altitude'=>'altitude', 'charge'=>'charge', 'hook_up'=>'hook_up');
+		$valid_fields = array('id'=>'id' , 'altitude'=>'altitude', 'charge'=>'charge', 'hourly'=>'hourly', 'hook_up'=>'hook_up');
  		$select_string = $this->select_fields($request, $valid_fields);
 // process filters.  	  
- 	    $valid_filters = array('altitude'=>'altitude' , 'charge'=>'charge', 'hook_up'=>'hook_up' );
+ 	    $valid_filters = array('altitude'=>'altitude' , 'charge'=>'charge', 'hourly'=>'hourly', 'hook_up'=>'hook_up' );
 	    $filter_string = $this->select_filters($request, $valid_filters);
 	
 		if ($request['id'] != null){	
@@ -82,7 +82,8 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		// should not get here normally but if it happens.
      	 	return rest_ensure_response( 'Fee not avaliable.' );
 		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500);
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_fees_post_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -91,38 +92,43 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		if (!empty($request['altitude'])){
 			$altitude = $request['altitude'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing altitude.', 'my-text-domain' ), array( 'status' => 400 ) );
+		 	wp_send_json_error(array('message'=>'missing altitude.'), 400);
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing altitude.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
-
 		if (!empty($request['charge'])){
 				$fee = $request['charge'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing charge.', 'my-text-domain' ), array( 'status' => 400 ) );
+			$fee = '0';
 		}		
-
 		if (!empty($request['hook_up'])){
 				$hook_up = $request['hook_up'];
 		} else {
 			$hook_up = '0';
 		}		
-	
+		if (!empty($request['hourly_fee'])){
+				$hourly = $request['hourly_fee'];
+		} else {
+			$hook_up = '0';
+		}	
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until = 0 " , $altitude  );	
 		$fees = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
 			return rest_ensure_response( 'Already exists id= '. $fees->id );
  		 } else {
-		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %s, %f, %f, %s) " , $altitude, $fee, $hook_up, "0");	
+		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, hourly, valid_until ) VALUES ( %s, %f, %f, %f, %s) " , $altitude, $fee, $hook_up, $hourly, "0");	
 			$wpdb->query($sql);
 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
 			$fees = $wpdb->get_row( $sql, OBJECT);	
 			if( $wpdb->num_rows > 0 ) {
 				wp_send_json($fees);
  		 	} else {
-     	 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not added.', 'my-text-domain' ), array( 'status' => 404 ) );
+ 		 		  wp_send_json_error(array('message'=>'Fee not added.'), 404);
+//     	 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not added.', 'my-text-domain' ), array( 'status' => 404 ) );
 			}
 	    }
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500);
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	
 	}
 	public function cloud_base_fees_edit_callback( \WP_REST_Request $request) {
@@ -152,14 +158,21 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 				} else {
 					$hook_up = $fees->hook_up;
 				}				
-			}
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['hourly'] && $request['hourly'] != $fees->hourly )){
+					$hourly = $request['hourly'];
+					$change = 1;
+				} else {
+					$hourly = $fees->hourly;
+				}				
+			}			
 			if ($change != 0 ){
 			// mark existing recored as nolonger valid by setting the valin_until to now.
 	       		$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $fees->id );
 			 	$wpdb->query($sql);
 		    // create new record with valid_until = 0. 
-				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, valid_until ) VALUES ( %s, %f, %f, %s) " , 
-				$altitude, $fee, $hook_up, "0");	
+				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, hourly, valid_until ) VALUES ( %s, %f, %f, %f, %s) " , 
+				$altitude, $fee, $hook_up, $hourly, "0");	
 				$wpdb->query($sql);			
 
 				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND valid_until = 0 " , $altitude  );	
@@ -167,15 +180,17 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 				if( $wpdb->num_rows > 0 ) {
 					wp_send_json($fees);
 				} else {
-		    		return new \WP_Error( 'update Failes', esc_html__( 'Update failes. ', 'my-text-domain' ), array( 'status' => 400 ) );
+					wp_send_json_error(array('message'=>'Update failed.', 'altitude'=>$altitude), 400);
+//		    		return new \WP_Error( 'update Failes', esc_html__( 'Update failes. ', 'my-text-domain' ), array( 'status' => 400 ) );
 				}
-
-//		 		wp_send_json(array('message'=>'Record Updated'), 201 );
+		 		wp_send_json(array('message'=>'Record Updated'), 201 );
 		    } else {
-		    	return new \WP_Error( 'nothing changed', esc_html__( 'Updates identical to existing record. ', 'my-text-domain' ), array( 'status' => 400 ) );
+				wp_send_json_error(array('message'=>'Updates identical to existing record.', 'altitude'=>$altitude), 400);
+//		    	return new \WP_Error( 'nothing changed', esc_html__( 'Updates identical to existing record. ', 'my-text-domain' ), array( 'status' => 400 ) );
 		    }		    
 		}
-		return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );		
+		wp_send_json_error(array('message'=>'Record not found.', 'altitude'=>$altitude), 404);
+//		return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );		
 
 		/* 
 			Process your PUT request here.
@@ -196,7 +211,8 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 				wp_send_json(array('message'=>'Deleted', 'id'=>$fee_id), 202 );
 			}
 		} else{
-			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+			wp_send_json_error(array('message'=>'Record not found.', 'id'=>$fee_id), 404);
+//			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
 
 		}
 	}

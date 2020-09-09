@@ -51,11 +51,8 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
       	  )
       	)
-      );	                
-             
+      );	                        
     }
-
-
 // call back for signoffs:	
 	public function cloud_base_signoffs_get_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -68,8 +65,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 		// If the code somehow executes to here something bad happened return a 500.
       	return rest_ensure_response( 'No Signoff Types avaliable.' );
 		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
-
+		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500);
 	}	
 	public function cloud_base_signoffs_post_callback( \WP_REST_Request $request) {
 		/* 

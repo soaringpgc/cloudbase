@@ -58,8 +58,14 @@
 		},
 		wait: true	
 	} );
-	
-	app.Towfee = Backbone.Model.extend({
+	app.FlightType = app.Model.extend({
+		initialize: function(){
+		},	
+	    defaults: {		
+		},
+		wait: true	
+	} );
+	app.Towfee = app.Model.extend({
 		initialize: function(){
 		},
 	    defaults: {
@@ -67,14 +73,7 @@
 	    	hourly_fee: "0",
 	    	hook_up: "0",
 		},
-		wait: true,	
-   		sync: function( method, model, options ){
-    		return Backbone.sync(method, this, jQuery.extend( options, {
-      			beforeSend: function (xhr) {
-        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
-      			},
-   			} ));	
-   		},		
+		wait: true,			
 	} );
 // collections	
     app.TowFeesList = Backbone.Collection.extend({
@@ -84,6 +83,10 @@
     app.AircraftTypeList = Backbone.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',			
+    }) ; 
+    app.FlightTypeList = Backbone.Collection.extend({
+    	model: app.AircraftType,
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/flight_types',			
     }) ; 
     	
 // model view	
@@ -129,7 +132,59 @@
            this.$el.removeClass('editing');
   		},
 	});
-// model view	
+// model view
+	app.FlightTypeView = Backbone.View.extend({
+		tagName: 'div',
+        className: 'Row view',
+        template: flighttypetemplate,
+		render: function(){
+			this.$el.html( this.template(this.model.toJSON() ) );
+			this.$input = this.$('.edit');
+			return this;
+		},
+		initialize: function(){
+    		this.model.on('change', this.render, this);
+  		},
+		events:{
+			'click .delete' : 'deleteFlightType',
+			'dblclick label' : 'edit',
+			'keypress .edit' : 'updateOnEnter',
+			'blur .edit' : 'close'
+		},
+		deleteFlightType: function(){
+			this.model.destroy(
+			{
+    			wait: true,			
+    			error: function(model, response) {
+    				var parsedmessage = JSON.parse(response.responseText);
+    				alert(parsedmessage.data.message);
+    				var parsedmessage = JSON.parse(response.responseText);
+    				},	
+    			success: (function(model, response){
+            		this.remove();  
+    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
+    			}	
+			)
+ 		},
+		edit: function(){
+			this.$el.addClass('editing');
+      		this.$input.focus();
+		},
+		updateOnEnter: function(e){
+    		if(e.which == 13){
+      			this.close();
+    		}
+   		},
+   		close: function(){
+   			var title_value = this.$('#flight_type').val().trim();
+   			if(title_value){
+   				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
+   			}
+  			this.$el.removeClass('editing');
+  		},
+	});	
+
+
 	app.AircraftTypeView = Backbone.View.extend({
 		tagName: 'div',
         className: 'Row view',
@@ -256,6 +311,44 @@
        	this.collection.create( formData, {wait: true});
       }
     });  
+    
+ 	 app.FlightTypesView = Backbone.View.extend({
+      el: '#flight_types',     
+      // It's the first function called when this view it's instantiated.
+      initialize: function(){
+//      	console.log('the view has been initialized. ');
+        this.collection = new app.FlightTypeList();
+        this.collection.fetch({reset:true});
+        this.render();
+        this.listenTo(this.collection, 'add', this.renderFlightTypes);
+        this.listenTo(this.collection, 'reset', this.render);
+      },
+      render: function(){
+      	this.collection.each(function(item){
+  			this.renderFlightTypes(item);    	
+      	}, this );
+      },	
+      renderFlightTypes: function(item){
+      	var flighttypeview= new app.FlightTypeView({
+      	  model: item
+      	})
+      	this.$el.append( flighttypeview.render().el);   
+      },
+      events:{
+      	'click #add' :  'addType'
+      },    
+      addType: function(e){
+      	e.preventDefault();      	
+      	var formData ={};
+      	$('#addflight_type div').children('input').each(function(i, el ){
+      		if($(el).val() != ''){
+      			formData[el.id] = $(el).val();		
+      		}
+      	});
+//      	 console.log(JSON.stringify(formData));
+       	this.collection.create( formData, {wait: true});
+      }
+    });     
      
    $(function(){
    if (typeof cb_admin_tab !== 'undefined' ){
@@ -264,6 +357,9 @@
    			break;
    			case "aircraft_types" : new app.AircraftTypesView();
    			break;
+   			case "flight_types" : new app.FlightTypesView();
+   			break;
+
    		}
    	} else {
    	console.log("not defined");}

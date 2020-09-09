@@ -67,7 +67,7 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );		
 		} else {
 		// return all current items. 
-	        $sql = "SELECT * FROM ". $table_name . "  ORDER BY title ASC ";	
+	        $sql = "SELECT * FROM ". $table_name . " WHERE `active` = 1  ORDER BY `title` ASC ";	
 		}
 		$items = $wpdb->get_results( $sql, OBJECT);
 
@@ -77,7 +77,8 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 		// should not get here normally but if it happens.
      	 	return rest_ensure_response( 'no flight types avaliable.' );
 		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+		wp_send_json_error(array('message'=>'Something went horribly wrong.', 'id'=>$item_id), 500);
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_types_post_callback( \WP_REST_Request $request) {
 	    global $wpdb;
@@ -86,27 +87,40 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 		if (!empty($request['type'])){
 			$title = $request['type'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
+			wp_send_json_error(array('message'=>'Title/type is missing.', 'id'=>$item_id), 400);
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
-
-			return rest_ensure_response( 'Already exists id= '. $items->id );
+				$sql =  $wpdb->prepare("UPDATE  {$table_name} SET `active` = 1 WHERE `id` = %d " , $items->id );
+				$wpdb->query($sql);
+					
+				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+				$items = $wpdb->get_row( $sql, OBJECT);				
+				wp_send_json($items);										
+//			return rest_ensure_response( 'Already exists id= '. $items->id );
  		 } else {
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
-			$wpdb->query($sql);						
-			wp_send_json(array('message'=>'Record Added'), 201 );
+			$wpdb->query($sql);	
+			// read it back to get id and send
+ 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+			$items = $wpdb->get_row( $sql, OBJECT);				
+			wp_send_json($items);		
+									
+//			wp_send_json(array('message'=>'Record Added'), 201 );
 	    }
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.', 'id'=>$item_id), 500);
+
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_types_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_flight_type";	
 		$item_id =  $request['id'];
-		if (!empty($request['type'])){
-			$title = $request['type'];
+		if (!empty($request['title'])){
+			$title = $request['title'];
 		} else {
 			$title =null;
 		}
@@ -119,12 +133,14 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 				$wpdb->query($sql);
 				wp_send_json(array('message'=>'Record Updated'), 201 );
 			} else{
-			
+			 	wp_send_json_error(array('message'=>'Record not found.', 'id'=>$item_id), 400);
  			}
  		} else {
- 			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or type missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
+ 			wp_send_json_error(array('message'=>'Id and or type is missing.', 'id'=>$item_id), 400);
+// 			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or type missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
  		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.', 'id'=>$item_id), 500);
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_types_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -138,7 +154,7 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 				$wpdb->query($sql);
 				wp_send_json(array('message'=>'Deleted', 'id'=>$item_id), 202 );
 			} else{
-				return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+				wp_send_json_error(array('message'=>'Record Not found.', 'id'=>$item_id), 404);
 			}	
 		} 
 	}	

@@ -79,11 +79,12 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		if( $wpdb->num_rows > 0 ) {
 			wp_send_json($items);
  		 } else {
- 		 	wp_send_json(array('message'=>'Record missing'), 201 );
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
+ 		 	wp_send_json(array('message'=>'no Types avaliable.'), 204 );
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
 		// should not get here normally but if it happens.
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+			wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_types_post_callback( \WP_REST_Request $request) {
 	    global $wpdb;
@@ -92,7 +93,8 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		if (!empty($request['type'])){
 			$title = $request['type'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
+			wp_send_json_error(array('message'=>'missing Type.'), 400 );				
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
@@ -109,7 +111,8 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 			wp_send_json($items);				
 //			wp_send_json(array('message'=>'Record Added'), 201 );
 	    }
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+			wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_types_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -120,7 +123,6 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		} else {
 			$title =null;
 		}
- 
  		if ($item_id != null && $title != null ) {	
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
 			$items = $wpdb->get_row( $sql, OBJECT);
@@ -129,12 +131,14 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 				$wpdb->query($sql);
 				wp_send_json(array('message'=>'Record Updated'), 201 );
 			} else{
-			
+			 	wp_send_json_error(array('message'=>'Record not found.', 'id'=>$item_id), 400);
  			}
  		} else {
- 			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or type missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
+ 			wp_send_json_error(array('message'=>'id and/or type missing.'), 400 );		
+// 			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or type missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
  		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+ 		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_types_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -162,7 +166,9 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 //				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 405) );
 			}	
 		} else{
-			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
+			wp_send_json_error(array('message'=>'invalid request no id.'), 404 );
+//			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
+
 		}
 	}	
 

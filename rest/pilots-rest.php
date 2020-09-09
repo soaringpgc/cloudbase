@@ -259,8 +259,9 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 			}
 			return rest_ensure_response( $pilots ); 	
 		}	
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500);
 	
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 		/* 
 			Process your GET request here.		
 		*/
@@ -274,18 +275,20 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 		if (!empty($request['member_id']) && does_user_exist( $request['member_id'] )){	
 			$member_id = $wpdb->prepare($request['member_id']);	
 		} else {
+			wp_send_json_error(array('message'=>'Missing member ID.'), 400);
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing member ID.', 'my-text-domain' ), array( 'status' => 400 ) );		
 		}
 		if (!empty($request['authority_id'])  && does_user_exist( $request['authority_id'] )){	
 			$authority_id = $wpdb->prepare($request['authority_id']);	
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing authority ID.', 'my-text-domain' ), array( 'status' => 400 ) );		
-		}
-		
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing authority ID.', 'my-text-domain' ), array( 'status' => 400 ) );		
+		  	wp_send_json_error(array('message'=>'Missing authority ID.'), 400);
+		}		
 		if (!empty($request['effective_date'])){	
 			$date_effective = new \DateTime($request['effective_date']);		
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'Effective date missing.', 'my-text-domain' ), array( 'status' => 400 ) );		
+		  	wp_send_json_error(array('message'=>'Effective date missing.'), 400);
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'Effective date missing.', 'my-text-domain' ), array( 'status' => 400 ) );		
 		}			  
 
 //		$signoff_id = $request['signoff_id'];	
@@ -304,18 +307,21 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 				$wpdb->query($sql);						
 				wp_send_json(array('message'=>'Record Added'), 201 );  
  		      } else {
-  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'already exists.', 'my-text-domain' ), array( 'status' => 400 ) );
+  		     	wp_send_json_error(array('message'=>'Already exists..'), 400);
+//  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'already exists.', 'my-text-domain' ), array( 'status' => 400 ) );
   		      }	
   		     } else {
-  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Not authorized.', 'my-text-domain' ), array( 'status' => 400 ) );
+  		     	wp_send_json_error(array('message'=>'Not authorized.'), 400);
+//  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Not authorized.', 'my-text-domain' ), array( 'status' => 400 ) );
   		     }
   		    } else {
-			  return new \WP_Error( 'rest_api_sad', esc_html__( 'invalid Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
+  		    	wp_send_json_error(array('message'=>'Invalid Signoff.'), 400);
+//			  return new \WP_Error( 'rest_api_sad', esc_html__( 'invalid Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
 		    }
   		  } else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
+			wp_send_json_error(array('message'=>'Missing Signoff.'), 400);
 		  }
-
 	}
 	public function cloud_base_pilots_signoffs_edit_callback( \WP_REST_Request $request) {
 	

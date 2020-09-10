@@ -43,5 +43,8 @@
     
     You can not delete a aircraft type if an aircraft is assigned to that type. 
 
-
+    To edit an existing item double click anywhere in that line input fields will 
+    replace the display fields and each can be updated. Press "Enter" to have the new
+    values accepted. 
+    
 

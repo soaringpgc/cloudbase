@@ -77,16 +77,18 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 		// should not get here normally but if it happens.
      	 	return rest_ensure_response( 'no Status avaliable.' );
 		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_status_post_callback( \WP_REST_Request $request) {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 
-		if (!empty($request['status'])){
-			$title = $request['status'];
+		if (!empty($request['type'])){
+			$title = $request['type'];
 		} else {
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
+			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
+//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
@@ -96,17 +98,21 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 			return rest_ensure_response( 'Already exists id= '. $items->id );
  		 } else {
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
-			$wpdb->query($sql);						
-			wp_send_json(array('message'=>'Record Added'), 201 );
+			$wpdb->query($sql);	
+ 			// read it back to get id and send
+ 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+			$items = $wpdb->get_row( $sql, OBJECT);				
+			wp_send_json($items);				
 	    }
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
+	//	return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_status_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 		$item_id =  $request['id'];
-		if (!empty($request['status'])){
-			$title = $request['status'];
+		if (!empty($request['title'])){
+			$title = $request['title'];
 		} else {
 			$title =null;
 		}
@@ -124,7 +130,8 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
  		} else {
  			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or status missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
  		}
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+ 		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
+//		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_status_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -143,13 +150,18 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 					$wpdb->query($sql);
 					wp_send_json(array('message'=>'Deleted', 'id'=>$item_id), 202 );
 				} else{
-				  return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+ 					wp_send_json_error(array('message'=>'Record Not found.'), 404 );	
+				
+//				  return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
 				}	
 			} else {
-				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 404 ) );
+			 	wp_send_json_error(array('message'=>'Record found but is inuse, cannot delete.'), 404 );	
+//				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 404 ) );
 			}	
 		} else{
-			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
+			 wp_send_json_error(array('message'=>'Invalid request no id..'), 404 );	
+
+//			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
 		}
 	}	
 }

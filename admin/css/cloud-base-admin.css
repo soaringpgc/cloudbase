@@ -48,3 +48,8 @@ list-style-type: none;
 .editing .edit {
 	display: inline;
 }
+// background color for datapicker. 
+.ui-datepicker {
+  background: #FFFFFF ;
+
+}

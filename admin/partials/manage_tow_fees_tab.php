@@ -8,13 +8,6 @@
     <form id="addTowFee" action="#" >
     	<div>
   	  <input type="hidden" >
-<!-- 
-        <input type = "hidden"
-            id = "record_id"
-            size = "5"
-            value = ""
-            name = "record_id"/>
- -->
         <label for="altitude">Altitude
         <?php 
     		  if (get_option("glider_club_tow_units") == "m"){
@@ -87,6 +80,19 @@
 
     
     <h4>Instructions</h4>
+    
+    Tried to make this as flexible as possible. For normal tow fees; enter Altitude and
+    Charge, leave Base Fee and Hourly blank. Altitude can be text such as "SRB" or "Self"
+    Some clubs have a hook up fee that would be entered in the Base fee field. 
+    
+    For retrive enter "Retrive" under altitude, the basic charge under Base fee and 
+    charge for each additional hour under Hourly. 
+    
+    To edit an existing item double click anywhere in that line input fields will 
+    replace the display fields and each can be updated. Press "Enter" to have the new
+    values accepted. 
+    
+    
 
 
 

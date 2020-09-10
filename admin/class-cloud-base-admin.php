@@ -72,8 +72,8 @@ class Cloud_Base_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-admin.css', array(), $this->version, 'all' );
+		wp_register_style( 'datepicker',  plugins_url('/Cloud-Base/includes/datepicker.css'));
+		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-admin.css', array( 'datepicker'), $this->version, 'all' );
 
 	}
 
@@ -95,13 +95,12 @@ class Cloud_Base_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
+//     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
      	wp_register_script( 'templates',  plugins_url('/Cloud-Base/admin/js/templates.js'));
-//     	wp_register_script( 'bb_models',  plugins_url('/Cloud-Base/admin/js/backbone_models.js'));
 
 
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
-		 'backforms', 'templates'), $this->version, false );
+		 'jquery-ui-datepicker', 'templates'), $this->version, false );
 
 	//localize data for script
 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(

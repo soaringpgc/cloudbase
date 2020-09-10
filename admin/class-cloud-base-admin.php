@@ -134,9 +134,19 @@ class Cloud_Base_Admin {
      	$glider_club_long_name = sanitize_text_field($_POST['long_name']);
     	$glider_club_short_name = sanitize_text_field($_POST['short_name']);
     	$glider_club_unit = sanitize_text_field($_POST['units']);
+    	$cloud_base_fy_month = sanitize_text_field($_POST['fyStartMonth']);
+    	$cloud_base_fy_day = sanitize_text_field($_POST['fyStartDay']);
+    	$cloud_base_se_month = sanitize_text_field($_POST['sessionStartMonth']);
+    	$cloud_base_se_day = sanitize_text_field($_POST['sessionStartDay']);
     	update_option('glider_club_long_name', $glider_club_long_name  );
     	update_option('glider_club_short_name', $glider_club_short_name  ); 	
     	update_option('glider_club_tow_units', $glider_club_unit  ); 
+    	
+    	update_option('cloud_base_fy_month', $cloud_base_fy_month ); 
+    	update_option('cloud_base_fy_day', $cloud_base_fy_day ); 
+    	update_option('cloud_base_session_month', $cloud_base_se_month ); 
+    	update_option('cloud_base_session_day', $cloud_base_se_day); 
+	
     	wp_redirect('options-general.php?page=cloud_base&tab=config_page');
     	exit();    		
     }  

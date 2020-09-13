@@ -35,7 +35,6 @@
   		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd', showAnim: "slideDown"}); 
   	 });
 
-
 //NTFS: need to use `` or get unexpected EOF error. 	
 // needs to be here rather than 'includes' because templates are compiled into 
 // functions and the way wordpress load-scripts works, if the template function is not
@@ -55,7 +54,6 @@
    			} ));	
    		},	
 	});
-
 	app.AircraftType = app.Model.extend({
 		initialize: function(){
 		},	
@@ -94,8 +92,7 @@
 
 		},
 		wait: true,			
-	} );
-		
+	} );		
 // collections	
     app.TowFeesList = Backbone.Collection.extend({
     	model: app.Towfee,
@@ -116,8 +113,7 @@
      app.AircaftList = Backbone.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',			
-    }) ; 
-    	   	
+    }) ;    	   	
 // model view	
 	app.ModelView = Backbone.View.extend({
 		tagName: 'div',
@@ -149,6 +145,18 @@
       			this.close();
     		}
    		},
+	});
+	app.AircraftView = app.ModelView.extend({
+	        template: aircrafttemplate,
+	   		close: function(){
+   				var tow_fee = this.$('#').val().trim();
+  				var base_charge = this.$('#hook_up').val().trim();
+   				var hourly_fee = this.$('#hourly').val().trim();  
+    			if(tow_fee || base_charge || hourly_fee) {
+     				this.model.save({"charge": tow_fee, "hook_up": base_charge, "hourly": hourly_fee });
+    			}
+           		this.$el.removeClass('editing');
+  			}
 	});
 
 	app.TowFeeView = app.ModelView.extend({
@@ -184,16 +192,30 @@
   		},
 	});	
 	app.AircraftTypeView = app.ModelView.extend({
-	        template: actypetemplate,
-   			close: function(){
+	    template: actypetemplate,
+   		close: function(){
    			var title_value = this.$('#aircraft_type').val().trim();
    			if(title_value){
    				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(model))}});
    			}
   			this.$el.removeClass('editing');
   		},
+  		deleteItem: function(){
+			this.model.destroy(
+			{
+    			wait: true,			
+    			error: function(model, response) {
+    				var parsedmessage = JSON.parse(response.responseText);
+  //  				 alert(JSON.stringify(parsedmessage.message));
+	  				alert(parsedmessage.message);
+    				},	
+    			success: (function(model, response){
+            		this.remove();  
+    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
+    			}	
+			)
+ 		},
 	});
-	
 	app.CollectionView =  Backbone.View.extend({    
       // It's the first function called when this view it's instantiated.
       
@@ -214,19 +236,17 @@
       },
       addItem: function(e){
       	e.preventDefault();
-
       	var formData ={};
       	$(this.localDivTag).children('input').each(function(i, el ){
       		if($(el).val() != ''){
       			formData[el.id] = $(el).val();
       		}
       	});
-      	      	alert(JSON.stringify(formData));
+// alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       },	
 	
 	})
-
 	 app.TowFeesView = app.CollectionView.extend({
 	 	el: '#tow_fees', 
 		localDivTag: '#addTowFee Div',
@@ -239,8 +259,7 @@
       		})
       		this.$el.append( itemView.render().el);   
         }
-	 });
-	    
+	 });	    
 	 app.AircraftTypesView = app.CollectionView.extend({
 	 	el: '#aircraft_types', 
 	 	localDivTag: '#aircraft_type Div',
@@ -254,7 +273,6 @@
       		this.$el.append( itemView.render().el);   
         }
  	 });
-
 	 app.FlightTypesView = app.CollectionView.extend({
 	 	el: '#flight_types', 
 	 	localDivTag: '#addflight_type Div',

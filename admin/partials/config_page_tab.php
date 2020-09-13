@@ -53,7 +53,7 @@
                 	}
                 };
 // Session start date
-         		echo '</select><br><label for seasionStartMonth>Seasion Yr Start:</label>
+         		echo '</select><br><label for seasionStartMonth>Session Yr Start:</label>
           			<select name="sessionStartMonth" id="sessionStartMonth" >' ;
                 foreach($months as $key=> $value){
                 	if ( $key == $sessionStartMonth ){

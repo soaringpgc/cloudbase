@@ -25,7 +25,7 @@
             id = "model"
             title = "Model of aircraft." />   
         <label for="type">Type: </label>
-        <select>        
+         <select>
         	<?php
         	global $wpdb;
 			$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
@@ -36,14 +36,26 @@
             };
         	?>      
          </select>
+        <label for="status">Type: </label>
+        <select>        
+        	<?php
+        	global $wpdb;
+			$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
+			$sql = "SELECT * FROM ". $table_name . "  ORDER BY title ASC ";
+			$items = $wpdb->get_results( $sql, OBJECT);       	
+       		foreach($items as $key){ 	
+       			echo '<option value=' . $key->id . '>'. $key->title . '</option>';
+            };
+        	?>      
+         </select>
          <br>
-        <label for="compitition">Compitition
+        <label for="competition">Competition
         </label>
         <input type = "text"
-            id = "compitition"
+            id = "competition"
             size = "8"
-            title = "compitition ID." 
-            name = "compitition"/>
+            title = "Competition ID." 
+            name = "competition"/>
 
         <label for="Captian">Captian
         </label>
@@ -69,8 +81,7 @@
                  width = "100px"
                  value = "<?php echo date('Y-m-d') ?>"
                  title = "When is the registration due for this aircraft" 
-                 name = "registration_due"/>                  
-         
+                 name = "registration_due"/>                          
         <button id="add">Add</button>
 <!-- 
 		 <?php wp_nonce_field('tow_charge' ) ?> 
@@ -88,6 +99,9 @@
             <p>Registration</p>
         </div>
         <div class="Cell">
+            <p>Competition</p>
+        </div>
+        <div class="Cell">
             <p>Type</p>
         </div>
          <div class="Cell">
@@ -99,6 +113,15 @@
         <div class="Cell">
             <p>Status</p>
         </div>
+        <div class="Cell">
+            <p>Make</p>
+        </div>
+        <div class="Cell">
+            <p>Model</p>
+        </div>
+        <div class="Cell">
+            <p>Captian</p>
+        </div>   
     </div>
     <section >
     <div id="aircraft-list"></div>
@@ -107,15 +130,9 @@
 
 </div>
 
-    
     <h4>Instructions</h4>
     
-    Tried to make this as flexible as possible. For normal tow fees; enter Altitude and
-    Charge, leave Base Fee and Hourly blank. Altitude can be text such as "SRB" or "Self"
-    Some clubs have a hook up fee that would be entered in the Base fee field. 
-    
-    For retrive enter "Retrive" under altitude, the basic charge under Base fee and 
-    charge for each additional hour under Hourly. 
+    This got a bit busy. 
     
     To edit an existing item double click anywhere in that line input fields will 
     replace the display fields and each can be updated. Press "Enter" to have the new

@@ -75,16 +75,16 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $sql = "SELECT {$select_string} FROM {$table_name} s inner join 
 			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
  				
-	  $sqlreturn = $wpdb->get_results( $sql, OBJECT);
+	  $items = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
-	     wp_send_json($sqlreturn);
+	  	 return new \WP_REST_Response ($items);
+//	     wp_send_json($items);
  	   } else {
- 	   	  wp_send_json(array('message'=>'no Aircraft avaliable.'), 204 );				
-
-//    	  return new \WP_Error( 'rest_api_sad', esc_html__( 'no Aircraft avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
+// 	   	  wp_send_json(array('message'=>'no Aircraft avaliable.'), 204 );				
+    	  return new \WP_Error( 'No Aircraft', esc_html__( 'no Aircraft avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 	   }
-	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-//	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 
 	}	
 	public function cloud_base_aircraft_post_callback( \WP_REST_Request $request) {
@@ -100,18 +100,20 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  	if( $wpdb->num_rows > 0 ) {	
 			$type = $sqlreturn->id;
 	 	 } else {
-	 	 	wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
+    	   return new \WP_Error( 'No Aircraft', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
+//	 	 	wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
 	  	}
 	  } else{
-	  		wp_send_json_error(array('message'=>'Type Required.'), 404 );
+	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 404 ) );
+//	  		wp_send_json_error(array('message'=>'Type Required.'), 404 );
 	  }
 
 	  $captian = null;
 	  if (!empty($request['captian'])){
 	  	$the_user = get_user_by( 'id', $request['captian'] ); 
 		if (!$the_user) {
-			wp_send_json_error(array('message'=>'Member Not found.'), 400 );
-//	  	   	return new \WP_Error( 'invalid user', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 500 ) );		
+		    return new \WP_Error( 'Not Found', esc_html__( 'TMember Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
+//			wp_send_json_error(array('message'=>'Member Not found.'), 400 );
 	  	} else {
 			$captian = $the_user->id;
 		}
@@ -120,20 +122,20 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  if (!empty($request['registration'])){
 	  	$registration  = $wpdb->prepare("%s" , $request['registration']);
 	  } else{
-	  	wp_send_json_error(array('message'=>'Registration Required.'), 404 );
-//		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+//	  	wp_send_json_error(array('message'=>'Registration Required.'), 404 );
+		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 
 	  if (!empty($request['make'])){
 	  	$make  = $wpdb->prepare("%s" , $request['make']);
 	  } else{
-	  	  	wp_send_json_error(array('message'=>'Aircraft Manufacture Required.'), 404 );
-// 		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+//	  	  	wp_send_json_error(array('message'=>'Aircraft Manufacture Required.'), 404 );
+ 		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }	  
   	  if (!empty($request['model'])){
 	  	$make  = $wpdb->prepare("%s" , $request['model']);
 	  } else{
-	  	  	wp_send_json_error(array('message'=>'Aircraft Model Required.'), 404 );
-//		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+//	  	  	wp_send_json_error(array('message'=>'Aircraft Model Required.'), 404 );
+		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }		  
 	  
 	  $compitition = '';
@@ -147,33 +149,35 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  	if( $wpdb->num_rows > 0 ) {	
 			$status = $sqlreturn->id;
 	 	 } else {
-	 	 	 wp_send_json_error(array('message'=>'That status does not exist.'), 404 );
-//	  	   	return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	 	 	 wp_send_json_error(array('message'=>'That status does not exist.'), 404 );
+	  	   	return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
 	  	}
 	  } else{
-	  	wp_send_json_error(array('message'=>'Status Required.'), 404 );
-//		return new \WP_Error( 'status required', esc_html__( 'Status Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+//	  	wp_send_json_error(array('message'=>'Status Required.'), 404 );
+		return new \WP_Error( 'status required', esc_html__( 'Status Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }
-
 // generate new aircraft id number	  
 	  $sql = "SELECT MAX(aircraft_id)  FROM {$table_name} " ;
 	  $sqlreturn = $wpdb->get_row( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
 		$aircraft_id = $sqlreturn->aircraft_id + 1;
 	  } else {
-	  	  	wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );
-//	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	  	  	wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );
+	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	  }
 
 	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
 	  status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, %d) " , 
-	  $aircraft_id, $registration, $type, $status, $captian, $make, $model, $compitition, "0");
-	  
+	  $aircraft_id, $registration, $type, $status, $captian, $make, $model, $compitition, "0");	  
 	  $wpdb->query($sql);
-	  wp_send_json(array('message'=>'Record Added'), 201 );
+  // read it back to get id and send
+ 	  $sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
+	  $items = $wpdb->get_row( $sql, OBJECT);
+	  return new \WP_REST_Response ($items); 
+//	  wp_send_json(array('message'=>'Record Added'), 201 );
 	}
-	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-	
+//	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+	    return new \WP_Error( 'server_error', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_aircraft_edit_callback( \WP_REST_Request $request) {
 	  global $wpdb;
@@ -196,15 +200,15 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  			if( $wpdb->num_rows > 0 ) {	
 	 			$type = $sqlreturn->id;
 	 			} else {
-	 				wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
-//	  	   			return new \WP_Error( 'invalid type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	 				wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
+	  	   			return new \WP_Error( 'invalid type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  			}
 	    	} 	
 	    	if (!empty($request['captian'])){
 	  			$the_user = get_user_by( 'id', $request['captian'] ); 
 				if (!$the_user) {
-					wp_send_json_error(array('message'=>'Member Not found.'), 400 );		
-//	  	  		 	return new \WP_Error( 'invalid user', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 500 ) );		
+//					wp_send_json_error(array('message'=>'Member Not found.'), 400 );		
+	  	  		 	return new \WP_Error( 'invalid user', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );		
 	  			} else {
 					$captian = $the_user->id;
 				}
@@ -215,8 +219,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  			if( $wpdb->num_rows > 0 ) {	
 					$status = $sqlreturn->id;
 	 	 		} else {
-	 	 			wp_send_json_error(array('message'=>'That status does not exist.'), 400 );		
-//	  	   			return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	 	 			wp_send_json_error(array('message'=>'That status does not exist.'), 400 );		
+	  	   			return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  			}
 	  		}
 	  		
@@ -228,20 +232,23 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	 			status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, %d) " , 
 	  			$item->aircraft_id, $item->registration, $type, $status, $captian, $item->make, $item->model, $item->compitition, "0");
 
-			$wpdb->query($sql);			
-		 	wp_send_json(array('message'=>'Record Updated'), 201 );
+			$wpdb->query($sql);	
+  // read it back to get id and send
+ 	  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
+	  		$items = $wpdb->get_row( $sql, OBJECT);
+	  		return new \WP_REST_Response ($items);							
+//		 	wp_send_json(array('message'=>'Record Updated'), 201 );
 				
 		} else{
-			wp_send_json_error(array('message'=>'That aircraft Id was not found.'), 404 );		
-//			return new \WP_Error( 'not_found', esc_html__( 'That aircraft Id was not found', 'my-text-domain' ), array( 'status' => 404 ) );
+//			wp_send_json_error(array('message'=>'That aircraft Id was not found.'), 404 );		
+			return new \WP_Error( 'not_found', esc_html__( 'That aircraft Id was not found', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
-
 	  } else{
-	  		wp_send_json_error(array('message'=>'Parameter missing.'), 404 );		
-//		    return new \WP_Error( 'missing paramater', esc_html__( 'Parameter missing', 'my-text-domain' ), array( 'status' => 404 ) );
+//	  		wp_send_json_error(array('message'=>'Parameter missing.'), 404 );		
+		    return new \WP_Error( 'missing paramater', esc_html__( 'Parameter missing', 'my-text-domain' ), array( 'status' => 400 ) );
 	  }
-	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-//	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 
 	}
 	public function cloud_base_aircraft_delete_callback( \WP_REST_Request $request) {
@@ -259,14 +266,14 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 			$wpdb->query($sql);
 			wp_send_json(array('message'=>'Deleted', 'id'=>$fee_id), 202 );
 		} else{
-			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  	}	
 	  } else{
-	  	   wp_send_json_error(array('message'=>'Parameter missing.'), 404 );		
-//   	   return new \WP_Error( 'missing paramater', esc_html__( 'Parameter missing', 'my-text-domain' ), array( 'status' => 404 ) );
+//	  	  wp_send_json_error(array('message'=>'Parameter missing.'), 404 );		
+   	      return new \WP_Error( 'missing paramater', esc_html__( 'Parameter missing', 'my-text-domain' ), array( 'status' => 400 ) );
 	  }
-	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-//	  return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+//	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
+  	   return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 }
 

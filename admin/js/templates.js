@@ -46,4 +46,18 @@ var feeitemtemplate = _.template(`
    </div>
    <input class="edit" value = <%= title %> size=11 id="status_type" >
 `);
+// Flight Types 
+  var aircrafttemplate = _.template(`
+   <div class="Cell" > <%= Registration %></div>
+   <div class="Cell" > <%= Competition %></div>
+   <div class="view">
+        <label class="Cell"><%=  annual_due_date %></label>
+     	<label class="Cell"><%=  registration_due_date  %></label>
+     	<label class="Cell"><%=  status %></label>
+    	<label class="Cell"><%= captian_id %></label>
+     <div class="Cell"><button class="delete" ">Delete</button></div>
+   </div>
+   <input class="edit" value = <%= annual_due_date %> size=11 id="status_type" >
+`);
+
 

@@ -40,6 +40,7 @@
 
     
     <h4>Instructions</h4>
+    You must have at least have a "Glider" and "Tow Plane" type. 
     
     You can not delete a aircraft type if an aircraft is assigned to that type. 
 

@@ -3,9 +3,9 @@
 	var cb_admin_tab = "aircraft";
 </script>
 
-<div style="display:inline-block"  align:left id="tow_fees"  class="TowFee" >
+<div style="display:inline-block"  align:left id="aircrafts"  class="TowFee" >
     <h3>Aircraft</h3>
-    <form id="addTowFee" action="#" >
+    <form id="addAircraft" action="#" >
     	<div>
         <label for="registration">Registration
         </label>
@@ -25,7 +25,7 @@
             id = "model"
             title = "Model of aircraft." />   
         <label for="type">Type: </label>
-         <select>
+         <select name="type" id="type" form="addAircraft">
         	<?php
         	global $wpdb;
 			$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
@@ -36,8 +36,8 @@
             };
         	?>      
          </select>
-        <label for="status">Type: </label>
-        <select>        
+        <label for="status">Status:</label>
+        <select id="status" id="status" form="addAircraft">        
         	<?php
         	global $wpdb;
 			$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
@@ -95,6 +95,9 @@
         <p>Aircraft </p>
     </div>
     <div class="Heading">
+       <div class="Cell">
+            <p>Aircraft Id</p>
+        </div>
         <div class="Cell">
             <p>Registration</p>
         </div>
@@ -105,23 +108,11 @@
             <p>Type</p>
         </div>
          <div class="Cell">
-            <p>Annual Due</p>
-        </div>
-        <div class="Cell">
-            <p>Registration Due</p>
-        </div>
-        <div class="Cell">
-            <p>Status</p>
-        </div>
-        <div class="Cell">
             <p>Make</p>
         </div>
         <div class="Cell">
             <p>Model</p>
         </div>
-        <div class="Cell">
-            <p>Captian</p>
-        </div>   
     </div>
     <section >
     <div id="aircraft-list"></div>

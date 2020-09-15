@@ -48,16 +48,21 @@ var feeitemtemplate = _.template(`
 `);
 // Flight Types 
   var aircrafttemplate = _.template(`
-   <div class="Cell" > <%= Registration %></div>
-   <div class="Cell" > <%= Competition %></div>
+   <div class="Cell" > <%= aircraft_id %></div>
    <div class="view">
-        <label class="Cell"><%=  annual_due_date %></label>
-     	<label class="Cell"><%=  registration_due_date  %></label>
-     	<label class="Cell"><%=  status %></label>
-    	<label class="Cell"><%= captian_id %></label>
-     <div class="Cell"><button class="delete" ">Delete</button></div>
+       <label class="Cell" > <%= registration %></label>
+       <label class="Cell" > <%=  compitition_id  %></label>
+       <label class="Cell" > <%=  type  %></label>
+       <label class="Cell" > <%=  make %></label>
+       <label class="Cell" > <%=  model %></label>
+       <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
-   <input class="edit" value = <%= annual_due_date %> size=11 id="status_type" >
+   <input class="edit" value = <%= typeof(registration) !== 'undefined' ?  registration : ' ' %> size=11 id="registration" >
+   <input class="edit" value = <%= typeof(compitition_id)  !== '' ? compitition_id : '_'  %>  size=11 id="compitition_id" >
+   <input class="edit" value = <%= type %> size=11 id="type" >
+   <input class="edit" value = <%= make %> size=11 id="make" >
+   <input class="edit" value = <%= typeof(model) === '' ? 'a' : '_' %> size=11 id="make" >
 `);
 
 
+//   <div class="Cell" > <%= typeof(compitition_id) !== 'undefined' ? compitition_id : ' ' %></div>

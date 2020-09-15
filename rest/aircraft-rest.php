@@ -65,14 +65,16 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 
 // fields to return. 
- 	  $valid_fields = array('aircraft'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'captian_id', 'captian'=>'a.display_name',
- 	  	'compitition_id'=>'s.compitition_id', 'status'=>'s.status', 't.title'=>'t.title  AS type' );
+ 	  $valid_fields = array('aircraft'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
+ 	  'make'=>'s.make', 'model'=>'s.model',
+ 	  	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date','status'=>'s.status', 
+ 	  	't.title'=>'t.title  AS type' );
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
  	  $valid_filters = array('aircraft_id'=>'aircraft_id' , 'type'=>'t.title', 'captian_id'=>'captian_id', 'compitition_id'=>'compitition_id' );
 	  $filter_string = $this->select_filters($request, $valid_filters);
 
-	  $sql = "SELECT {$select_string} FROM {$table_name} s inner join 
+	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
 			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
  				
 	  $items = $wpdb->get_results( $sql, OBJECT);

@@ -86,10 +86,14 @@
 		wait: true,			
 	} );
 	app.Aircraft = app.Model.extend({
+		idAttribute : "aircraft_id",
 		initialize: function(){
 		},
 	    defaults: {
-
+	      registration: "N777RM",
+          type: "Glider",
+          make: "Grob",
+          model: "G103",
 		},
 		wait: true,			
 	} );		
@@ -110,7 +114,7 @@
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/status',			
     }) ; 
-     app.AircaftList = Backbone.Collection.extend({
+     app.AircraftList = Backbone.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',			
     }) ;    	   	
@@ -158,7 +162,6 @@
            		this.$el.removeClass('editing');
   			}
 	});
-
 	app.TowFeeView = app.ModelView.extend({
 	        template: feeitemtemplate,
 	   		close: function(){
@@ -216,6 +219,7 @@
 			)
  		},
 	});
+	
 	app.CollectionView =  Backbone.View.extend({    
       // It's the first function called when this view it's instantiated.
       
@@ -237,16 +241,38 @@
       addItem: function(e){
       	e.preventDefault();
       	var formData ={};
+      	// grab all of the input fields
       	$(this.localDivTag).children('input').each(function(i, el ){
       		if($(el).val() != ''){
       			formData[el.id] = $(el).val();
       		}
       	});
-// alert(JSON.stringify(formData));
+      	//grab all of the <select> fields 
+      	$(this.localDivTag).children('select').each(function(i, el ){
+      		if($(el).val() != ''){
+      			formData[el.id] = $(el).val();
+      		}
+      	});
+      	
+      	
+ alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       },	
 	
-	})
+	});
+	app.AircraftsView = app.CollectionView.extend({
+	 	el: '#aircrafts', 
+		localDivTag: '#addAircraft Div',
+	 	preinitialize(){
+	 	   this.collection = new app.AircraftList();
+	 	},	
+        renderItem: function(item){
+      		var itemView = new app.AircraftView({
+      	  		model: item
+      		})
+      		this.$el.append( itemView.render().el);   
+        }
+	 });
 	 app.TowFeesView = app.CollectionView.extend({
 	 	el: '#tow_fees', 
 		localDivTag: '#addTowFee Div',
@@ -310,6 +336,8 @@
    			case "flight_types" : new app.FlightTypesView();
    			break;
    			case "status_types" : new app.StatusTypesView();
+   			break;
+   			case "aircraft" : new app.AircraftsView();
    			break;
    		}
    	} else {

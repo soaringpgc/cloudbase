@@ -63,15 +63,20 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		$item_id =  $request['id'];
 // Associative aray of valid fields, Key is string passed in the _fileds varable
 // value is what need to be passed to mySQL. 
- 		$valid_fields = array('id'=>'id' , 'list'=>'title');
+ 		$valid_fields = array('id'=>'id' , 'type_id'=>'type_id', 'title'=>'title', 'sort_code'=>'sort_code', 'base_charge'=>'base_charge',
+ 		'first_hour'=>'first_hour', 'each_hour'=>'each_hour', 'min_charge'=>'min_charge', 'active'=>'active' );
  		$select_string = $this->select_fields($request, $valid_fields);
-
+// process filters.  	  
+ 	    $valid_filters = array('type_id'=>'type_id' , 'sort_code'=>'sort_code', 'base_charge'=>'base_charge', 'first_hour'=>'first_hour',
+ 	     'each_hour'=>'each_hour', 'min_charge'=>'min_charge', 'active'=>'active' );
+	    $filter_string = $this->select_filters($request, $valid_filters);
+	
 		if ($item_id  != null){	
 		// return the current item for item requested
-			$sql = $wpdb->prepare("SELECT {$select_string} FROM {$table_name} WHERE `id` = %d " ,  $item_id );		
+			$sql = $wpdb->prepare("SELECT {$select_string} FROM {$table_name} s WHERE {$filter_string} AND `id` = %d " ,  $item_id );		
 		} else {
 		// return all current items. 
-	        $sql = "SELECT {$select_string} FROM ". $table_name . "  ORDER BY title ASC ";	
+	        $sql = "SELECT {$select_string} FROM {$table_name} s WHERE {$filter_string}  ORDER BY title ASC ";	
 		}
 
 		$items = $wpdb->get_results( $sql, OBJECT);
@@ -87,7 +92,7 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 //			wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
-	public function cloud_base_types_post_callback( \WP_REST_Request $request) {
+public function cloud_base_types_post_callback( \WP_REST_Request $request) {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
 
@@ -96,61 +101,138 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		} else {
 //			wp_send_json_error(array('message'=>'missing Type.'), 400 );				
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
-		}
+		}				
+// generate new type id number	  
+	  $sql = "SELECT MAX(type_id)  FROM {$table_name} " ;
+	  $sqlreturn = $wpdb->get_var( $sql);
+// get new type_id
+	  if( $wpdb->num_rows > 0 ) {	
+		$type_id = $sqlreturn + 1;
+//			  var_dump( $type_id);
+	  } else {
+	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+	  };
+// check for sort_code
+	if (!empty($request['sort_code'])){
+		$sort_code = $request['sort_code'];
+	}	else {
+		  $sort_code = '0';  //default to glider
+	} 
+	if (!empty($request['base_charge'])){
+		$base_charge = $request['base_charge'];
+	} else {
+		$base_charge = '0';
+	}
+	if (!empty($request['first_hour'])){
+		$first_hour = $request['first_hour'];
+	} else {
+		$first_hour = '0';
+	}
+	if (!empty($request['each_hour'])){
+		$each_hour = $request['each_hour'];
+	} else {
+		$each_hour = '0';
+	}
+	if (!empty($request['min_charge'])){
+		$min_charge = $request['min_charge'];
+	} else {
+		$min_charge = '0';
+	}
+	$active =true;
+		
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
-
 			return rest_ensure_response( 'Already exists id= '. $items->id );
- 		 } else {
-		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
+ 		 } else {		 
+		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title, type_id, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 		 	
+		 	VALUES ( %s, %d, %d, %f, %f, %f, %f, null) " , $title, $type_id, $sort_code, $base_charge, $first_hour, $each_hour, $min_charge);			 	 		 
 			$wpdb->query($sql);	
- 			// read it back to get id and send
+ 		// read it back to get id and send
  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 			$items = $wpdb->get_row( $sql, OBJECT);
-			return new \WP_REST_Response ($items);
-//			wp_send_json($items);				
+			return new \WP_REST_Response ($items);				
 	    }
 //			wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
-	public function cloud_base_types_put_callback( \WP_REST_Request $request) {
+public function cloud_base_types_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
-		$item_id =  $request['id'];
-		if (!empty($request['title'])){
-			$title = $request['title'];
-		} else {
-			$title =null;
-		}
- 		if ($item_id != null && $title != null ) {	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
+		$id =  $request['id'];
+		$type_id =  $request['type_id'];
+		$change = 0;
+ 		if ($type_id != null ) {	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `type_id` = %d AND valid_until IS NULL " ,  $type_id) ;	
 			$items = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {
-				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `title`= %s WHERE `id` = %d " , $title, $item_id  );
-				$wpdb->query($sql);
-//
-				$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
-
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['title']) && ($request['title'] != $items->title )){
+					$title = $request['title'];
+					$change = 1;
+				} else {
+					$title = $items->title;
+				}		
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['sort_code'] )  && ($request['sort_code'] != $items->sort_code )){
+					$sort_code = $request['sort_code'];
+					$change = 1;					
+				} else {
+					$sort_code = $items->sort_code;
+				}				
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['base_charge'] && ($request['base_charge'] != $items->base_charge) )){
+					$base_charge = $request['base_charge'];
+					$change = 1;
+				} else {
+					$base_charge = $items->base_charge;
+				}											
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['first_hour'] && ($request['first_hour'] != $items->first_hour ))){
+					$first_hour = $request['first_hour'];
+					$change = 1;
+				} else {
+					$first_hour = $items->first_hour;
+				}										
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['each_hour'] && ($request['each_hour'] != $items->each_hour) )){
+					$each_hour = $request['each_hour'];
+					$change = 1;
+				} else {
+					$each_hour = $items->each_hour;
+				}											
+// was a new value supplied and is it different than what we already have?			
+				if (!empty($request['min_charge'] && ($request['min_charge'] != $items->min_charge ))){
+					$min_charge = $request['min_charge'];
+					$change = 1;
+				} else {
+					$min_charge = $items->min_charge;
+				}				
+			} else {
+			 	return new \WP_Error( 'not_found', esc_html__( 'Record not found.', 'my-text-domain' ), array( 'status' => 400 ) );					
+			}							
+			if ($change === 1) {
+			// mark existing recored as nolonger valid by setting the valin_until to now.
+	       		$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $items->id );
+			 	$wpdb->query($sql);
+		    // create new record with valid_until = null. 
+				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (type_id, title, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 
+				VALUES (%d, %s, %d, %f, %f, %f, %f, null) " , $type_id, $title, $sort_code, $base_charge, $first_hour, $each_hour, $min_charge);	
+				$wpdb->query($sql);			
+// read back 
+				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `type_id` = %d AND valid_until IS NULL" , $type_id  );	
 				$items = $wpdb->get_row( $sql, OBJECT);	
 				if( $wpdb->num_rows > 0 ) {
 					return new \WP_REST_Response ($items);
-			//		wp_send_json($items);
-			    } else {
-			 		return new \WP_Error( 'update_error', esc_html__( 'Record was not updated.', 'my-text-domain' ), array( 'status' => 400 ) );			    
-			    }
-	//			wp_send_json(array('message'=>'Record Updated'), 201 );
-			} else{
-			 	return new \WP_Error( 'not_found', esc_html__( 'Record not found.', 'my-text-domain' ), array( 'status' => 400 ) );
-//			 	wp_send_json_error(array('message'=>'Record not found.', 'id'=>$item_id), 400);
- 			}
- 		} else {
-//          wp_send_json_error(array('message'=>'id and/or type missing.'), 400 );		
- 			return new \WP_Error( 'missing_parameters', esc_html__( 'id and/or type missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
- 		}
-// 		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
+				} else {
+		    		return new \WP_Error( 'update Failes', esc_html__( 'Update failed. ', 'my-text-domain' ), array( 'status' => 400 ) );
+				}
+		    } else {
+		    	return new \WP_Error( 'nothing changed', esc_html__( 'Updates identical to existing record. ', 'my-text-domain' ), array( 'status' => 400 ) );
+		    }
+ 		}	
+		return new \WP_Error( 'type_id_missing', esc_html__( 'Type ID is missing.', 'my-text-domain' ), array( 'status' => 400 ) );
 	}
 	public function cloud_base_types_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -160,12 +242,13 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 		if ($item_id  != null){	
 			$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 			$sql =  $wpdb->prepare("SELECT * FROM  $table_aircraft  WHERE `aircraft_type` = %d " ,  $item_id );	
-			$aircraft = $wpdb->get_row( $sql, OBJECT);
+			$item = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows === 0 ) {	
 				$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );	
 				$items = $wpdb->get_row( $sql, OBJECT);
 				if( $wpdb->num_rows > 0 ) {
-			        $sql =  $wpdb->prepare("DELETE from {$table_name}  WHERE `id` = %d " , $items->id );
+		            $sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $items->id );
+//			        $sql =  $wpdb->prepare("DELETE from {$table_name}  WHERE `id` = %d " , $items->id );
 					$wpdb->query($sql);
 					return rest_ensure_response( 'Deleted'. $items->id );
 //					wp_send_json_success(array('message'=>'Deleted', 'id'=>$item_id), 202 );

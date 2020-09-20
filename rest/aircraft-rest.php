@@ -109,12 +109,11 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 404 ) );
 //	  		wp_send_json_error(array('message'=>'Type Required.'), 404 );
 	  }
-
 	  $captian = null;
 	  if (!empty($request['captian'])){
 	  	$the_user = get_user_by( 'id', $request['captian'] ); 
 		if (!$the_user) {
-		    return new \WP_Error( 'Not Found', esc_html__( 'TMember Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
+		    return new \WP_Error( 'Not Found', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
 //			wp_send_json_error(array('message'=>'Member Not found.'), 400 );
 	  	} else {
 			$captian = $the_user->id;
@@ -138,8 +137,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  } else{
 //	  	  	wp_send_json_error(array('message'=>'Aircraft Model Required.'), 404 );
 		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-	  }		  
-	  
+	  }		  	  
 	  $compitition = '';
 	  if (!empty($request['compitition'])){
 	  	$compitition  = $wpdb->prepare("%s" , $request['compitition']);
@@ -169,8 +167,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  }
 
 	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
-	  status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, %d) " , 
-	  $aircraft_id, $registration, $type, $status, $captian, $make, $model, $compitition, "0");	  
+	  status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, null) " , 
+	  $aircraft_id, $registration, $type, $status, $captian, $make, $model, $compitition);	  
 	  $wpdb->query($sql);
   // read it back to get id and send
  	  $sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
@@ -231,8 +229,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 			$wpdb->query($sql);
 		    // create new record with valid_until = 0. 
 		    $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
-	 			status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, %d) " , 
-	  			$item->aircraft_id, $item->registration, $type, $status, $captian, $item->make, $item->model, $item->compitition, "0");
+	 			status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, null) " , 
+	  			$item->aircraft_id, $item->registration, $type, $status, $captian, $item->make, $item->model, $item->compitition);
 
 			$wpdb->query($sql);	
   // read it back to get id and send

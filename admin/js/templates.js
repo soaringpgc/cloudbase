@@ -20,12 +20,24 @@ var feeitemtemplate = _.template(`
 
 // Aircraft Types 
   var actypetemplate = _.template(`
-   <div class="Cell" > <%= id %></div>
+   <div class="Cell" > <%= type_id %></div>
    <div class="view">
-     <label class="Cell"><%=  title %></label>
+     <label class="Cell"><%=  title       %> </label>
+     <label class="Cell"><%=  sort_code   %> </label>
+     <label class="Cell"><%=  base_charge %> </label>
+     <label class="Cell"><%=  first_hour  %> </label>
+     <label class="Cell"><%=  each_hour   %> </label>
+     <label class="Cell"><%=  min_charge  %> </label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
-   </div>
-   <input class="edit" value = <%=  title %> size=11 id="aircraft_type" >
+   </div >
+    <div class="edit">
+      <input value = <%=  title       %> size=11 id="aircraft_type" >
+      <input value = <%= typeof(sort_code)  !== 'object' ? sort_code   : '" "'  %>  size=7 id="sort_code" >
+      <input value = <%= typeof(base_charge)!== 'object' ? base_charge : '" "'  %>  size=10 id="base_charge" >
+      <input value = <%= typeof(first_hour) !== 'object' ? first_hour  : '" "'  %>  size=10 id="first_hour" >
+      <input value = <%= typeof(each_hour)  !== 'object' ? each_hour   : '" "'  %>  size=10 id="each_hour" >
+      <input value = <%= typeof(min_charge) !== 'object' ? min_charge  : '" "'  %>  size=10 id="min_charge" >  
+     </div>
 `);
 
 // Flight Types 
@@ -49,19 +61,20 @@ var feeitemtemplate = _.template(`
 // Flight Types 
   var aircrafttemplate = _.template(`
    <div class="Cell" > <%= aircraft_id %></div>
+   <div class="Cell" > <%= type %></div>
    <div class="view">
-       <label class="Cell" > <%= registration %></label>
-       <label class="Cell" > <%=  compitition_id  %></label>
-       <label class="Cell" > <%=  type  %></label>
-       <label class="Cell" > <%=  make %></label>
-       <label class="Cell" > <%=  model %></label>
+       <label class="Cell" > <%= registration     %></label>
+       <label class="Cell" > <%= compitition_id  %></label>
+       <label class="Cell" > <%= make            %></label>
+       <label class="Cell" > <%= model           %></label>
        <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
-   <input class="edit" value = <%= typeof(registration) !== 'undefined' ?  registration : ' ' %> size=11 id="registration" >
-   <input class="edit" value = <%= typeof(compitition_id)  !== '' ? compitition_id : '_'  %>  size=11 id="compitition_id" >
-   <input class="edit" value = <%= type %> size=11 id="type" >
-   <input class="edit" value = <%= make %> size=11 id="make" >
-   <input class="edit" value = <%= typeof(model) === '' ? 'a' : '_' %> size=11 id="make" >
+   <div class="edit">
+     <input value = <%= typeof(registration)    !== 'object' ? registration   : '" "'  %>  size=11 id="registration" >
+     <input value = <%= typeof(compitition_id)  !== 'object' ? compitition_id : '" "'  %>  size=7 id="compitition_id" >
+     <input value = <%= make   !== '' ? make   : '" "'  %>  size=10 id="make" >
+     <input value = <%= model  !== '' ? model  : '" "'  %>  size=10 id="model" >
+   </div>
 `);
 
 

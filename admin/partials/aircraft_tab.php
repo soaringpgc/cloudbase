@@ -99,13 +99,13 @@
             <p>Aircraft Id</p>
         </div>
         <div class="Cell">
+            <p>Type</p>
+        </div>
+        <div class="Cell">
             <p>Registration</p>
         </div>
         <div class="Cell">
             <p>Competition</p>
-        </div>
-        <div class="Cell">
-            <p>Type</p>
         </div>
          <div class="Cell">
             <p>Make</p>

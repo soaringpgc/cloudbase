@@ -45,7 +45,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
 		global $wpdb;
 			$charset_collate = $wpdb->get_charset_collate();
-			$db_version = 0.4;
+			$db_version = 0.6;
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 			if (get_option("cloud_base_db_version") != $db_version){
@@ -55,9 +55,9 @@ function create_cb_database(){
 				$sql = "CREATE TABLE ". $table_name . " (
 					id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 					aircraft_id smallint(6),
-					make text NOT NULL,
-					model text NOT NULL,
-					registration tinyint NOT NULL,
+					make tinytext,
+					model tinytext,
+					registration tinytext NOT NULL,
 					compitition_id tinytext,
 					aircraft_type int(4),
 					status varchar(20),
@@ -122,8 +122,15 @@ function create_cb_database(){
 				// create aircraft type table
 				$sql = "CREATE TABLE ". $table_name . " (
         			id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+        			type_id smallint(6),
+        			sort_code smallint(6),
         			title text NOT NULL,
+        			base_charge decimal(5,2),
+        			first_hour decimal(5,2),
+        			each_hour decimal(5,2),
+        			min_charge decimal(5,2),
         			active bit(1) DEFAULT 1,
+        			valid_until datetime DEFAULT '0000-00-00 00:00:00',
 					PRIMARY KEY  (id)
 				);" . $charset_collate  . ";";
 				dbDelta($sql);		

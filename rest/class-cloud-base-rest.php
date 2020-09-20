@@ -219,8 +219,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 			$last = array_pop($valid_values);
 			foreach($valid_values as $field){
 				$select_string = $select_string . $field . ', ';
-			}
-				
+			}	
 		} 
 		return($select_string . $last);
 	}
@@ -237,7 +236,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	  if (!empty($request['audit'])){
 		 $filter_string = "s.valid_until > -1 ";
 	  } else {
-	  	$filter_string = "s.valid_until = 0 ";
+	  	$filter_string = "s.valid_until = 0  or s.valid_until IS NULL OR s.valid_until > NOW()  ";
 	  } 
 	  foreach($valid_keys as $key ){
 	  	if(!empty($request[$key]) ){

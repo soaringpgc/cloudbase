@@ -153,11 +153,12 @@
 	app.AircraftView = app.ModelView.extend({
 	        template: aircrafttemplate,
 	   		close: function(){
-   				var tow_fee = this.$('#').val().trim();
-  				var base_charge = this.$('#hook_up').val().trim();
-   				var hourly_fee = this.$('#hourly').val().trim();  
+   				var registration = this.$('#registration').val().trim();
+  				var compitition_id = this.$('#compitition_id').val().trim();
+   				var make = this.$('#make').val().trim();  
+   				var model = this.$('#model').val().trim();  
     			if(tow_fee || base_charge || hourly_fee) {
-     				this.model.save({"charge": tow_fee, "hook_up": base_charge, "hourly": hourly_fee });
+     				this.model.save({"registration": registration, "compitition_id": compitition_id, "make": make,  "model": model });
     			}
            		this.$el.removeClass('editing');
   			}
@@ -185,21 +186,28 @@
   		},
 	});
 	app.StatusTypeView = app.ModelView.extend({
-	        template: statustypetemplate,
-   			close: function(){
-   			var title_value = this.$('#status_type').val().trim();
-   			if(title_value){
-   				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
-   			}
-  			this.$el.removeClass('editing');
-  		},
+       template: statustypetemplate,
+	   close: function(){
+		 var title_value = this.$('#status_type').val().trim();
+		 if(title_value){
+			this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
+		 }
+		 this.$el.removeClass('editing');
+	   },
 	});	
 	app.AircraftTypeView = app.ModelView.extend({
 	    template: actypetemplate,
    		close: function(){
    			var title_value = this.$('#aircraft_type').val().trim();
+   			var sort_value = this.$('#sort_code').val().trim();
+   	  		var base_value = this.$('#base_charge').val().trim();	
+   	  		var first_value = this.$('#first_hour').val().trim();	
+ 	  		var hour_value = this.$('#each_hour').val().trim();	
+ 	     	var min_value = this.$('#min_charge').val().trim();		
    			if(title_value){
-   				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(model))}});
+   				this.model.save({ "title": title_value, "sort_code": sort_value, "base_charge": base_value,
+   				"first_hour" : first_value, "each_hour" : hour_value, "min_charge" : min_value },
+   				 {error: function(model, response) {alert(JSON.stringify(model))}});
    			}
   			this.$el.removeClass('editing');
   		},
@@ -253,9 +261,7 @@
       			formData[el.id] = $(el).val();
       		}
       	});
-      	
-      	
- alert(JSON.stringify(formData));
+//  alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       },	
 	
@@ -288,7 +294,7 @@
 	 });	    
 	 app.AircraftTypesView = app.CollectionView.extend({
 	 	el: '#aircraft_types', 
-	 	localDivTag: '#aircraft_type Div',
+	 	localDivTag: '#addaircraft_type Div',
 	 	preinitialize(collection){
 	 	   this.collection = new app.AircraftTypeList();
 	 	},	

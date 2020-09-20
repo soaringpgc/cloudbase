@@ -58,7 +58,6 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
              
     }
 	
-
 // call back for squawks:	
 	public function cloud_base_squawks_get_callback( \WP_REST_Request $request) {
 	

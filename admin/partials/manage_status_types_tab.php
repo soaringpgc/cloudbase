@@ -28,7 +28,6 @@
             <p>Title</p>
         </div>
     </div>
-    <div id="StatusType-list"></div>
 </div>
 
 </div>

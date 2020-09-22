@@ -3,9 +3,9 @@
 	var cb_admin_tab = "sign_offs";
 </script>
 
-<div style="display:inline-block"  align:left id="aircraft_types"  class="aircraft_type" >
+<div style="display:inline-block"  align:left id="sign_off_types"  class="sign_off_type" >
     <h3>Sign Offs</h3><DIV>
-    <form id="addaircraft_type" action="#" >
+    <form id="addsign_off_type" action="#" >
     	<div>
     	<label for="charge">Sign off: </label>
         <input type = "text"
@@ -31,10 +31,9 @@
 				}	
 				//not implemented yet....
 				echo '</select> <label>Apply to existing</label><input type="checkbox" name="applyall" id="applyall" value="applyall" >';
-			?>
-    		
+			?>   		
     		</select >
-    	  <div  id="expire_date"  style="display:none" >
+    	  <div  id="expire_date" class="calendar" >
     		  <label>Expire Date</label>
      	    	 <input type = "text"
                  id = "expire"
@@ -57,27 +56,25 @@
         <div class="Cell"  >
             <p>ID</p>
         </div>  
-        <div class="Cell"  >
+        <div class="Cell2"  >
             <p>Title</p>
         </div>
-         <div class="Cell"  >
+         <div class="Cell2"  >
             <p>Authority</p>
         </div>      
         <div class="Cell"  >
-            <p>No Fly</p>
-        </div>      
-        <div class="Cell"  >
-            <p>Effective</p>
+            <p>Period</p>
         </div>      
         <div class="Cell"  >
             <p>Date</p>
         </div>      
-        <div class="Cell"  >
+        <div class="Cell0"  >
+            <p>No Fly</p>
+        </div>      
+        <div class="Cell0"  >
             <p>All</p>
         </div>      
-       
     </div>
-    <div id="aircraftType-list"></div>
 </div>
 
 </div>

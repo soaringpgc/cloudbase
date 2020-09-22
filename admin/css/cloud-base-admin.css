@@ -25,6 +25,16 @@
 {
     display: table-row;
 }
+.Cell0
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 40px;
+}
 .Cell
 {
     display: table-cell;
@@ -34,6 +44,26 @@
     padding-left: 5px;
     padding-right: 5px;
     width: 80px;
+}
+.Cell2
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 160px;
+}
+.Cell3
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 240px;
 }
 // /table CSS 
 ul { 
@@ -52,4 +82,7 @@ list-style-type: none;
 .ui-datepicker {
   background: #FFFFFF ;
 
+}
+#expire_date {
+	display: none;
 }

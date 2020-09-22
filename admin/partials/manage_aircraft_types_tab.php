@@ -87,9 +87,7 @@
         <div class="Cell"  >
             <p>Minimum Charge</p>
         </div>      
-       
     </div>
-    <div id="aircraftType-list"></div>
 </div>
 
 </div>

@@ -72,7 +72,6 @@
         </div>
     </div>
     <section >
-    <div id="towfee-list"></div>
     </section>
 </div>
 

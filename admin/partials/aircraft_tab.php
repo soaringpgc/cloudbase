@@ -51,35 +51,31 @@
        </div>
     </form>
 
-<div  class="TowFee Table">
-    <div class="Title">
-        <p>Aircraft </p>
+    <div  class="TowFee Table">
+        <div class="Title">
+            <p>Aircraft </p>
+        </div>
+        <div class="Heading">
+           <div class="Cell">
+                <p>Aircraft Id</p>
+            </div>
+            <div class="Cell">
+                <p>Type</p>
+            </div>
+            <div class="Cell">
+                <p>Registration</p>
+            </div>
+            <div class="Cell">
+                <p>Competition</p>
+            </div>
+             <div class="Cell">
+                <p>Make</p>
+            </div>
+            <div class="Cell">
+                <p>Model</p>
+            </div>
+        </div>
     </div>
-    <div class="Heading">
-       <div class="Cell">
-            <p>Aircraft Id</p>
-        </div>
-        <div class="Cell">
-            <p>Type</p>
-        </div>
-        <div class="Cell">
-            <p>Registration</p>
-        </div>
-        <div class="Cell">
-            <p>Competition</p>
-        </div>
-         <div class="Cell">
-            <p>Make</p>
-        </div>
-        <div class="Cell">
-            <p>Model</p>
-        </div>
-    </div>
-    <section >
-    <div id="aircraft-list"></div>
-    </section>
-</div>
-
 </div>
 
     <h4>Instructions</h4>

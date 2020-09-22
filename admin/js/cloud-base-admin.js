@@ -30,10 +30,30 @@
 	 */
 	 $(function(){
 	 var app = app || {};
-	 
+
+//   	$(".calendar").mouseenter(function(){	 
 	 $(".calendar").click(function(){
   		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd', showAnim: "slideDown"}); 
+  		 $('.calendar').datepicker("setDate", new Date());
   	 });
+
+// show the expire date filed if fixed date is selected. 
+		$("#eff_period").mouseleave(function(){
+  			if ( ($("#eff_period").val() === "fixed")) {
+		  		$("#expire_date").show();
+  			} else {
+	    		$("#expire_date").hide(); 	
+ 			}
+		 })	;   
+// to make it work on iPad, (this needs additional work. )
+		$("#eff_period").on('touchend', function(e){
+  			if ( ($("#eff_period").val() === "fixed")) {
+		  		$("#expire_date").show();
+  			} else {
+	    		$("#expire_date").hide(); 	
+ 			}
+		 })	;
+
 
 //NTFS: need to use `` or get unexpected EOF error. 	
 // needs to be here rather than 'includes' because templates are compiled into 
@@ -96,6 +116,13 @@
           model: "G103",
 		},
 		wait: true,			
+	} );
+	app.SignOffType = app.Model.extend({
+		initialize: function(){
+		},	
+	    defaults: {		
+		},
+		wait: true	
 	} );		
 // collections	
     app.TowFeesList = Backbone.Collection.extend({
@@ -117,6 +144,10 @@
      app.AircraftList = Backbone.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',			
+    }) ; 
+    app.SignOffList = Backbone.Collection.extend({
+    	model: app.AircraftType,
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/sign_off_types',			
     }) ;    	   	
 // model view	
 	app.ModelView = Backbone.View.extend({
@@ -207,6 +238,37 @@
    			if(title_value){
    				this.model.save({ "title": title_value, "sort_code": sort_value, "base_charge ": base_value,
    				"first_hour" : first_value, "each_hour" : hour_value, "min_charge" : min_value },
+   				 {error: function(model, response) {alert(JSON.stringify(model))}});
+   			}
+  			this.$el.removeClass('editing');
+  		},
+  		deleteItem: function(){
+			this.model.destroy(
+			{
+    			wait: true,			
+    			error: function(model, response) {
+    				var parsedmessage = JSON.parse(response.responseText);
+  //  				 alert(JSON.stringify(parsedmessage.message));
+    				},	
+    			success: (function(model, response){
+            		this.remove();  
+    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
+    			}	
+			)
+ 		},
+	});
+	app.SignOffTypeView = app.ModelView.extend({
+	    template: signofftemplate,
+   		close: function(){
+   			var signoff_type = this.$('#signoff_type').val().trim();
+   			var period = this.$('#period').val().trim();
+   	  		var authority = this.$('#authority').val().trim();	
+   	  		var fixed_date = this.$('#fixed_date').val().trim();	
+ 	  		var no_fly = this.$('#no_fly').val().trim();	
+ 	     	var applytoall = this.$('#applytoall').val().trim();		
+   			if(signoff_type){
+   				this.model.save({ "signoff_type": signoff_type, "period": period, "authority ": authority,
+   				"fixed_date" : fixed_date, "no_fly" : no_fly, "applytoall" : applytoall },
    				 {error: function(model, response) {alert(JSON.stringify(model))}});
    			}
   			this.$el.removeClass('editing');
@@ -329,8 +391,21 @@
       		})
       		this.$el.append( itemView.render().el);   
         }
- 	 });  	 
-     
+ 	 });  
+ 	 app.SignOffTypesView = app.CollectionView.extend({
+	 	el: '#sign_off_types', 
+	 	localDivTag: '#addsign_off_type Div',
+	 	preinitialize(collection){
+	 	   this.collection = new app.SignOffList();
+	 	},	
+        renderItem: function(item){
+      		var itemView = new app.SignOffTypeView({
+      	  		model: item
+      		})
+      		this.$el.append( itemView.render().el);   
+        }
+ 	 });  
+ 	 	      
    $(function(){
    if (typeof cb_admin_tab !== 'undefined' ){
    		switch(cb_admin_tab){
@@ -343,6 +418,8 @@
    			case "status_types" : new app.StatusTypesView();
    			break;
    			case "aircraft" : new app.AircraftsView();
+   			break;
+   			case "sign_offs" : new app.SignOffTypesView();
    			break;
    		}
    	} else {

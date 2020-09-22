@@ -28,7 +28,6 @@
             <p>Title</p>
         </div>
     </div>
-    <div id="flightType-list"></div>
 </div>
 
 </div>

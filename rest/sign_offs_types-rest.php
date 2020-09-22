@@ -62,7 +62,6 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 		if( $wpdb->num_rows > 0 ) {
 			return new \WP_REST_Response ($items);
  		 } else {
-		// If the code somehow executes to here something bad happened return a 500.
 			return new \WP_Error( 'no_types', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );

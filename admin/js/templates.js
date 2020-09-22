@@ -71,10 +71,32 @@ var feeitemtemplate = _.template(`
    </div>
    <div class="edit">
      <input value = <%= typeof(registration)    !== 'object' ? registration   : '" "'  %>  size=11 id="registration" >
-     <input value = <%= typeof(compitition_id)  !== 'object' ? compitition_id : '" "'  %>  size=7 id="compitition_id" >
+     <input value = <%= typeof(compitition_id)  !== 'undefined' ? compitition_id : '" "'  %>  size=7 id="compitition_id" >
      <input value = <%= make   !== '' ? make   : '" "'  %>  size=10 id="make" >
      <input value = <%= model  !== '' ? model  : '" "'  %>  size=10 id="model" >
    </div>
+`);
+
+// Aircraft Types 
+  var signofftemplate = _.template(`
+   <div class="Cell" > <%= type_id %></div>
+   <div class="view">
+     <label class="Cell"><%=  signoff_type       %> </label>
+     <label class="Cell"><%=  period   %> </label>
+     <label class="Cell"><%=  fixed_date %> </label>
+     <label class="Cell"><%=  authority  %> </label>
+     <label class="Cell"><%=  no_fly   %> </label>
+     <label class="Cell"><%=  applytoall  %> </label>
+     <div class="Cell"><button class="delete" ">Delete</button></div>
+   </div >
+    <div class="edit">
+      <input value = <%=  signoff_type       %> size=11 id="signoff_type" >
+      <input value = <%= typeof(period)  !== 'object' ? period   : '" "'  %>  size=7 id="period" >
+      <input value = <%= typeof(fixed_date)!== 'object' ? fixed_date : '" "'  %>  size=10 id="fixed_date" >
+      <input value = <%= typeof(authority) !== 'object' ? authority  : '" "'  %>  size=10 id="authority" >
+      <input value = <%= typeof(no_fly)  !== 'object' ? no_fly   : '" "'  %>  size=10 id="no_fly" >
+      <input value = <%= typeof(applytoall) !== 'object' ? applytoall  : '" "'  %>  size=10 id="applytoall" >  
+     </div>
 `);
 
 

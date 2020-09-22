@@ -112,14 +112,14 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 			$hook_up = '0';
 		}	
  	// check it does not exist. 
- 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until = 0 " , $altitude  );	
+ 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until IS NULL " , $altitude  );	
 		$fees = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
 			return rest_ensure_response( 'Already exists id= '. $fees->id );
  		 } else {
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, hourly, valid_until ) VALUES ( %s, %f, %f, %f, null) " , $altitude, $fee, $hook_up, $hourly);	
 			$wpdb->query($sql);
-			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND  (valid_until = 0  OR valid_until = null)" , $altitude  );	
+			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND  valid_until IS NULL" , $altitude  );	
 			$items = $wpdb->get_row( $sql, OBJECT);	
 			if( $wpdb->num_rows > 0 ) {
 				return new \WP_REST_Response ($items);
@@ -141,7 +141,7 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		$change = 0;
 		
 		if ($altitude  != null){	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND  (valid_until = 0  OR valid_until = null)" ,  $altitude);	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND  valid_until IS NULL " ,  $altitude);	
 
 			$fees = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {
@@ -172,11 +172,11 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 	       		$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $fees->id );
 			 	$wpdb->query($sql);
 		    // create new record with valid_until = null. 
-				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, hourly, null) VALUES ( %s, %f, %f, %f, %s) " , 
+				$sql =  $wpdb->prepare("INSERT INTO {$table_name} (altitude, charge, hook_up, hourly, valid_until) VALUES ( %s, %f, %f, %f, null) " , 
 				$altitude, $fee, $hook_up, $hourly);	
 				$wpdb->query($sql);			
 
-				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %d AND (valid_until = 0  OR valid_until = null)" , $altitude  );	
+				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until IS NULL" , $altitude  );	
 				$items = $wpdb->get_row( $sql, OBJECT);	
 				if( $wpdb->num_rows > 0 ) {
 					return new \WP_REST_Response ($items);
@@ -206,7 +206,7 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		$fee_id =  $request['id'];
 		
 		if ($fee_id  != null){	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND  (valid_until = 0  OR valid_until = null)" ,  $fee_id );	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND OR valid_until IS NULL" ,  $fee_id );	
 			$expire_date =	date('Y-m-d H:i:s');
 			$items = $wpdb->get_results( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {

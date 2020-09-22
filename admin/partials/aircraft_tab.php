@@ -4,7 +4,7 @@
 </script>
 
 <div style="display:inline-block"  align:left id="aircrafts"  class="TowFee" >
-    <h3>Aircraft</h3>
+    <h3>Aircraft Basic information</h3>
     <form id="addAircraft" action="#" >
     	<div>
         <label for="registration">Registration
@@ -36,52 +36,13 @@
             };
         	?>      
          </select>
-        <label for="status">Status:</label>
-        <select id="status" id="status" form="addAircraft">        
-        	<?php
-        	global $wpdb;
-			$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-			$sql = "SELECT * FROM ". $table_name . "  ORDER BY title ASC ";
-			$items = $wpdb->get_results( $sql, OBJECT);       	
-       		foreach($items as $key){ 	
-       			echo '<option value=' . $key->id . '>'. $key->title . '</option>';
-            };
-        	?>      
-         </select>
-         <br>
         <label for="competition">Competition
         </label>
         <input type = "text"
             id = "competition"
             size = "8"
             title = "Competition ID." 
-            name = "competition"/>
-
-        <label for="Captian">Captian
-        </label>
-        <input type = "text"
-            id = "captian"
-            size = "15"
-            title = "Captian." 
-            name = "captian"/>
-         <label for annual_due>Annual due</label>
-           	<input type = "text"
-           		 class = "calendar"
-                 id = "annual_due"
-                 size = "10"
-                 width = "100px"
-                 value = "<?php echo date('Y-m-d') ?>"
-                 title = "When is the annual due for this aircraft" 
-                 name = "annual_due"/> 
-         <label for registration_due>Registration due</label>
-           	<input type = "text"
-           		 class = "calendar"
-                 id = "registration_due"
-                 size = "10"
-                 width = "100px"
-                 value = "<?php echo date('Y-m-d') ?>"
-                 title = "When is the registration due for this aircraft" 
-                 name = "registration_due"/>                          
+            name = "competition"/>             
         <button id="add">Add</button>
 <!-- 
 		 <?php wp_nonce_field('tow_charge' ) ?> 
@@ -122,14 +83,15 @@
 </div>
 
     <h4>Instructions</h4>
-    
-    This got a bit busy. 
-    
+<p>      
+    Enter basic aircraft information here. Registration, Competition ID Make and Model.
+</p><p>        
     To edit an existing item double click anywhere in that line input fields will 
     replace the display fields and each can be updated. Press "Enter" to have the new
     values accepted. 
-    
-    
+</p><p>  
+	Registration due, Inspection due and status are to be entered on other pages.  
+</p>    
 
 
 

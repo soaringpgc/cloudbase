@@ -80,18 +80,18 @@
 
     
     <h4>Instructions</h4>
-    
+<p>      
     Tried to make this as flexible as possible. For normal tow fees; enter Altitude and
     Charge, leave Base Fee and Hourly blank. Altitude can be text such as "SRB" or "Self"
     Some clubs have a hook up fee that would be entered in the Base fee field. 
-    
+</p><p>      
     For retrive enter "Retrive" under altitude, the basic charge under Base fee and 
     charge for each additional hour under Hourly. 
-    
-    To edit an existing item double click anywhere in that line input fields will 
-    replace the display fields and each can be updated. Press "Enter" to have the new
+</p><p>      
+    To edit an existing item double click anywhere in that line's input fields will 
+    replace the display fields with input fields, each can be updated. Press "Enter" to have the new
     values accepted. 
-    
+</p><p>      
     
 
 

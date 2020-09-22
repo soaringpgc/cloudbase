@@ -35,14 +35,14 @@
 
     
     <h4>Instructions</h4>
-    
+<p>      
     This like 'flight types' is a bit silly. However the altenative is to hard code them
     into the code. And as soon as you do that someone will want to change it. 
-    
+</p><p>      
     You can not delete a status type if an aircraft is assigned to that type. 
-
+</p><p>  
     To edit an existing item double click anywhere in that line input fields will 
     replace the display fields and each can be updated. Press "Enter" to have the new
     values accepted. 
-    
+</p>    
 

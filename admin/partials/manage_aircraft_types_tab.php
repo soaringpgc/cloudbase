@@ -96,13 +96,16 @@
 
     
     <h4>Instructions</h4>
-    Sort code determines if an aircraft will be listed in the glider(sort code 1) list
-    or tow plane (sort code 2) lists. Future type of aircraft will us new (3+) sort codes. 
-    
+<p>    Sort code determines if an aircraft will be listed in the glider(sort code 1) list
+    or tow plane (sort code 2) lists. Future type of aircraft will use new (3+) sort codes. 
+</p><p>    
     You can not delete a aircraft type if an aircraft is assigned to that type. 
-
+</p><p>  
     To edit an existing item double click anywhere in that line input fields will 
     replace the display fields and each can be updated. Press "Enter" to have the new
     values accepted. 
-    
+</p><p>      
+    Fields are provided for charging by aircraft type. Base charge, first hour, each houe
+    and minimum charge fields are provided. How they are used is up to you. 
+</p>    
 

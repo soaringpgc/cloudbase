@@ -34,13 +34,13 @@
 </div>
    
     <h4>Instructions</h4>
-    
+<p>      
     Must have at least one flight type.
-    
+</p><p>      
     To edit an existing item double click anywhere in that line input fields will 
     replace the display fields and each can be updated. Press "Enter" to have the new
     values accepted. 
-     
+</p>     
 
 
 

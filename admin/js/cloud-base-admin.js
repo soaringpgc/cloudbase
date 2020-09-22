@@ -157,7 +157,7 @@
   				var compitition_id = this.$('#compitition_id').val().trim();
    				var make = this.$('#make').val().trim();  
    				var model = this.$('#model').val().trim();  
-    			if(tow_fee || base_charge || hourly_fee) {
+    			if(registration || compitition_id || make  || model) {
      				this.model.save({"registration": registration, "compitition_id": compitition_id, "make": make,  "model": model });
     			}
            		this.$el.removeClass('editing');
@@ -205,7 +205,7 @@
  	  		var hour_value = this.$('#each_hour').val().trim();	
  	     	var min_value = this.$('#min_charge').val().trim();		
    			if(title_value){
-   				this.model.save({ "title": title_value, "sort_code": sort_value, "base_charge": base_value,
+   				this.model.save({ "title": title_value, "sort_code": sort_value, "base_charge ": base_value,
    				"first_hour" : first_value, "each_hour" : hour_value, "min_charge" : min_value },
    				 {error: function(model, response) {alert(JSON.stringify(model))}});
    			}
@@ -218,7 +218,6 @@
     			error: function(model, response) {
     				var parsedmessage = JSON.parse(response.responseText);
   //  				 alert(JSON.stringify(parsedmessage.message));
-	  				alert(parsedmessage.message);
     				},	
     			success: (function(model, response){
             		this.remove();  

@@ -24,7 +24,7 @@
 
 		// Build the Form
 		$page_tabs = array (  "aircraft"=>"Aircraft", "manage_aircraft_types"=>"Aircraft Types",  "manage_status_types"=>"Status Types", 
-		"manage_flight_types "=>"Flight Types",  "manage_tow_fees" =>  "Tow Fees", "config_page" =>  "Basic Configuration Page" );		
+		"manage_flight_types "=>"Flight Types",  "manage_tow_fees" =>  "Tow Fees",  "manage_sign_offs"=>"Sign Off Types", "config_page" =>  "Basic Configuration Page" );		
 		
 //		$page_tabs = apply_filters('pgc_signoffs/tab_header' , $page_tabs);		
 				

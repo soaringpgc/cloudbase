@@ -7,12 +7,23 @@
     <h3>Status Types</h3><DIV>
     <form id="addstatus_type" action="#" >
     	<div>
+    	<input type = "hidden"
+            id = "id"
+            size = "2"
+            value = ""
+            name = "id"/>
         <input type = "text"
-            id = "type"
+            id = "title"
             size = "8"
             title = "Status ." 
-            name = "type"/> 
-        <button id="add">Add</button>
+            name = "title"/> 
+        <input type = "hidden"
+            id = "active"
+            size = "2"
+            value = ""
+            name = "active"/> 
+        <button id="add" class="view">Add</button>
+        <button id="update" class="edit">Update</button>
        </div>
     </form></DIV>
 

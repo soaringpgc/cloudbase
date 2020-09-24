@@ -17,7 +17,7 @@
 			<select name ="authority" id="authority"  >
 			<?php 
 			  	$value_label_authority = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", "cb_edit_instruction"=>"CFI-G", 
-			  	"cb_edit_cfig"=>"Chief Flight Instructor", "cb_edit_towpilot"=>"Chief Tow Pilot");
+			  	"cb_edit_cfig"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot");
 				foreach ($value_label_authority  as $key => $authority ){
 					echo ('<option value="' . $key . '">' . $authority . '</option>');
 				}	

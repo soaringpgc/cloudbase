@@ -165,7 +165,7 @@
 			'click .delete' : 'deleteItem',
 			'dblclick label' : 'edit',
 			'keypress .edit' : 'updateOnEnter',
-			'blur .edit' : 'close'
+			'blur .edit' : 'close',
 		},
 		deleteItem: function(){
 			this.model.destroy();
@@ -218,6 +218,16 @@
 	});
 	app.StatusTypeView = app.ModelView.extend({
        template: statustypetemplate,
+       		events:{
+			'dblclick label' : 'update'
+		},
+		update: function(){
+        //	alert(this.model.get('id'));
+        	$("#id").val(this.model.get('id'));
+        	$("#title").val(this.model.get('title'));		
+        	$("#active").val(this.model.get('active'));
+        	$(addstatus_type).addClass('editing');
+		},
 	   close: function(){
 		 var title_value = this.$('#status_type').val().trim();
 		 if(title_value){
@@ -381,10 +391,43 @@
  	 }); 
 	 app.StatusTypesView = app.CollectionView.extend({
 	 	el: '#status_types', 
-	 	localDivTag: '#addstatus_type Div',
+	 	localTag: 'addstatus_type',
+//	 	localDivTag: '#addstatus_type Div',
+		localDivTag: function(){
+			return '#'+this.localTag+' Div';
+		},
+
 	 	preinitialize(collection){
 	 	   this.collection = new app.StatusTypeList();
 	 	},	
+	 	 events:{
+      		'click #update' : 'updateItem'
+      	},
+      	updateItem: function(e){     	
+      		e.preventDefault();
+      		var formData ={};
+      		// grab all of the input fields
+      		$(this.localDivTag).children('input').each(function(i, el ){
+      			if($(el).val() != ''){
+      				formData[el.id] = $(el).val();
+      			}
+      		});
+      		//grab all of the <select> fields 
+      		$(this.localDivTag).children('select').each(function(i, el ){
+      			if($(el).val() != ''){
+      				formData[el.id] = $(el).val();
+      			}
+      		});
+      		var updateModel = this.collection.get(formData.id);
+      alert(this.localTag); 		
+      		
+// alert(this.localDivTag.replace(" Div", "").replace("#",""));
+//        	updateModel.save(formData, {wait: true});
+//        	$(addstatus_type).removeClass('editing');
+
+				$(this.localTag).removeClass('editing');
+//    		alert(JSON.stringify(updateModel));     		
+      	} ,
         renderItem: function(item){
       		var itemView = new app.StatusTypeView({
       	  		model: item

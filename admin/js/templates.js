@@ -51,9 +51,9 @@ var feeitemtemplate = _.template(`
 `);
 // Flight Types 
   var statustypetemplate = _.template(`
-   <div class="Cell" > <%= id %></div>
+   <div class="Cell"  id = "id" > <%= id %></div>
    <div class="view">
-     <label class="Cell"><%= title %></label>
+     <label class="Cell" ><%= title %></label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
    <input class="edit" value = <%= title %> size=11 id="status_type" >

@@ -152,7 +152,7 @@
 // model view	
 	app.ModelView = Backbone.View.extend({
 		tagName: 'div',
-        className: 'Row view',
+        className: 'Row',
 		render: function(){
 			this.$el.html( this.template(this.model.toJSON() ) );
 			this.$input = this.$('.edit');
@@ -163,11 +163,13 @@
   		},
 		events:{
 			'click .delete' : 'deleteItem',
-			'dblclick label' : 'edit',
+//			'dblclick label' : 'edit',
 			'keypress .edit' : 'updateOnEnter',
 			'blur .edit' : 'close',
+			'dblclick label' : 'update'
 		},
 		deleteItem: function(){
+		alert("delete");
 			this.model.destroy();
 			this.remove();
 		},
@@ -180,6 +182,20 @@
       			this.close();
     		}
    		},
+   		update: function(){
+			var localmodel = this.model;
+//			alert(JSON.stringify(localmodel))
+ 			$("div.editform").addClass('editing');
+// 			
+// NTFS this requires the form id's to be the same as the model id's.
+// we are looping over the form, picking up the id's and then getting the 
+// value of the same id in the model and then loading it back into the from
+//  someone (probably me) is going to hate me in the future.  -dsj
+      		$(this.localDivTag).children('input').each(function(i, el ){
+//      		alert(el);
+				$('#'+el.id).val(localmodel.get(el.id));
+      		});
+		},
 	});
 	app.AircraftView = app.ModelView.extend({
 	        template: aircrafttemplate,
@@ -207,27 +223,17 @@
   			}
 	});
 	app.FlightTypeView = app.ModelView.extend({
-	        template: flighttypetemplate,
-   			close: function(){
-   			var title_value = this.$('#flight_type').val().trim();
-   			if(title_value){
-   				this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
-   			}
-  			this.$el.removeClass('editing');
+	    template: flighttypetemplate,
+   		close: function(){
+   		  var title_value = this.$('#flight_type').val().trim();
+   		  if(title_value){
+   			this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
+   		  }
+  		  this.$el.removeClass('editing');
   		},
 	});
 	app.StatusTypeView = app.ModelView.extend({
        template: statustypetemplate,
-       		events:{
-			'dblclick label' : 'update'
-		},
-		update: function(){
-        //	alert(this.model.get('id'));
-        	$("#id").val(this.model.get('id'));
-        	$("#title").val(this.model.get('title'));		
-        	$("#active").val(this.model.get('active'));
-        	$(addstatus_type).addClass('editing');
-		},
 	   close: function(){
 		 var title_value = this.$('#status_type').val().trim();
 		 if(title_value){
@@ -299,9 +305,7 @@
  		},
 	});
 	
-	app.CollectionView =  Backbone.View.extend({    
-      // It's the first function called when this view it's instantiated.
-      
+	app.CollectionView =  Backbone.View.extend({         
       initialize: function(){
 //      	console.log('the view has been initialized. ');
         this.collection.fetch({reset:true});
@@ -315,7 +319,8 @@
       	}, this );
       },
       events:{
-      	'click #add' : 'addItem'
+      	'click #add' : 'addItem',
+      	'click #update' : 'updateItem'
       },
       addItem: function(e){
       	e.preventDefault();
@@ -334,8 +339,26 @@
       	});
 //  alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
-      },	
-	
+      },
+      updateItem: function(e){     	
+		e.preventDefault();
+ 		var formData ={};
+		// grab all of the input fields
+ 		$(this.localDivTag).children('input').each(function(i, el ){
+		  if($(el).val() != ''){
+        	formData[el.id] = $(el).val();
+      	  }
+      	});
+      	//grab all of the <select> fields 
+      	$(this.localDivTag).children('select').each(function(i, el ){
+      	  if($(el).val() != ''){
+      		formData[el.id] = $(el).val();
+      	  }
+      	});
+      	var updateModel = this.collection.get(formData.id);
+        updateModel.save(formData, {wait: true});
+		$("div.editform").removeClass('editing');	
+      	}
 	});
 	app.AircraftsView = app.CollectionView.extend({
 	 	el: '#aircrafts', 
@@ -344,7 +367,9 @@
 	 	   this.collection = new app.AircraftList();
 	 	},	
         renderItem: function(item){
-      		var itemView = new app.AircraftView({
+            var expandedView = app.AircraftView.extend({ localDivTag:this.localDivTag });
+            var itemView = new expandedView({
+//      		var itemView = new app.AircraftView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   
@@ -357,7 +382,9 @@
 	 	   this.collection = new app.TowFeesList();
 	 	},	
         renderItem: function(item){
-      		var itemView = new app.TowFeeView({
+            var expandedView = app.TowFeeView.extend({ localDivTag:this.localDivTag });
+            var itemView = new expandedView({
+//      		var itemView = new app.TowFeeView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   
@@ -370,7 +397,9 @@
 	 	   this.collection = new app.AircraftTypeList();
 	 	},	
         renderItem: function(item){
-      		var itemView = new app.AircraftTypeView({
+            var expandedView = app.AircraftTypeView.extend({ localDivTag:this.localDivTag });
+            var itemView = new expandedView({
+//      		var itemView = new app.AircraftTypeView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   
@@ -383,7 +412,9 @@
 	 	   this.collection = new app.FlightTypeList();
 	 	},	
         renderItem: function(item){
-      		var itemView = new app.FlightTypeView({
+            var expandedView = app.FlightTypeView.extend({ localDivTag:this.localDivTag });
+            var itemView = new expandedView({
+//      		var itemView = new app.FlightTypeView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   
@@ -391,45 +422,14 @@
  	 }); 
 	 app.StatusTypesView = app.CollectionView.extend({
 	 	el: '#status_types', 
-	 	localTag: 'addstatus_type',
-//	 	localDivTag: '#addstatus_type Div',
-		localDivTag: function(){
-			return '#'+this.localTag+' Div';
-		},
-
+	 	localDivTag: '#addstatus_type Div',
 	 	preinitialize(collection){
 	 	   this.collection = new app.StatusTypeList();
 	 	},	
-	 	 events:{
-      		'click #update' : 'updateItem'
-      	},
-      	updateItem: function(e){     	
-      		e.preventDefault();
-      		var formData ={};
-      		// grab all of the input fields
-      		$(this.localDivTag).children('input').each(function(i, el ){
-      			if($(el).val() != ''){
-      				formData[el.id] = $(el).val();
-      			}
-      		});
-      		//grab all of the <select> fields 
-      		$(this.localDivTag).children('select').each(function(i, el ){
-      			if($(el).val() != ''){
-      				formData[el.id] = $(el).val();
-      			}
-      		});
-      		var updateModel = this.collection.get(formData.id);
-      alert(this.localTag); 		
-      		
-// alert(this.localDivTag.replace(" Div", "").replace("#",""));
-//        	updateModel.save(formData, {wait: true});
-//        	$(addstatus_type).removeClass('editing');
-
-				$(this.localTag).removeClass('editing');
-//    		alert(JSON.stringify(updateModel));     		
-      	} ,
         renderItem: function(item){
-      		var itemView = new app.StatusTypeView({
+        	var expandedView = app.StatusTypeView.extend({ localDivTag:this.localDivTag });
+//      		var itemView = new app.StatusTypeView({
+			var itemView = new expandedView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   
@@ -442,7 +442,9 @@
 	 	   this.collection = new app.SignOffList();
 	 	},	
         renderItem: function(item){
-      		var itemView = new app.SignOffTypeView({
+            var expandedView = app.SignOffTypeView.extend({ localDivTag:this.localDivTag });
+            var itemView = new expandedView({
+//      		var itemView = new app.SignOffTypeView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   

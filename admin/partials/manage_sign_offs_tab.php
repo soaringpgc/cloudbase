@@ -86,9 +86,9 @@
 </p><p>    
     You can not delete a aircraft type if an aircraft is assigned to that type. 
 </p><p>  
-    To edit an existing item double click anywhere in that line input fields will 
-    replace the display fields and each can be updated. Press "Enter" to have the new
-    values accepted. 
+    To edit an existing item double click anywhere in that line. The data will be copied 
+    to the form at the top of the page and the button will change to "Update" click on
+    Update to save the new values.  
 </p><p>      
     Fields are provided for charging by aircraft type. Base charge, first hour, each houe
     and minimum charge fields are provided. How they are used is up to you. 

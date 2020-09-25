@@ -7,6 +7,11 @@
     <h3>Aircraft Basic information</h3>
     <form id="addAircraft" action="#" >
     	<div>
+    	<input type = "hidden"
+            id = "aircraft_id"
+            size = "2"
+            value = ""
+            name = "aircraft_id"/>
         <label for="registration">Registration
         </label>
         <input type = "text"
@@ -14,6 +19,13 @@
             size = "8"
             title = "Registration(N) number." 
             name = "registration"/>
+        <label for="competition">Competition
+        </label>
+        <input type = "text"
+            id = "competition_id"
+            size = "8"
+            title = "Competition ID." 
+            name = "competition_id"/>           
         <label for="type">Make: </label>
         <input type = "text"
             size = "8"
@@ -36,18 +48,9 @@
             };
         	?>      
          </select>
-        <label for="competition">Competition
-        </label>
-        <input type = "text"
-            id = "competition"
-            size = "8"
-            title = "Competition ID." 
-            name = "competition"/>             
-        <button id="add">Add</button>
-<!-- 
-		 <?php wp_nonce_field('tow_charge' ) ?> 
-       <?php    submit_button();	 ?>
- -->
+      
+        <button id="add" class="view">Add</button>
+        <button id="update" class="edit">Update</button>
        </div>
     </form>
 
@@ -82,9 +85,9 @@
 <p>      
     Enter basic aircraft information here. Registration, Competition ID Make and Model.
 </p><p>        
-    To edit an existing item double click anywhere in that line input fields will 
-    replace the display fields and each can be updated. Press "Enter" to have the new
-    values accepted. 
+    To edit an existing item double click anywhere in that line. The data will be copied 
+    to the form at the top of the page and the button will change to "Update" click on
+    Update to save the new values.  
 </p><p>  
 	Registration due, Inspection due and status are to be entered on other pages.  
 </p>    

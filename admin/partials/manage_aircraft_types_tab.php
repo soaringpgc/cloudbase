@@ -3,16 +3,21 @@
 	var cb_admin_tab = "aircraft_types";
 </script>
 
-<div style="display:inline-block"  align:left id="aircraft_types"  class="aircraft_type" >
+<div style="display:inline-block"  align:left id="aircraft_types"  class="aircraft_type editform" >
     <h3>Aircraft Type</h3><DIV>
     <form id="addaircraft_type" action="#" >
     	<div>
+    	<input type = "hidden"
+            id = "type_id"
+            size = "2"
+            value = ""
+            name = "type_id"/>
     	<label for="charge">Aircraft type: </label>
         <input type = "text"
-            id = "type"
+            id = "title"
             size = "10"
             title = "Type of Aircraft ." 
-            name = "type"/>
+            name = "title"/>
         <label for="charge">Sort code: </label>
         <input type = "number"
             step="1"
@@ -53,12 +58,14 @@
             style="width: 5em"
             value ="0"
             title = "miminum charge." /> 
-        <button id="add">Add</button>
-<!-- 
-		 <?php wp_nonce_field('tow_charge' ) ?> 
-       <?php    submit_button();	 ?>
- -->
-       </div>
+        <input type = "hidden"
+            id = "active"
+            size = "2"
+            value = ""
+            name = "active"/>    
+        <button id="add" class="view">Add</button>
+        <button id="update" class="edit">Update</button>
+     </div>
     </form></DIV>
 
 <div  class="Table">
@@ -99,11 +106,11 @@
 </p><p>    
     You can not delete a aircraft type if an aircraft is assigned to that type. 
 </p><p>  
-    To edit an existing item double click anywhere in that line input fields will 
-    replace the display fields and each can be updated. Press "Enter" to have the new
-    values accepted. 
+    To edit an existing item double click anywhere in that line. The data will be copied 
+    to the form at the top of the page and the button will change to "Update" click on
+    Update to save the new values.  
 </p><p>      
-    Fields are provided for charging by aircraft type. Base charge, first hour, each houe
-    and minimum charge fields are provided. How they are used is up to you. 
+    Fields are provided for charging by aircraft type. Base charge, first hour, each hour
+    and minimum charge fields are provided. 
 </p>    
 

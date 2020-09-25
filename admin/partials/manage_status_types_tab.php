@@ -3,7 +3,7 @@
 	var cb_admin_tab = "status_types";
 </script>
 
-<div style="display:inline-block"  align:left id="status_types"  class="status_type" >
+<div style="display:inline-block"  align:left id="status_types"  class="status_type editform" >
     <h3>Status Types</h3><DIV>
     <form id="addstatus_type" action="#" >
     	<div>
@@ -51,8 +51,8 @@
 </p><p>      
     You can not delete a status type if an aircraft is assigned to that type. 
 </p><p>  
-    To edit an existing item double click anywhere in that line input fields will 
-    replace the display fields and each can be updated. Press "Enter" to have the new
-    values accepted. 
+    To edit an existing item double click anywhere in that line. The data will be copied 
+    to the form at the top of the page and the button will change to "Update" click on
+    Update to save the new values.  
 </p>    
 

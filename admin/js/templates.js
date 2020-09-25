@@ -5,23 +5,18 @@
 // fees 
 var feeitemtemplate = _.template(`
      <div class="Cell"><%= altitude %></div>
-     <div class="view">
+     <div >
      	 <label class="Cell"><%=  charge %></label>
      	 <label class="Cell"><%=  hook_up %></label>
      	 <label class="Cell"><%=  hourly %></label>
      	 <div class="Cell"><button class="delete" ">Delete</button></div>
       </div>
-     <div class="edit">
-         <input  value = <%=  charge  %> size=11 id="tow_fee" >
-         <input  value = <%=  hook_up %> size=11 id="hook_up">
-         <input  value = <%=  hourly  %> size=12 id="hourly">
-    </div>
 `);
 
 // Aircraft Types 
   var actypetemplate = _.template(`
    <div class="Cell" > <%= type_id %></div>
-   <div class="view">
+   <div >
      <label class="Cell"><%=  title       %> </label>
      <label class="Cell"><%=  sort_code   %> </label>
      <label class="Cell"><%=  base_charge %> </label>
@@ -30,33 +25,23 @@ var feeitemtemplate = _.template(`
      <label class="Cell"><%=  min_charge  %> </label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div >
-    <div class="edit">
-      <input value = <%=  title       %> size=11 id="aircraft_type" >
-      <input value = <%= typeof(sort_code)  !== 'object' ? sort_code   : '" "'  %>  size=7 id="sort_code" >
-      <input value = <%= typeof(base_charge)!== 'object' ? base_charge : '" "'  %>  size=10 id="base_charge" >
-      <input value = <%= typeof(first_hour) !== 'object' ? first_hour  : '" "'  %>  size=10 id="first_hour" >
-      <input value = <%= typeof(each_hour)  !== 'object' ? each_hour   : '" "'  %>  size=10 id="each_hour" >
-      <input value = <%= typeof(min_charge) !== 'object' ? min_charge  : '" "'  %>  size=10 id="min_charge" >  
-     </div>
 `);
 
 // Flight Types 
   var flighttypetemplate = _.template(`
-   <div class="Cell" > <%= id %></div>
-   <div class="view">
+   <div class="Cell"  id = "id"> <%= id %></div>
+   <div>
      <label class="Cell"><%= title %></label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
-   <input class="edit" value = <%= title %> size=11 id="flight_type" >
 `);
-// Flight Types 
+// Status Types 
   var statustypetemplate = _.template(`
    <div class="Cell"  id = "id" > <%= id %></div>
-   <div class="view">
+   <div >
      <label class="Cell" ><%= title %></label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
-   <input class="edit" value = <%= title %> size=11 id="status_type" >
 `);
 // Flight Types 
   var aircrafttemplate = _.template(`

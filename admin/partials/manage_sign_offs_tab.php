@@ -14,10 +14,10 @@
             name = "id"/>
     	<label for="charge">Sign off: </label>
         <input type = "text"
-            id = "signoff"
+            id = "signoff_type"
             size = "10"
             title = "signoff." 
-            name = "signoff"/>
+            name = "signoff_type"/>
 			<label for "authority">Authority</label>
 			<select name ="authority" id="authority"  >
 			<?php 
@@ -29,13 +29,15 @@
 									
 				$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
-				echo '</select> <label>No Fly</label><input type="checkbox" name="nofly" id="nofly" value="nofly" />
-    					<label>Effective Period</label><select name ="period"  id="eff_period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
+				echo '</select> 
+				<label>No Fly</label>
+				<input type="checkbox" name="no_fly" id="no_fly" value=true />
+    			<label>Effective Period</label><select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
     			foreach ($value_lable_period  as $key => $period ){
 					echo ('<option value="' . $key . '">' . $period . '</option>');
 				}	
 				//not implemented yet....
-				echo '</select> <label>Apply to existing</label><input type="checkbox" name="applyall" id="applyall" value="applyall" >';
+				echo '</select> <label>Apply to existing</label><input type="checkbox" name="applytoall" id="applytoall" value="applytoall" >';
 			?>   		
     		</select >
     	  <div  id="expire_date" class="calendar" >
@@ -48,8 +50,8 @@
                  title = "Enter the date the sign off expires"
                 />
          	</div>
-
-        <button id="add">Add</button>
+        <button id="add" class="view">Add</button>
+        <button id="update" class="edit">Update</button>
        </div>
     </form></DIV>
 

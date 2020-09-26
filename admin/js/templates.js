@@ -62,7 +62,7 @@ var feeitemtemplate = _.template(`
 // Sign off Types 
   var signofftemplate = _.template(`
    <div class="Cell" > <%= id %></div>
-   <div class="view">
+   <div>
      <label class="Cell2"><%=  signoff_type  %> </label>
      <label class="Cell2"><%=  authority  %> </label>
      <label class="Cell"><%=  period   %> </label>

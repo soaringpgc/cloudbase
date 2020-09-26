@@ -182,8 +182,16 @@
 // value of the same id in the model and then loading it back into the from
 //  someone (probably me) is going to hate me in the future.  -dsj
       		$(this.localDivTag).children('input').each(function(i, el ){
-				$('#'+el.id).val(localmodel.get(el.id));
-      		});
+      		   if(el.type === "checkbox" ){
+      		   		if (localmodel.get(el.id) === "1" ){
+      		   			$('#'+el.id).prop("checked", true);
+      		   		} else {
+      		   		    $('#'+el.id).prop("checked", false);
+      		   		}
+      		   } else {
+      		      $('#'+el.id).val(localmodel.get(el.id));
+      		   }  
+      		});     		
       		$(this.localDivTag).children('select').each(function(i, el ){
 				$('#'+el.id).val(localmodel.get(el.id));
       		});

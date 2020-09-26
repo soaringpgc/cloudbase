@@ -65,10 +65,10 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 
 // fields to return. 
- 	  $valid_fields = array('aircraft'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
+ 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
  	  'make'=>'s.make', 'model'=>'s.model',
  	  	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date','status'=>'s.status', 
- 	  	't.title'=>'t.title  AS type' );
+ 	  	'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
  	  $valid_filters = array('aircraft_id'=>'aircraft_id' , 'type'=>'t.title', 'captian_id'=>'captian_id', 'compitition_id'=>'compitition_id' );
@@ -95,89 +95,74 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	  $table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
 	
-	  if (!empty($request['type'])){
-	  	$sql = $wpdb->prepare("SELECT id FROM {$table_type} where UPPER(`title`) LIKE UPPER(%s) " , $request['type']);
-//	  	echo $sql;
+	  if (!empty($request['aircraft_type'])){
+	  	$sql = $wpdb->prepare("SELECT id FROM {$table_type} WHERE `id` =%d " , $request['aircraft_type']);
 	  	$sqlreturn = $wpdb->get_row( $sql, OBJECT);
 	  	if( $wpdb->num_rows > 0 ) {	
-			$type = $sqlreturn->id;
+			$aircraft_type = $sqlreturn->id;
 	 	 } else {
-    	   return new \WP_Error( 'No Aircraft', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
-//	 	 	wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
+    	   return new \WP_Error( 'No aircraft type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  	}
 	  } else{
 	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 404 ) );
-//	  		wp_send_json_error(array('message'=>'Type Required.'), 404 );
-	  }
-	  $captian = null;
+	  }	  	  
+// 	  $captian = null;
 	  if (!empty($request['captian'])){
 	  	$the_user = get_user_by( 'id', $request['captian'] ); 
 		if (!$the_user) {
 		    return new \WP_Error( 'Not Found', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
-//			wp_send_json_error(array('message'=>'Member Not found.'), 400 );
 	  	} else {
 			$captian = $the_user->id;
 		}
-	  } 
-	
+	  } 	
 	  if (!empty($request['registration'])){
 	  	$registration  = $wpdb->prepare("%s" , $request['registration']);
 	  } else{
-//	  	wp_send_json_error(array('message'=>'Registration Required.'), 404 );
 		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-
+      }
 	  if (!empty($request['make'])){
 	  	$make  = $wpdb->prepare("%s" , $request['make']);
 	  } else{
-//	  	  	wp_send_json_error(array('message'=>'Aircraft Manufacture Required.'), 404 );
  		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }	  
   	  if (!empty($request['model'])){
 	  	$make  = $wpdb->prepare("%s" , $request['model']);
 	  } else{
-//	  	  	wp_send_json_error(array('message'=>'Aircraft Model Required.'), 404 );
 		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }		  	  
 	  $compitition = '';
 	  if (!empty($request['compitition'])){
 	  	$compitition  = $wpdb->prepare("%s" , $request['compitition']);
 	  }   	  
-
+// 
 	  if (!empty($request['status'])){
-	  	$sql = $wpdb->prepare("SELECT id FROM {$table_status} where UPPER(`title`) LIKE UPPER(%s) " , $request['status']);
-	  	$sqlreturn = $wpdb->get_row( $sql, OBJECT);
-	  	if( $wpdb->num_rows > 0 ) {	
+		$sql = $wpdb->prepare("SELECT id FROM {$table_status} WHERE `id` = %d " , $request['status']);
+		$sqlreturn = $wpdb->get_row( $sql, OBJECT);
+		if( $wpdb->num_rows > 0 ) {	
 			$status = $sqlreturn->id;
-	 	 } else {
-//	 	 	 wp_send_json_error(array('message'=>'That status does not exist.'), 404 );
-	  	   	return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
-	  	}
+ 		} else {
+   			return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
+		}
 	  } else{
-//	  	wp_send_json_error(array('message'=>'Status Required.'), 404 );
-		return new \WP_Error( 'status required', esc_html__( 'Status Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-	  }
+  	    	$status = null;
+   	  }
 // generate new aircraft id number	  
 	  $sql = "SELECT MAX(aircraft_id)  FROM {$table_name} " ;
 	  $sqlreturn = $wpdb->get_row( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
 		$aircraft_id = $sqlreturn->aircraft_id + 1;
 	  } else {
-//	  	  	wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );
 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	  }
-
-	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
-	  status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, null) " , 
-	  $aircraft_id, $registration, $type, $status, $captian, $make, $model, $compitition);	  
-	  $wpdb->query($sql);
-  // read it back to get id and send
- 	  $sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
-	  $items = $wpdb->get_row( $sql, OBJECT);
-	  return new \WP_REST_Response ($items); 
-//	  wp_send_json(array('message'=>'Record Added'), 201 );
-	}
-//	   wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
-	    return new \WP_Error( 'server_error', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
+// 
+ 	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
+        status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %d, %d, now(), %s, %s, %s, null) " , 
+ 	    $aircraft_id, $registration, $aircraft_type, $status, $captian, $make, $model, $compitition );	  
+ 	  $wpdb->query($sql);
+//   // read it back to get id and send
+  	  $sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
+ 	  $items = $wpdb->get_row( $sql, OBJECT);
+ 	  return new \WP_REST_Response ($items); 
 	}
 	public function cloud_base_aircraft_edit_callback( \WP_REST_Request $request) {
 	  global $wpdb;
@@ -187,34 +172,64 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  
 	  $item =  $request['aircraft_id'];
 	  if ($item  != null){	
-		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until = 0 " ,  $item );	
+		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,  $item );	
 		$item = $wpdb->get_row( $sql, OBJECT);
-		if( $wpdb->num_rows > 0 ) {		
-			$type = $item->type;	
-			$status = $item->status;
-			$captian = $item->captian_id;	
-			
-	  		if (!empty($request['type'])){
-	  			$sql = $wpdb->prepare("SELECT id FROM {$table_type} where UPPER(`title`) LIKE UPPER(%s) " , $request['type']);
-	  			$sqlreturn = $wpdb->get_row( $sql, OBJECT);
-	  			if( $wpdb->num_rows > 0 ) {	
-	 			$type = $sqlreturn->id;
-	 			} else {
-//	 				wp_send_json_error(array('message'=>'That type does not exist.'), 400 );		
-	  	   			return new \WP_Error( 'invalid type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
-	  			}
-	    	} 	
+		if( $wpdb->num_rows > 0 ) {					
+        	if (!empty($request['aircraft_type'])){
+        	 	$sql = $wpdb->prepare("SELECT id FROM {$table_type} WHERE `id` =%d " , $request['aircraft_type']);
+        	 	$sqlreturn = $wpdb->get_row( $sql, OBJECT);
+        	 	if( $wpdb->num_rows > 0 ) {	
+        			$aircraft_type = $sqlreturn->id;
+        		 } else {
+            return new \WP_Error( 'No aircraft type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
+        	 	}
+        	} else{
+        	    	$aircraft_type = $item->aircraft_type;
+         	}	
+         	// aircraft id  
+	    	if (!empty($request['aircraft_id'])){
+				$aircraft_id =$request['aircraft_id'];
+	  		} else {
+				$aircraft_id = $item->aircraft_id;
+			}
+			// registration 
+	    	if (!empty($request['registration'])){
+				$registration =$request['registration'];
+	  		} else {
+				$registration = $item->registration;
+			}
+			// compitition_id 
+	    	if (!empty($request['compitition_id'])){
+				$compitition_id =$request['compitition_id'];
+	  		} else {
+				$compitition_id = $item->compitition_id;
+			}
+			// make 
+	    	if (!empty($request['make'])){
+				$make =$request['make'];
+	  		} else {
+				$make = $item->make;
+			}
+			// model 
+	    	if (!empty($request['model'])){
+				$model =$request['model'];
+	  		} else {
+				$model = $item->model;
+			}
+	      	
 	    	if (!empty($request['captian'])){
-	  			$the_user = get_user_by( 'id', $request['captian'] ); 
+	  			$the_user = get_user_by( 'id', $request['captian_id'] ); 
 				if (!$the_user) {
 //					wp_send_json_error(array('message'=>'Member Not found.'), 400 );		
 	  	  		 	return new \WP_Error( 'invalid user', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );		
 	  			} else {
-					$captian = $the_user->id;
+					$captian_id = $the_user->id;
 				}
-	  		} 		
+	  		} else{
+        	    	$captian_id = $item->captian_id;
+         	} 		
 	  		if (!empty($request['status'])){
-	  			$sql = $wpdb->prepare("SELECT id FROM {$table_status} where UPPER(`title`) LIKE UPPER(%s) " , $request['status']);
+	  			$sql = $wpdb->prepare("SELECT id FROM {$table_status} WHERE `id` = %d " , $request['status']);
 	  			$sqlreturn = $wpdb->get_row( $sql, OBJECT);
 	  			if( $wpdb->num_rows > 0 ) {	
 					$status = $sqlreturn->id;
@@ -222,19 +237,21 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 //	 	 			wp_send_json_error(array('message'=>'That status does not exist.'), 400 );		
 	  	   			return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  			}
-	  		}
+	  		} else{
+        	    	$status = $item->status;
+         	}
 	  		
 	  		// mark existing recored as nolonger valid by setting the valin_until to now.
 	       	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $item->id );
 			$wpdb->query($sql);
 		    // create new record with valid_until = 0. 
 		    $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
-	 			status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %s, %d, now(), %s, %s, %s, null) " , 
-	  			$item->aircraft_id, $item->registration, $type, $status, $captian, $item->make, $item->model, $item->compitition);
+	 			status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %d, %d, now(), %s, %s, %s, null) " , 
+	  			$aircraft_id, $registration, $aircraft_type, $status, $captian_id, $make, $model, $compitition_id);
 
 			$wpdb->query($sql);	
   // read it back to get id and send
- 	  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
+ 	  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s AND valid_until IS NULL " , $registration  );	
 	  		$items = $wpdb->get_row( $sql, OBJECT);
 	  		return new \WP_REST_Response ($items);							
 //		 	wp_send_json(array('message'=>'Record Updated'), 201 );
@@ -258,7 +275,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $item =  $request['aircraft_id'];
 		
 	  if ($item  != null){	
-		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until = 0 " ,  $item );	
+		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,  $item );	
 		$expire_date =	date('Y-m-d H:i:s');
 		$items = $wpdb->get_row( $sql, OBJECT);
 		if( $wpdb->num_rows > 0 ) {

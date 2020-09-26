@@ -8,6 +8,11 @@
     <form id="addaircraft_type" action="#" >
     	<div>
     	<input type = "hidden"
+            id = "id"
+            size = "2"
+            value = ""
+            name = "id"/>
+    	<input type = "hidden"
             id = "type_id"
             size = "2"
             value = ""

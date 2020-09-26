@@ -59,7 +59,7 @@ function create_cb_database(){
       	registration tinytext NOT NULL,
       	compitition_id tinytext,
       	aircraft_type int(4),
-      	status varchar(20),
+      	status tinyint(4),
       	captian_id int(10),
       	valid_until datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
       	PRIMARY KEY  (id)

@@ -164,24 +164,23 @@
 		events:{
 			'click .delete' : 'deleteItem',
 //			'dblclick label' : 'edit',
-			'keypress .edit' : 'updateOnEnter',
-			'blur .edit' : 'close',
+//			'keypress .edit' : 'updateOnEnter',
+//			'blur .edit' : 'close',
 			'dblclick label' : 'update'
 		},
 		deleteItem: function(){
-		alert("delete");
 			this.model.destroy();
 			this.remove();
 		},
-		edit: function(e){
-			this.$el.addClass('editing');
-      		this.$input.focus();
-		},
-		updateOnEnter: function(e){
-    		if(e.which == 13){
-      			this.close();
-    		}
-   		},
+// 		edit: function(e){
+// 			this.$el.addClass('editing');
+//       		this.$input.focus();
+// 		},
+// 		updateOnEnter: function(e){
+//     		if(e.which == 13){
+//       			this.close();
+//     		}
+//    		},
    		update: function(){
 			var localmodel = this.model;
 //			alert(JSON.stringify(localmodel))
@@ -192,7 +191,9 @@
 // value of the same id in the model and then loading it back into the from
 //  someone (probably me) is going to hate me in the future.  -dsj
       		$(this.localDivTag).children('input').each(function(i, el ){
-//      		alert(el);
+				$('#'+el.id).val(localmodel.get(el.id));
+      		});
+      		$(this.localDivTag).children('select').each(function(i, el ){
 				$('#'+el.id).val(localmodel.get(el.id));
       		});
 		},
@@ -355,8 +356,16 @@
       		formData[el.id] = $(el).val();
       	  }
       	});
+      	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {wait: true});
+// clean out the form:
+      		$(this.localDivTag).children('input').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
+      		$(this.localDivTag).children('select').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
 		$("div.editform").removeClass('editing');	
       	}
 	});

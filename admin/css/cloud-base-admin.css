@@ -75,6 +75,9 @@ list-style-type: none;
 .edit{
 	display: none;
 }
+.hiding{
+	display: none;
+}
 .editing .edit {
 	display: inline;
 }

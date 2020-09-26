@@ -3,10 +3,15 @@
 	var cb_admin_tab = "sign_offs";
 </script>
 
-<div style="display:inline-block"  align:left id="sign_off_types"  class="sign_off_type" >
+<div style="display:inline-block"  align:left id="sign_off_types"  class="sign_off_type editform" >
     <h3>Sign Offs</h3><DIV>
     <form id="addsign_off_type" action="#" >
     	<div>
+      	<input type = "hidden"
+            id = "id"
+            size = "2"
+            value = ""
+            name = "id"/>
     	<label for="charge">Sign off: </label>
         <input type = "text"
             id = "signoff"

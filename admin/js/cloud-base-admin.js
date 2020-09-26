@@ -97,23 +97,14 @@
 	} );
 	app.Towfee = app.Model.extend({
 		initialize: function(){
+
 		},
-	    defaults: {
-	    	charge: "0",
-	    	hourly_fee: "0",
-	    	hook_up: "0",
-		},
-		wait: true,			
+		wait: true		
 	} );
 	app.Aircraft = app.Model.extend({
 		idAttribute : "aircraft_id",
 		initialize: function(){
-		},
-	    defaults: {
-	      registration: "N777RM",
-          type: "Glider",
-          make: "Grob",
-          model: "G103",
+
 		},
 		wait: true,			
 	} );
@@ -356,7 +347,7 @@
       		formData[el.id] = $(el).val();
       	  }
       	});
-      	alert(JSON.stringify(formData));
+//      	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {wait: true});
 // clean out the form:

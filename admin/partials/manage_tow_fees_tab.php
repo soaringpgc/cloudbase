@@ -7,6 +7,11 @@
     <h3>Tow Charges</h3>
     <form id="addTowFee" action="#" >
     	<div>
+     	<input type = "hidden"
+            id = "id"
+            size = "2"
+            value = ""
+            name = "id"/>
         <label for="altitude">Altitude
         <?php 
     		  if (get_option("glider_club_tow_units") == "m"){

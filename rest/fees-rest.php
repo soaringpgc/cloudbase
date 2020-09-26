@@ -106,10 +106,10 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		} else {
 			$hook_up = '0';
 		}		
-		if (!empty($request['hourly_fee'])){
-				$hourly = $request['hourly_fee'];
+		if (!empty($request['hourly'])){
+				$hourly = $request['hourly'];
 		} else {
-			$hook_up = '0';
+			$hourly = '0';
 		}	
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND valid_until IS NULL " , $altitude  );	
@@ -123,23 +123,17 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 			$items = $wpdb->get_row( $sql, OBJECT);	
 			if( $wpdb->num_rows > 0 ) {
 				return new \WP_REST_Response ($items);
-//				wp_send_json($items);
  		 	} else {
-// 		 		  wp_send_json_error(array('message'=>'Fee not added.'), 404);
      	 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Fee not added.', 'my-text-domain' ), array( 'status' => 404 ) );
 			}
 	    }
-//	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500);
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );	
 	}
 	public function cloud_base_fees_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_tow_fees";		
-//		$fee_id =  $request['id'];
 		$altitude = $request['altitude'];
-		$expire_date =	date('Y-m-d H:i:s');
 		$change = 0;
-		
 		if ($altitude  != null){	
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `altitude` = %s AND  valid_until IS NULL " ,  $altitude);	
 
@@ -206,7 +200,7 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 		$fee_id =  $request['id'];
 		
 		if ($fee_id  != null){	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND OR valid_until IS NULL" ,  $fee_id );	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND valid_until IS NULL" ,  $fee_id );	
 			$expire_date =	date('Y-m-d H:i:s');
 			$items = $wpdb->get_results( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {

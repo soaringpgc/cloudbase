@@ -15,41 +15,55 @@
     	<label for="charge">Sign off: </label>
         <input type = "text"
             id = "signoff_type"
-            size = "10"
+            size = "20"
             title = "signoff." 
             name = "signoff_type"/>
 			<label for "authority">Authority</label>
 			<select name ="authority" id="authority"  >
 			<?php 
-			  	$value_label_authority = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", "cb_edit_instruction"=>"CFI-G", 
-			  	"cb_edit_cfig"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot");
+// 				if (get_option ('glider_club_short_name') == 'PGC'){
+// 					$value_label_authority = array("read"=>"Self", "edit_gc_dues"=>"Treasurer", "edit_gc_operations"=>"Operations", 
+// 						"edit_gc_instruction"=>"CFI-G", "chief_flight"=>"Chief CFI-G", "chief_tow"=>"Chief Tow Pilot", "edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god");		
+// 				} else {
+// 					$value_label_authority = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
+// 						"cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");				
+// 				}
+
+				// authority array is stored in WP options, It is created/updated on activation 
+				$value_label_authority = get_option('cloud_base_authoritys');
+
 				foreach ($value_label_authority  as $key => $authority ){
 					echo ('<option value="' . $key . '">' . $authority . '</option>');
 				}	
 									
 				$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
-				echo '</select> 
+				echo '</select>
 				<label>No Fly</label>
 				<input type="checkbox" name="no_fly" id="no_fly" value=true />
-    			<label>Effective Period</label><select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
+				</select> <label>Apply to existing</label><input type="checkbox" name="applytoall" id="applytoall" value="applytoall" >
+				<br><label>Effective Period</label>
+    			<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
     			foreach ($value_lable_period  as $key => $period ){
 					echo ('<option value="' . $key . '">' . $period . '</option>');
 				}	
 				//not implemented yet....
-				echo '</select> <label>Apply to existing</label><input type="checkbox" name="applytoall" id="applytoall" value="applytoall" >';
 			?>   		
     		</select >
+<!-- 
     	  <div  id="expire_date" class="calendar" >
+ -->
     		  <label>Expire Date</label>
      	    	 <input type = "text"
                  id = "expire"
                  class = "calendar"
                  name ="expire"
                  size = "10"
-                 title = "Enter the date the sign off expires"
+                 title = "Enter the date the sign off expires - fixed date only"
                 />
+<!-- 
          	</div>
+ -->
         <button id="add" class="view">Add</button>
         <button id="update" class="edit">Update</button>
        </div>

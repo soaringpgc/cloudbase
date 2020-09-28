@@ -64,8 +64,10 @@ var feeitemtemplate = _.template(`
    <div class="Cell" > <%= id %></div>
    <div>
      <label class="Cell2"><%=  signoff_type  %> </label>
-     <label class="Cell2"><%=  authority  %> </label>
-     <label class="Cell"><%=  period   %> </label>
+     <div class="hiding" > <%= authority %></div>
+     <label class="Cell2"><%=  authority_label  %> </label>
+     <label class="Cell"><%=  period_label  %> </label>
+     <div class="hiding" > <%= period %></div>
      <label class="Cell"><%=  fixed_date %> </label>
      <label class="Cell0"><%=  no_fly   %> </label>
      <label class="Cell0"><%=  applytoall  %> </label>

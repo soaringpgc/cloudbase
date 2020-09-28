@@ -40,12 +40,13 @@ class Cloud_Base_Activator {
 			create_cb_database();
 			create_cb_roles();
 			set_default_cb_configuration();
+	      copy_pgc_sign_offs();		
 	}
 }
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.6;
+   	$db_version = 0.7;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){
@@ -154,7 +155,7 @@ function create_cb_database(){
 	  active bit(1) DEFAULT 1,
       PRIMARY KEY (ID)
 	  );" . $charset_collate  . ";";
-	dbelta($sql);
+	dbDelta($sql);
 
 	$table_name = $wpdb->prefix . "cloud_base_sqw_work";
 	// create audit table for flight sheet
@@ -169,34 +170,34 @@ function create_cb_database(){
 	  );" . $charset_collate  . ";";
 	dbDelta($sql);
 // Sign offs	
-   	$table_name = $wpdb->prefix . "pgc_signoffs_types";	
-  	// create signoff types table
-	$sql = "CREATE TABLE ". $table_name . " (
-	  	id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-   	    signoff_type varchar(40) NOT NULL,
-		period tinytext NOT NULL,
-		fixed_date tinytext,
-		user_id int(10) UNSIGNED NOT NULL,
-		authority varchar(30),
-		no_fly BOOLEAN,
-		applytoall BOOLEAN,
-		PRIMARY KEY  (id)
-		);" . $charset_collate  . ";";	
-	dbDelta($sql); 
-
-	$table_name = $wpdb->prefix . "pgc_member_signoffs";
-	// create member specific signoffs 
-	$sql = "CREATE TABLE ". $table_name . " (
-	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-   	  member_id int(10) NOT NULL,
-   	  signoff_id int(10) UNSIGNED NOT NULL,
-      authority_id int(10) NOT NULL,
-	  date_entered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-	  date_effective datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-	  date_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-	  PRIMARY KEY  (id)
-	  );" . $charset_collate  . ";";
-	dbDelta($sql); 
+//    	$table_name = $wpdb->prefix . "cloud_base_signoffs_types";	
+//   	// create signoff types table
+// 	$sql = "CREATE TABLE ". $table_name . " (
+// 	  	id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+//    	    signoff_type varchar(40) NOT NULL,
+// 		period tinytext NOT NULL,
+// 		fixed_date tinytext,
+// 		user_id int(10) UNSIGNED NOT NULL,
+// 		authority varchar(30),
+// 		no_fly BOOLEAN,
+// 		applytoall BOOLEAN,
+// 		PRIMARY KEY  (id)
+// 		);" . $charset_collate  . ";";	
+// 	dbDelta($sql); 
+// 
+// 	$table_name = $wpdb->prefix . "cloud_base_member_signoffs";
+// 	// create member specific signoffs 
+// 	$sql = "CREATE TABLE ". $table_name . " (
+// 	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+//    	  member_id int(10) NOT NULL,
+//    	  signoff_id int(10) UNSIGNED NOT NULL,
+//       authority_id int(10) NOT NULL,
+// 	  date_entered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+// 	  date_effective datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+// 	  date_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+// 	  PRIMARY KEY  (id)
+// 	  );" . $charset_collate  . ";";
+// 	dbDelta($sql); 
 
 	//  Set the version of the Database
 	update_option("cloud_base_db_version", $db_version);
@@ -342,4 +343,69 @@ function role_exists( $role ) {
 		return $GLOBALS['wp_roles']->is_role( $role );
 		}
 		return false;
+}
+
+function copy_pgc_sign_offs(){
+   	global $wpdb;
+	if(get_option ('glider_club_short_name') == 'PGC'){
+	// copy sign off types.
+// 		$table_cloud_base = $wpdb->prefix . "cloud_base_signoffs_types";	
+//  		$table_pgc = $wpdb->prefix . "pgc_signoffs_types";	
+// 		$sql = "CREATE TABLE IF NOT EXISTS {$table_cloud_base} LIKE {$table_pgc}";	
+// 		$wpdb->query($sql);	
+// 	$sql = "INSERT INTO {$table_cloud_base} SELECT * FROM {$table_pgc}";	
+// 	$wpdb->query($sql);	
+// 	// copy sign offs.
+// 		$table_cloud_base = $wpdb->prefix . "cloud_base_member_signoffs";	
+// 		$table_pgc = $wpdb->prefix . "pgc_member_signoffs";	
+// 		$sql = "CREATE TABLE IF NOT EXISTS {$table_cloud_base} LIKE {$table_pgc}";	
+// 		$wpdb->query($sql);	
+// 	$sql = "INSERT INTO {$table_cloud_base} SELECT * FROM {$table_pgc}";	
+// 	$wpdb->query($sql);		
+// 	// fix the 			
+// 		$authority = array( "edit_gc_dues"=>"cb_edit_dues", "edit_gc_operations"=>"cb_edit_operations", 
+// 			"edit_gc_instruction"=>"cb_edit_instruction", "chief_flight"=>"cb_edit_cfig", "chief_tow"=>"cb_chief_tow");		
+// 		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";				    
+// 		foreach($authority as $k=>$v){
+// 			$sql = "UPDATE {$table_name} SET authority= '".$v. "'WHERE authority = '".$k."' " ;
+// 			$wpdb->query($sql);
+// 		}		
+	} else{
+	// if the PGC tables do not exist creat the cloud_base tables. 
+// Sign offs	
+    $table_name = $wpdb->prefix . "cloud_base_signoffs_types";	
+    	// create signoff types table
+    $sql = "CREATE TABLE ". $table_name . " (
+      	id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    	signoff_type varchar(40) NOT NULL,
+    	period tinytext NOT NULL,
+    	fixed_date tinytext,
+    	user_id int(10) UNSIGNED NOT NULL,
+    	authority varchar(30),
+    	no_fly BOOLEAN,
+    	applytoall BOOLEAN,
+    	PRIMARY KEY  (id)
+    	)";	
+    dbDelta($sql); 
+    
+    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";
+    // create member specific signoffs 
+    $sql = "CREATE TABLE ". $table_name . " (
+      id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+      member_id int(10) NOT NULL,
+      signoff_id int(10) UNSIGNED NOT NULL,
+      authority_id int(10) NOT NULL,
+      date_entered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      date_effective datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      date_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      PRIMARY KEY  (id)
+      );"; 
+     dbDelta($sql);	
+	}
+					    								    
+	update_option('cloud_base_authoritys', array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
+				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot"));
+		
+								    
+			    
 }

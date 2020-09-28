@@ -69,17 +69,21 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until = 0 ORDER BY end_time DESC ";		
 			$items = $wpdb->get_results( $sql, OBJECT);		
 			if( $wpdb->num_rows > 0 ) {		
-				wp_send_json($items, 200 );
+				return new \WP_REST_Response ($items);
+//				wp_send_json($items, 200 );
 			} else {
-	 			return rest_ensure_response( 'No flights today' );
+						return new \WP_REST_Response ($items);
+//	 			return rest_ensure_response( 'No flights today' );
 			}
 		} else {
 			$sql = $wpdb->prepare( "SELECT * FROM {$flights_table} WHERE  id =  %d ",  $request['flight_id']);
 			$items = $wpdb->get_row( $sql, OBJECT);		
 			if( $wpdb->num_rows > 0 ) {		
-				wp_send_json($items, 200 );
+			return new \WP_REST_Response ($items);
+//				wp_send_json($items, 200 );
 			} else {
-	 			return rest_ensure_response( 'No such flight' );
+              return new \WP_REST_Response ('No such flight' );
+//	 		  return rest_ensure_response( 'No such flight' );
 			}
 		}	
 	}	
@@ -213,8 +217,12 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		$wpdb->insert($flights_table, array('flight_number'=> $flight_number, 'flight_type'=>$flight_type, 'aircraft_id'=>$aircraft_id,
 			'pilot_id'=>$pilot , 'flight_fee_id'=>$altitude ,'total_charge'=>$charge ,'instructor_id'=> $instructor_id ,'tow_plane_id'=>$tug_id,
 			'tow_pilot_id'=> $tow_pilot ,'start_time'=>$start_time,'end_time'=>$end_time ,'ip'=>$ip_address ,'notes'=>$flight_notes ,'valid_until'=>'' ));
-
-		wp_send_json(array('flight_number'=>$flight_number), 201 );
+			
+			
+			
+			
+//		return new \WP_REST_Response ($items);
+//		wp_send_json(array('flight_number'=>$flight_number), 201 );
 	
 		/* 
 			Process your POST request here.

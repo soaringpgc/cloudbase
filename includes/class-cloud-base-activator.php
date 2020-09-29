@@ -384,6 +384,8 @@ function copy_pgc_sign_offs(){
     	authority varchar(30),
     	no_fly BOOLEAN,
     	applytoall BOOLEAN,
+    	PRIMARY KEY  (id),
+    	active bit(1) DEFAULT 1,
     	PRIMARY KEY  (id)
     	)";	
     dbDelta($sql); 

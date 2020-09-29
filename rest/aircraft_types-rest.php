@@ -96,8 +96,8 @@ public function cloud_base_types_post_callback( \WP_REST_Request $request) {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
 
-		if (!empty($request['type'])){
-			$title = $request['type'];
+		if (!empty($request['title'])){
+			$title = $request['title'];
 		} else {
 //			wp_send_json_error(array('message'=>'missing Type.'), 400 );				
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );

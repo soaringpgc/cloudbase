@@ -36,12 +36,14 @@
 					echo ('<option value="' . $key . '">' . $authority . '</option>');
 				}	
 									
-				$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+				$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 				echo '</select>
 				<label>No Fly</label>
-				<input type="checkbox" name="no_fly" id="no_fly" value=true />
-				</select> <label>Apply to existing</label><input type="checkbox" name="applytoall" id="applytoall" value="applytoall" >
+				<input type="checkbox" name="no_fly" id="no_fly" value=false class="checked_class"/>
+				</select> 
+				<label>Apply to existing</label>
+				<input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
 				<br><label>Effective Period</label>
     			<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
     			foreach ($value_lable_period  as $key => $period ){

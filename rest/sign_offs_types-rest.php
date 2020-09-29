@@ -20,9 +20,10 @@
  * @author     Your Name <email@example.com>
  */
 class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
+	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 
-	public function register_routes() {
-	              
+	public function register_routes() {	              
      $this->resource_path = '/sign_off_types' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
@@ -59,28 +60,14 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	    $table_name = $wpdb->prefix . "cloud_base_signoffs_types";    
 	    // authority array is stored in WP options, It is created/updated on activation           
 	    $value_label_authority = get_option('cloud_base_authoritys');
-						
-// delete this before next commit. 		
-// 		if (get_option ('glider_club_short_name') == 'PGC'){
-// 			$table_name = $wpdb->prefix . "pgc_signoffs_types";
-// 			$value_label_authority = array("read"=>"Self", "edit_gc_dues"=>"Treasurer", "edit_gc_operations"=>"Operations", 
-// 					"edit_gc_instruction"=>"CFI-G", "chief_flight"=>"Chief CFI-G", "chief_tow"=>"Chief Tow Pilot", "edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god");		
-// 			} else {
-// 				$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
-// 				$value_label_authority = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
-// 				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");				
-// 			}
-	
-	
+							
 // NTFS: this array has the new "cb_" capabilities and the "PGC" capabilities from  
 // and earily version of sign offs. eventualy all shoudl be over written with new. 
 // forget all that on activation PGC stuff is copyied and updated. (I hope)
 //
 // authority array is stored in WP options, It is created/updated on activation 
-		$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 
-		$sql = "SELECT * FROM {$table_name}";
+		$sql = "SELECT * FROM {$table_name} WHERE `active` = 1 ";
  		$items = $wpdb->get_results( $sql, OBJECT);
 		if( $wpdb->num_rows > 0 ) {
 			foreach($items as $k=> $v){
@@ -89,8 +76,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 			$items[$k]->authority_label =  $value_label_authority[$v->authority];
 // likewise for the period. sending both dthe period and period lable. 
 // kinda a pain as these two arrays need to be in two different locations. 			
-			
-			$items[$k]->period_label =  $value_lable_period[$v->period];
+			$items[$k]->period_label =  $this->value_lable_period[$v->period];
 			}				
 			return new \WP_REST_Response ($items);
  		 } else {
@@ -100,51 +86,155 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	}	
 	public function cloud_base_signoffs_post_callback( \WP_REST_Request $request) {
 		global $wpdb;
-		$table_name = $wpdb->prefix . "pgc_signoffs_types";
+		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
+		$value_label_authority = get_option('cloud_base_authoritys');
 		if (!empty($request['signoff_type'])){
 			$title = $request['signoff_type'];
 		} else {
-			wp_send_json_error(array('message'=>'Missing Sign off.'), 400 );	
-		}
+    		return new \WP_Error( 'Sign Off Required', esc_html__( 'Sign Off Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+		} 			 
+    	if (!empty($request['authority'])){
+    	  	$authority  =  $request['authority'];
+    	} else{
+    		return new \WP_Error( 'authority required', esc_html__( 'authority Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+        }
+    	if (!empty($request['period'])) {
+    	  	$period  = $request['period'];
+    	  	if($period == 'fixed'){
+    	  		if (!empty($request['fixed_date'])){
+    	  			$fixed_date  =  $request['fixed_date'];
+    			} else{
+     				return new \WP_Error( 'date required', esc_html__( 'Date required for fixed period.', 'my-text-domain' ), array( 'status' => 404 ) );  
+    			}	    	  	
+    	  	}
+    	} else{
+     		return new \WP_Error( 'period required', esc_html__( 'Period Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+    	}	
+    	
  	// check it does not exist. 
- 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+ 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `signoff_type` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
-		if( $wpdb->num_rows > 0 ) {
+		if( $wpdb->num_rows > 0 ) {	
 			return rest_ensure_response( 'Sign off already exists id= '. $items->id );
  		 } else {
-		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
+		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (signoff_type,  authority, period, fixed_date, user_id) 		 	
+		 	VALUES ( %s, %s, %s, %s, %d) " , $title, $authority, $period, $fixed_date, get_current_user_id());			 	 		 
 			$wpdb->query($sql);	
- 			// read it back to get id and send
- 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-			$items = $wpdb->get_row( $sql, OBJECT);				
-			wp_send_json($items);				
-	    }
+			// handle checkboxes sepertally
+			if (!empty($request['no_fly'] && $request['no_fly']))	{
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly`=  true  WHERE `id` = %d ",  $id);			        					
+			} else {
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly` = NULL WHERE `id` = %d ", $id);		
+			}
+			$wpdb->query($sql);	
+			if (!empty($request['applytoall'] && $request['applytoall']))	{
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall`=  true  WHERE `id` = %d ",  $id);			        					
+			} else {
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall` = NULL WHERE `id` = %d ", $id);		
+			}
+			$wpdb->query($sql);							
+ 		// read it back to get id and send
+ 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `signoff_type` = %s " , $title  );	 
+			$items = $wpdb->get_row( $sql, OBJECT);
+//	NTFS: see above. 
+			$items->authority_label =  $value_label_authority[$items->authority];
+			$items->period_label =  $this->value_lable_period[$items->period];				
+			return new \WP_REST_Response ($items);						
+	    }    
 	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
-	
-		
-		
-		
-		
-		
-		
-		/* 
-			Process your POST request here.
-		*/
 	}
-	public function cloud_base_signoffs_callback( \WP_REST_Request $request) {
+	public function cloud_base_signoffs_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;
-		$table_name = $wpdb->prefix . "pgc_signoffs_types";
-		/* 
-			Process your PUT request here.
-		*/
+		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
+		$value_label_authority = get_option('cloud_base_authoritys');
+//		$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+//				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
+		$id =  $request['id'];
+ 		if ($id != null ) {	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $id) ;	
+			$items = $wpdb->get_row( $sql, OBJECT);
+			if( $wpdb->num_rows > 0 ) { 			
+// was a new value supplied 		
+				if (!empty($request['signoff_type'])){
+					$title = $request['signoff_type'];
+				} else {
+					$title = $items->signoff_type;
+				}		
+// was a new value supplied 		
+				if (!empty($request['authority'] ) ){
+					$authority = $request['authority'];					
+				} else {
+					$authority = $items->authority;
+				}	 			
+// was a new value supplied 
+   				if (!empty($request['period'])) {
+    	  			$period  = $request['period'];
+    	  			if($period == 'fixed'){
+    	  				if (empty($request['fixed_date'])){
+     						return new \WP_Error( 'date required', esc_html__( 'Date required for fixed period.', 'my-text-domain' ), array( 'status' => 404 ) );  
+    					}	    	  	
+    	  			}					
+				} else {
+					$period = $items->period;
+				}	 			 					 				
+ 			} else {
+			 	return new \WP_Error( 'not_found', esc_html__( 'Record not found.', 'my-text-domain' ), array( 'status' => 400 ) );					
+			}
+// 	        $sql =  $wpdb->prepare("UPDATE {$table_name} SET `signoff_type`=%s, `authority`=%s , `period`=%s, `fixed_date`=%d, `user_id`=%d, `no_fly`=%d, `applytoall`=%d 
+// 	        	WHERE `id` = %d ", $title, $authority, $period, $fixed_date, get_current_user_id(), $no_fly, $applytoall, $id);	
+	        	
+	        $sql =  $wpdb->prepare("UPDATE {$table_name} SET `signoff_type`=%s, `authority`=%s, `period`=%s, `user_id`=%d 
+	        	WHERE `id` = %d ", $title, $authority, $period, get_current_user_id(), $id);			        	
+			$wpdb->query($sql);	
+// want to keep values as NULL unless actually set. funky way that wpdb->prepare handles nulls
+			if ($period == 'fixed')	{
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `fixed_date`=%s, WHERE `id` = %d ", $request['fixed_date'], $id);			        	
+			} else {
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `fixed_date` = NULL WHERE `id` = %d ", $id);		
+			}
+			$wpdb->query($sql);	
+
+			if (!empty($request['no_fly'] && $request['no_fly']))	{
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly`=  true  WHERE `id` = %d ",  $id);			        					
+			} else {
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly` = NULL WHERE `id` = %d ", $id);		
+			}
+			$wpdb->query($sql);	
+			if (!empty($request['applytoall'] && $request['applytoall']))	{
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall`=  true  WHERE `id` = %d ",  $id);			        					
+			} else {
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall` = NULL WHERE `id` = %d ", $id);		
+			}
+			$wpdb->query($sql);															
+        // read back 
+			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d" , $id  );	
+			$items = $wpdb->get_row( $sql, OBJECT);	
+			if( $wpdb->num_rows > 0 ) {
+									
+//	NTFS: see above. 
+				$items->authority_label =  $value_label_authority[$items->authority];
+				$items->period_label =  $this->value_lable_period[$items->period];				
+				return new \WP_REST_Response ($items);
+			} else {
+		    	return new \WP_Error( 'update Failes', esc_html__( 'Update failed. ', 'my-text-domain' ), array( 'status' => 400 ) );
+			}			
+		}
+
 	}
 	public function cloud_base_signoffs_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;
-		$table_name = $wpdb->prefix . "pgc_signoffs_types";
-		/* 
-			Process your DELETE request here.			
-		*/
-	}	
-			
+		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
+		$item_id =  $request['id'];			
+		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );	
+		$items = $wpdb->get_row( $sql, OBJECT);
+		if( $wpdb->num_rows > 0 ) {
+		    $sql =  $wpdb->prepare("UPDATE  {$table_name} SET active = 0 WHERE `id` = %d " , $items->id );
+			$wpdb->query($sql);
+			return new \WP_REST_Response ($items);
+		} else{
+		 	return new \WP_Error( 'not_found', esc_html__( 'Not found. ', 'my-text-domain' ), array( 'status' => 400 ) );
+		}	
+	} 			
+	
 }
 

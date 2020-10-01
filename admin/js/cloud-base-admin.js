@@ -69,6 +69,7 @@
 	  	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
+      			alert(POST_SUBMITTER.nonce);
         		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
       			},
    			} ));	
@@ -118,27 +119,38 @@
 		wait: true	
 	} );		
 // collections	
-    app.TowFeesList = Backbone.Collection.extend({
+    app.Collection = Backbone.Collection.extend({	
+    	sync: function( method, model, options ){
+    		return Backbone.sync(method, this, jQuery.extend( options, {
+      			beforeSend: function (xhr) {
+ //     			alert(POST_SUBMITTER.nonce);
+        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+      			},
+   			} ));	
+   		},	
+   	 }) ; 
+
+    app.TowFeesList = app.Collection.extend({
     	model: app.Towfee,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  
    	 }) ; 
-    app.AircraftTypeList = Backbone.Collection.extend({
+    app.AircraftTypeList = app.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',			
     }) ; 
-    app.FlightTypeList = Backbone.Collection.extend({
+    app.FlightTypeList = app.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/flight_types',			
     }) ; 
-    app.StatusTypeList = Backbone.Collection.extend({
+    app.StatusTypeList = app.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/status',			
     }) ; 
-     app.AircraftList = Backbone.Collection.extend({
+     app.AircraftList = app.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',			
     }) ; 
-    app.SignOffList = Backbone.Collection.extend({
+    app.SignOffList =   app.Collection.extend({
     	model: app.AircraftType,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/sign_off_types',			
     }) ;    	   	
@@ -176,7 +188,6 @@
 //    		},
    		update: function(){
 			var localmodel = this.model;
-//			alert(JSON.stringify(localmodel))
  			$("div.editform").addClass('editing');
 // 			
 // NTFS this requires the form id's to be the same as the model id's.

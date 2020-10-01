@@ -67,12 +67,21 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 
 		$this->namespace = $this->plugin_name. '/v' .  $this->rest_version; 			
 	}
+	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
+
+	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
+				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");
+				    
+	public function cloud_base_roles($authority){
+		return array_keys($this->$cloud_base_authoritys, $authority );
+//		return =array_search($authority, $this->$cloud_base_authoritys)
+	}
 
 // register routes must be overridden for each endpoint. 
-	public function register_routes() {
-	                         
-             
-    }
+//	public function register_routes() {
+//	                                     
+//    }
  
  	public function cloud_base_admin_access_check(){
 	// put your access requirements here. You might have different requirements for each
@@ -86,7 +95,9 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	public function cloud_base_instruction_access_check(){
 	// put your access requirements here. You might have different requirements for each
 	// access method. I'm showing only one here. 
-    	if ( !(current_user_can('edit_gc_instruction'))) {
+//    	if ( !(current_user_can('edit_gc_instruction'))) {
+
+    	if ( !(current_user_can(cloud_base_roles('CFI_G')))) {
      	   return new \WP_Error( 'rest_forbidden', esc_html__( 'Sorry, you are not authorized for that.', 'my-text-domain' ), array( 'status' => 401 ) );
     	}
     	// This is a black-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
@@ -114,7 +125,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	
 	public function cloud_base_members_access_check(){
 	// put your access requirements here. You might have different requirements for each access method. 
-	// can read, at least a subscriber. 
+	// can read, at least a subscriber. 	
     	if (  current_user_can( 'read' )) {
     	    return true;
      	}
@@ -132,15 +143,15 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	}   
 	   
 	public function cloud_base_private_access_check(){
-	return true;
+//	return true;
 	// put your access requirements here. You might have different requirements for each
 	// access method. I'm showing only one here. 
-    	if ( ! (current_user_can( 'edit_users' ) || current_user_can('edit_gc_operations') || current_user_can('edit_gc_dues') ||
+    	if ( (current_user_can( 'edit_users' ) || current_user_can('edit_gc_operations') || current_user_can('edit_gc_dues') ||
     		current_user_can('edit_gc_instruction') || current_user_can('edit_gc_tow') || current_user_can('edit_gc_tow') || current_user_can('read') 
     	)) {
      	   return new \WP_Error( 'rest_forbidden', esc_html__( 'Sorry, you are not authorized for that.', 'my-text-domain' ), array( 'status' => 401 ) );
     	}
-    	// This is a black-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
+    	// This is a white-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
     	return true;	
 	}
 	
@@ -177,9 +188,10 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 		}	
 		return($start_date);
 		}
-	 	function does_user_exist( int $user_id ) : bool {
-	 	  return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
-		}
+//
+// 	 	public function does_user_exist( int $user_id ) : bool {
+// 	 	  return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
+// 		}
 		public function cb_expire($start_date, $signoff_id){
 // do the database look up here. the call expire_date	
 		global $wpdb;

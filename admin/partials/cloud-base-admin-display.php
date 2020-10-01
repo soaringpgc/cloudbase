@@ -48,7 +48,7 @@
 		do_action( 'pgc_signoffs/tab_page' , $active_tab);
 	}
   
-   wp_nonce_field('cloud_base');	
+   wp_nonce_field('wp_rest');	
 	
 ?> 
 </div>

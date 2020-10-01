@@ -16,8 +16,8 @@ var feeitemtemplate = _.template(`
 // Aircraft Types 
   var actypetemplate = _.template(`
    <div class="hiding" > <%= id %></div>
-   <div class="Cell" > <%= type_id %></div>
-   <div >
+      <div >
+   	 <label class="Cell"><%=  type_id     %></label>
      <label class="Cell"><%=  title       %> </label>
      <label class="Cell"><%=  sort_code   %> </label>
      <label class="Cell"><%=  base_charge %> </label>
@@ -49,9 +49,10 @@ var feeitemtemplate = _.template(`
    <div class="hiding" > <%= id %></div>
    <div class="Cell" > <%= aircraft_id %></div>
    <div class="hiding" > <%= aircraft_type %></div>
-   <div class="Cell" > <%= type %></div>
+
    <div >
-       <label class="Cell" > <%= registration     %></label>
+       <label class="Cell" > <%= type   %></label>
+       <label class="Cell" > <%= registration    %></label>
        <label class="Cell" > <%= compitition_id  %></label>
        <label class="Cell" > <%= make            %></label>
        <label class="Cell" > <%= model           %></label>

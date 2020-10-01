@@ -66,9 +66,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 
 // fields to return. 
  	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
- 	  'make'=>'s.make', 'model'=>'s.model',
- 	  	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date','status'=>'s.status', 
- 	  	'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
+ 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
+ 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
  	  $valid_filters = array('aircraft_id'=>'aircraft_id' , 'type'=>'t.title', 'captian_id'=>'captian_id', 'compitition_id'=>'compitition_id' );

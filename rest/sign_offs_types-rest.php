@@ -20,24 +20,23 @@
  * @author     Your Name <email@example.com>
  */
 class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
-	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 
 	public function register_routes() {	              
      $this->resource_path = '/sign_off_types' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_signoffs_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
+//            'permission_callback' => function (){
+//                return current_user_can( 'read' );
+//                },), 
+        	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_signoffs_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -59,7 +58,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 		global $wpdb;
 	    $table_name = $wpdb->prefix . "cloud_base_signoffs_types";    
 	    // authority array is stored in WP options, It is created/updated on activation           
-	    $value_label_authority = get_option('cloud_base_authoritys');
+//	    $value_label_authority = $this->cloud_base_authoritys;
 							
 // NTFS: this array has the new "cb_" capabilities and the "PGC" capabilities from  
 // and earily version of sign offs. eventualy all shoudl be over written with new. 
@@ -73,7 +72,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 			foreach($items as $k=> $v){
 //	NTFS: The CAPABILITY is stored in the database, however it does not look pretty
 // use the above array to reverse lookup the primary AUTHORITY that can signoff an item. 			
-			$items[$k]->authority_label =  $value_label_authority[$v->authority];
+			$items[$k]->authority_label =  $this->cloud_base_authoritys[$v->authority];
 // likewise for the period. sending both dthe period and period lable. 
 // kinda a pain as these two arrays need to be in two different locations. 			
 			$items[$k]->period_label =  $this->value_lable_period[$v->period];
@@ -87,7 +86,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_post_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
-		$value_label_authority = get_option('cloud_base_authoritys');
+//		$value_label_authority = get_option('cloud_base_authoritys');
 		if (!empty($request['signoff_type'])){
 			$title = $request['signoff_type'];
 		} else {
@@ -109,9 +108,8 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
     	  	}
     	} else{
      		return new \WP_Error( 'period required', esc_html__( 'Period Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-    	}	
-    	
- 	// check it does not exist. 
+    	}	   	
+ 	   // check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `signoff_type` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {	
@@ -137,7 +135,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `signoff_type` = %s " , $title  );	 
 			$items = $wpdb->get_row( $sql, OBJECT);
 //	NTFS: see above. 
-			$items->authority_label =  $value_label_authority[$items->authority];
+			$items->authority_label =  $this->cloud_base_authoritys[$items->authority];
 			$items->period_label =  $this->value_lable_period[$items->period];				
 			return new \WP_REST_Response ($items);						
 	    }    
@@ -146,7 +144,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
-		$value_label_authority = get_option('cloud_base_authoritys');
+//		$value_label_authority = get_option('cloud_base_authoritys');
 //		$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 //				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 		$id =  $request['id'];
@@ -212,7 +210,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 			if( $wpdb->num_rows > 0 ) {
 									
 //	NTFS: see above. 
-				$items->authority_label =  $value_label_authority[$items->authority];
+				$items->authority_label =  $this->cloud_base_authoritys[$items->authority];
 				$items->period_label =  $this->value_lable_period[$items->period];				
 				return new \WP_REST_Response ($items);
 			} else {

@@ -405,8 +405,8 @@ function copy_pgc_sign_offs(){
      dbDelta($sql);	
 	}
 					    								    
-	update_option('cloud_base_authoritys', array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
-				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot"));
+// 	update_option('cloud_base_authoritys', array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
+// 				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot"));
 		
 								    
 			    

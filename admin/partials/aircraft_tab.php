@@ -17,7 +17,7 @@
             size = "2"
             value = ""
             name = "aircraft_id"/>
-        <label for="type">Type: </label>
+        <label for="aircraft_type">Type: </label>
          <select name="aircraft_type" id="aircraft_type" form="addAircraft">
         	<?php
         	global $wpdb;

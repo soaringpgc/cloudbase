@@ -98,7 +98,6 @@ class Cloud_Base_Admin {
 //     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
      	wp_register_script( 'templates',  plugins_url('/Cloud-Base/admin/js/templates.js'));
 
-
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
 		 'jquery-ui-datepicker', 'templates'), $this->version, false );
 
@@ -111,7 +110,6 @@ class Cloud_Base_Admin {
 			'current_user_id' => get_current_user_id()
 			)
 		);
-
 	}
     public function add_settings_page() {
 

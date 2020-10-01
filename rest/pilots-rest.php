@@ -25,65 +25,37 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 	   
      $this->resource_path = '/pilots' . '(?:/(?P<id>[\d]+))?';
     
-     register_rest_route( $this->namespace, $this->resource_path, 
+      register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_pilots_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	)
-      );	
-     $this->resource_path = '/pilots/data' . '(?:/(?P<id>[\d]+))?';
-    
-     register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),
+         	'args' => array('id'=> array('type'=>'integer', 'required'=> false, 'sanitize_callback'=> 'absint'))), 
+          array(
+      	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_pilots_data_get_callback' ),
+            'callback' => array( $this, 'cloud_base_pilots_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_pilots_data_edit_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),)
-      	)
-      );	 
-           
-       $this->resource_path = '/pilots/sign_offs' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
-        array(	
-      	  array(
-      	    'methods'  => \WP_REST_Server::READABLE,
-             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_pilots_signoffs_get_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
-//           array(
-//       	    'methods'  => \WP_REST_Server::CREATABLE,
-//              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-//             'callback' => array( $this, 'cloud_base_pilots_signoffs_post_callback' ),
-//             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-//          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_pilots_signoffs_edit_callback' ),
+            'callback' => array( $this, 'cloud_base_pilots_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_pilots_signoffs_delete_callback' ),
+             'callback' => array( $this, 'cloud_base_pilots_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
       	  )
       	)
-      );	                         
-    }
+      );	
+	}
 
 // call back for pilots signoffs:	
 	public function cloud_base_pilots_get_callback( \WP_REST_Request $request) {
@@ -152,7 +124,8 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 		  		$meta = sanitize_text_field( $request[$user_meta]);
 				update_user_meta( $id,$user_meta, $meta);
 				if ( get_user_meta($id,  $key, true ) != $meta ){
-					wp_send_json_error( 'ERROR: Unable to update record.', 406 );
+					return new \WP_Error( 'rest_api_sad', esc_html__( 'ERROR: Unable to update record', 'my-text-domain' ), array( 'status' => 406 ) );		
+//					wp_send_json_error( 'ERROR: Unable to update record.', 406 );
 				}
 			}
 		}
@@ -170,9 +143,14 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 				if ($wpdb->update( $table_name, array ('member_id' => $id, 'Signoff_id' => $signoff_id, 'date_entered' => date('Y-m-d'), 
 					'date_effective' => $date_effective->format('Y-m-d'), 'date_expire' => $date_expire->format('Y-m-d'), 'authority_id' => $id),
 					array('id' => $record_id)) ){			  
-			  	
-				wp_send_json(array('message'=>'Record Updared'), 201 );  
+			// read it back to get id and send
+             		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %s " , $title  );	
+            		$items = $wpdb->get_row( $sql, OBJECT);				
+            		return new \WP_REST_Response ($items);	
+  
+//				wp_send_json(array('message'=>'Record Updared'), 201 );  
  		      } else {
+ 		      
   		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'does not exists.', 'my-text-domain' ), array( 'status' => 400 ) );
   		      }	
   		     } else {
@@ -253,14 +231,14 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 		if (!empty($request['authority_id'])  && does_user_exist( $request['authority_id'] )){	
 			$authority_id = $wpdb->prepare($request['authority_id']);	
 		} else {
-//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing authority ID.', 'my-text-domain' ), array( 'status' => 400 ) );		
-		  	wp_send_json_error(array('message'=>'Missing authority ID.'), 400);
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing authority ID.', 'my-text-domain' ), array( 'status' => 400 ) );		
+//		  	wp_send_json_error(array('message'=>'Missing authority ID.'), 400);
 		}		
 		if (!empty($request['effective_date'])){	
 			$date_effective = new \DateTime($request['effective_date']);		
 		} else {
-		  	wp_send_json_error(array('message'=>'Effective date missing.'), 400);
-//			return new \WP_Error( 'rest_api_sad', esc_html__( 'Effective date missing.', 'my-text-domain' ), array( 'status' => 400 ) );		
+//		  	wp_send_json_error(array('message'=>'Effective date missing.'), 400);
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'Effective date missing.', 'my-text-domain' ), array( 'status' => 400 ) );		
 		}			  
 
 //		$signoff_id = $request['signoff_id'];	
@@ -279,20 +257,20 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 				$wpdb->query($sql);						
 				wp_send_json(array('message'=>'Record Added'), 201 );  
  		      } else {
-  		     	wp_send_json_error(array('message'=>'Already exists..'), 400);
-//  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'already exists.', 'my-text-domain' ), array( 'status' => 400 ) );
+//  		     	wp_send_json_error(array('message'=>'Already exists..'), 400);
+  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'already exists.', 'my-text-domain' ), array( 'status' => 400 ) );
   		      }	
   		     } else {
-  		     	wp_send_json_error(array('message'=>'Not authorized.'), 400);
-//  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Not authorized.', 'my-text-domain' ), array( 'status' => 400 ) );
+//  		     	wp_send_json_error(array('message'=>'Not authorized.'), 400);
+  		 	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Not authorized.', 'my-text-domain' ), array( 'status' => 400 ) );
   		     }
   		    } else {
-  		    	wp_send_json_error(array('message'=>'Invalid Signoff.'), 400);
-//			  return new \WP_Error( 'rest_api_sad', esc_html__( 'invalid Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
+//  		    	wp_send_json_error(array('message'=>'Invalid Signoff.'), 400);
+			  return new \WP_Error( 'rest_api_sad', esc_html__( 'invalid Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
 		    }
   		  } else {
-//			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
-			wp_send_json_error(array('message'=>'Missing Signoff.'), 400);
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Signoff.', 'my-text-domain' ), array( 'status' => 400 ) );
+//			wp_send_json_error(array('message'=>'Missing Signoff.'), 400);
 		  }
 	}
 	public function cloud_base_pilots_signoffs_edit_callback( \WP_REST_Request $request) {
@@ -307,53 +285,6 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 			Process your DELETE request here.			
 		*/
 	}	
-	
-// 	public function cb_expire_date($start_date, $period, $fixed_date ){
-// 	// function to calculate the expire date. 
-// 			switch($period ){
-// 			case "monthly":
-// 				$start_date->modify('+1 month');
-// 			break;
-// 			case "quarterly":
-// 				$start_date->modify('+3 month');
-// 			break;
-// 			case "yearly":
-// 				$start_date->modify('+1 year');
-// 			break;
-// 			case "biennial":
-// 				$start_date->modify('+2 year');
-// 			break;
-// 			case "fixed":
-// 				$start_date = new \DateTime($fixed_date );
-// 			break;
-// 			case "no_expire":
-// 				 $start_date = new \DateTime('2099-12-31');
-// 			break;
-// 			case "yearly-eom":
-// 				 $start_date->modify('+1 year');
-// 				 $start_date->modify('last day of this month');
-// 			break;
-// 			case "biennial-eom":
-// 				$start_date->modify('+2 year');
-// 				$start_date->modify('last day of this month');
-// 			break;
-// 			default:
-// 		}	
-// 		return($start_date);
-// 		}
-// 	 	function does_user_exist( int $user_id ) : bool {
-// 	 	 return (bool) get_users( [ 'include' => $user_id, 'fields' => 'ID' ] );
-// 		}
-// 		public function cb_expire($start_date, $signoff_id){
-// // do the database look up here. the call expire_date	
-// 		global $wpdb;
-// 	 	$table_signoffs = $wpdb->prefix . "pgc_signoffs_types";
-// 	 	$sql = $wpdb->prepare("SELECT * FROM {$table_signoffs} WHERE `id` = %d", $signoff_id);	 	
-//   		$signoff_duration = $wpdb->get_row($sql);
-// 		$date_expire = $this->gc_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
-// 		return($date_expire);	
-// 	}	
-	
 	
 }
 	

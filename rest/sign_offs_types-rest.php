@@ -26,10 +26,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,
-            'callback' => array( $this, 'cloud_base_signoffs_get_callback' ),
-//            'permission_callback' => function (){
-//                return current_user_can( 'read' );
-//                },), 
+            'callback' => array( $this, 'cloud_base_signoffs_get_callback' ), 
         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
@@ -57,6 +54,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_get_callback( \WP_REST_Request $request) {		
 		global $wpdb;
 	    $table_name = $wpdb->prefix . "cloud_base_signoffs_types";    
+	    $cloud_base_authoritys = get_option('cloud_base_authoritys');
 	    // authority array is stored in WP options, It is created/updated on activation           
 //	    $value_label_authority = $this->cloud_base_authoritys;
 							
@@ -72,7 +70,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 			foreach($items as $k=> $v){
 //	NTFS: The CAPABILITY is stored in the database, however it does not look pretty
 // use the above array to reverse lookup the primary AUTHORITY that can signoff an item. 			
-			$items[$k]->authority_label =  $this->cloud_base_authoritys[$v->authority];
+			$items[$k]->authority_label =  $cloud_base_authoritys[$v->authority];
 // likewise for the period. sending both dthe period and period lable. 
 // kinda a pain as these two arrays need to be in two different locations. 			
 			$items[$k]->period_label =  $this->value_lable_period[$v->period];

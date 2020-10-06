@@ -72,9 +72,8 @@ class Cloud_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
+		wp_register_style( 'datepicker',  plugins_url('/Cloud-Base/includes/datepicker.css'));
 		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-public.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -96,8 +95,27 @@ class Cloud_Base_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'jquery', 'wp-api' ), $this->version, false );
+     	wp_register_script( 'templates',  plugins_url('/Cloud-Base/public/js/templates.js'));
+//
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
+		 'jquery-ui-datepicker', 'templates'), $this->version, false );
 
+	//localize data for script
+		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(
+			'root' => esc_url_raw( rest_url() ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+			'current_user_id' => get_current_user_id()
+			)
+		);
+	}
+	public function register_shortcodes() {
+		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
+	} // register_shortcodes()
+	public function display_flights(){
+		include_once 'partials/cloud-base-public-display.php';
+//		return display_flights();
 	}
 
 }

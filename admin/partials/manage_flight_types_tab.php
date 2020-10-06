@@ -4,6 +4,9 @@
 </script>
 
 <div style="display:inline-block"  align:left id="flight_types"  class="flight_type editform"  >
+<?php 			
+if( current_user_can( 'manage_options' ) ) {	
+  echo(' 
     <h3>Flight Type</h3><DIV>
     <form id="addflight_type" action="#" >
     	<div>
@@ -25,7 +28,9 @@
         <button id="add" class="view">Add</button>
         <button id="update" class="edit">Update</button>
        </div>
-    </form></DIV>
+    </form> </DIV>');
+}    
+?>    
 
 <div  class="Table">
     <div class="Title">

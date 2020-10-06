@@ -2,3 +2,51 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+ 
+
+
+/* Sidebar/left column */
+
+
+.flex-container {
+  display: flex;
+    flex-direction: column;
+  background-color: white;
+  padding: 20px;
+}
+
+.aside {
+  flex: 30%;
+  background-color: #f1f1f1;
+  padding: 20px;
+}
+
+/* Main column */
+.main {
+  display: inline;
+  background-color: white;
+  padding: 20px;
+  flex-direction: column;
+}
+
+/* Main column */
+.flex-main {
+  display: flex;
+  flex-direction: row;
+}
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+}
+label, input {
+    display: block;
+}
+
+.form_row {
+    margin-bottom: 10px;
+}
+.edit{
+	display: none;
+}

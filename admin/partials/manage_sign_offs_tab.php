@@ -4,7 +4,9 @@
 </script>
 
 <div style="display:inline-block"  align:left id="sign_off_types"  class="sign_off_type editform" >
-    <h3>Sign Offs</h3><DIV>
+<?php 			
+if( current_user_can( 'manage_options' ) ) {	
+  echo('     <h3>Sign Offs</h3><DIV>
     <form id="addsign_off_type" action="#" >
     	<div>
       	<input type = "hidden"
@@ -19,8 +21,8 @@
             title = "signoff." 
             name = "signoff_type"/>
 			<label for "authority">Authority</label>
-			<select name ="authority" id="authority"  >
-			<?php 
+			<select name ="authority" id="authority"  >');
+
 // 				if (get_option ('glider_club_short_name') == 'PGC'){
 // 					$value_label_authority = array("read"=>"Self", "edit_gc_dues"=>"Treasurer", "edit_gc_operations"=>"Operations", 
 // 						"edit_gc_instruction"=>"CFI-G", "chief_flight"=>"Chief CFI-G", "chief_tow"=>"Chief Tow Pilot", "edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god");		
@@ -30,46 +32,45 @@
 // 				}
 
 				// authority array is stored in WP options, It is created/updated on activation 
-				$value_label_authority = get_option('cloud_base_authoritys');
+			$value_label_authority = get_option('cloud_base_authoritys');
 
-				foreach ($value_label_authority  as $key => $authority ){
-					echo ('<option value="' . $key . '">' . $authority . '</option>');
-				}	
-									
-				$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
-				echo '</select>
-				<label>No Fly</label>
-				<input type="checkbox" name="no_fly" id="no_fly" value=false class="checked_class"/>
-				</select> 
-				<label>Apply to existing</label>
-				<input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
-				<br><label>Effective Period</label>
-    			<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ';
-    			foreach ($value_lable_period  as $key => $period ){
-					echo ('<option value="' . $key . '">' . $period . '</option>');
-				}	
-				//not implemented yet....
-			?>   		
-    		</select >
-<!-- 
-    	  <div  id="expire_date" class="calendar" >
- -->
-    		  <label>Expire Date</label>
-     	    	 <input type = "text"
-                 id = "expire"
-                 class = "calendar"
-                 name ="expire"
-                 size = "10"
-                 title = "Enter the date the sign off expires - fixed date only"
-                />
+		foreach ($value_label_authority  as $key => $authority ){
+			echo ('<option value="' . $key . '">' . $authority . '</option>');
+		}	
+							
+		$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
+		echo ('</select>
+		  <label>No Fly</label>
+		  <input type="checkbox" name="no_fly" id="no_fly" value=false class="checked_class"/>
+		  </select> 
+		<label>Apply to existing</label>
+		<input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
+		<br><label>Effective Period</label>
+		<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ');
+		foreach ($value_lable_period  as $key => $period ){
+			echo ('<option value="' . $key . '">' . $period . '</option>');
+		}	
+		echo ('</select >
+	  <label>Expire Date</label>
+    	 <input type = "text"
+          id = "expire"
+          class = "calendar"
+          name ="expire"
+          size = "10"
+          title = "Enter the date the sign off expires - fixed date only"
+         />        
+         <button id="add" class="view">Add</button>
+ 		<button id="update" class="edit">Update</button>
+			</div>
+		</form></DIV>				
+
+		');
+}				//not implemented yet....
+?>   		
 <!-- 
          	</div>
  -->
-        <button id="add" class="view">Add</button>
-        <button id="update" class="edit">Update</button>
-       </div>
-    </form></DIV>
 
 <div  class="Table">
     <div class="Title">

@@ -114,7 +114,7 @@ class Cloud_Base_Admin {
     public function add_settings_page() {
 
 		$this->plugin_screen_hook_suffix = add_options_page(	
-			'Cloud Base Settings', 'Cloud Base', 'manage_options', 'cloud_base',
+			'Cloud Base Settings', 'Cloud Base','read', 'cloud_base',
 			array( $this, 'display_settings_page') );		
 	}
 	/**
@@ -147,5 +147,7 @@ class Cloud_Base_Admin {
     	wp_redirect('options-general.php?page=cloud_base&tab=config_page');
     	exit();    		
     }  
+    
 
+    
 }

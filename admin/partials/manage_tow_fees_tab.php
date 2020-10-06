@@ -4,6 +4,9 @@
 </script>
 
 <div style="display:inline-block"  align:left id="tow_fees"  class="TowFee editform" >
+<?php 			
+if( current_user_can( 'manage_options' ) ) {	
+  echo ('   
     <h3>Tow Charges</h3>
     <form id="addTowFee" action="#" >
     	<div>
@@ -12,15 +15,13 @@
             size = "2"
             value = ""
             name = "id"/>
-        <label for="altitude">Altitude
-        <?php 
+        <label for="altitude">Altitude');
     		  if (get_option("glider_club_tow_units") == "m"){
     		  	echo '(m)' ;
     		  } else {
     		  	echo '(ft)' ;
-    		  }
-        ?>           
-        </label>
+    		  }          
+  echo (' </label>
         <input type = "text"
             id = "altitude"
             name = "altitude"
@@ -53,7 +54,9 @@
         <button id="add" class="view">Add</button>
         <button id="update" class="edit">Update</button>
        </div>
-    </form>
+    </form>');
+}    
+?>    
 
 <div  class="TowFee Table">
     <div class="Title">

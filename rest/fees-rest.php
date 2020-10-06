@@ -30,31 +30,30 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_fees_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), 
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),), //cloud_base_private_access_check  cloud_base_members_access_check
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_fees_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_fees_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
              'callback' => array( $this, 'cloud_base_fees_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),          	 		      		
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),          	 		      		
     	 		      		
       	  )
       	)
       );      	                         
-    }
- 	
+    }	
 	public function cloud_base_fees_get_callback( \WP_REST_Request $request) {
 //		$params = $request->get_params();
 	    global $wpdb;
@@ -210,13 +209,7 @@ class Cloud_Base_Fees extends Cloud_Base_Rest {
 //				wp_send_json(array('message'=>'Deleted', 'id'=>$fee_id), 202 );
 			}
 		} else{
-//			wp_send_json_error(array('message'=>'Record not found.', 'id'=>$fee_id), 404);
 			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
-
 		}
 	}
 }
-
-	
-	
-

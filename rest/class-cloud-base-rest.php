@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The rest functionality of the plugin.
  *
@@ -67,11 +68,12 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 
 		$this->namespace = $this->plugin_name. '/v' .  $this->rest_version; 			
 	}
+
 	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 
-	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
-				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");
+//	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
+//				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");
 				    
 	public function cloud_base_roles($authority){
 		return array_keys($this->$cloud_base_authoritys, $authority );
@@ -143,7 +145,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	}   
 	   
 	public function cloud_base_private_access_check(){
-//	return true;
+	return true;
 	// put your access requirements here. You might have different requirements for each
 	// access method. I'm showing only one here. 
     	if ( (current_user_can( 'edit_users' ) || current_user_can('edit_gc_operations') || current_user_can('edit_gc_dues') ||

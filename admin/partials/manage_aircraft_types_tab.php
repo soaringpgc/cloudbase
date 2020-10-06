@@ -4,7 +4,11 @@
 </script>
 
 <div style="display:inline-block"  align:left id="aircraft_types"  class="aircraft_type editform" >
-    <h3>Aircraft Type</h3><DIV>
+
+    
+<?php 			
+if( current_user_can( 'manage_options' ) ) {	
+  echo ('     <h3>Aircraft Type</h3><DIV>   
     <form id="addaircraft_type" action="#" >
     	<div>
     	<input type = "hidden"
@@ -71,7 +75,9 @@
         <button id="add" class="view">Add</button>
         <button id="update" class="edit">Update</button>
      </div>
-    </form></DIV>
+    </form></DIV>');
+}
+?> 
 
 <div  class="Table">
     <div class="Title">

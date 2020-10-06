@@ -69,7 +69,7 @@
 	  	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
-      			alert(POST_SUBMITTER.nonce);
+//      			alert(POST_SUBMITTER.nonce);
         		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
       			},
    			} ));	
@@ -209,113 +209,38 @@
 				$('#'+el.id).val(localmodel.get(el.id));
       		});
 		},
+		deleteItem: function(){
+			this.model.destroy(
+			{
+    			wait: true,			
+    			error: function(model, response) {
+    				var parsedmessage = JSON.parse(response.responseText);
+    				 alert(JSON.stringify(parsedmessage.message));
+    				},	
+    			success: (function(model, response){
+            		this.remove();  
+    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
+    			}	
+			)
+ 		},	   
 	});
 	app.AircraftView = app.ModelView.extend({
-	        template: aircrafttemplate,
-// 	   		close: function(){
-//    				var registration = this.$('#registration').val().trim();
-//   				var compitition_id = this.$('#compitition_id').val().trim();
-//    				var make = this.$('#make').val().trim();  
-//    				var model = this.$('#model').val().trim();  
-//     			if(registration || compitition_id || make  || model) {
-//      				this.model.save({"registration": registration, "compitition_id": compitition_id, "make": make,  "model": model });
-//     			}
-//            		this.$el.removeClass('editing');
-//   			}
+	        template: aircrafttemplate,     
 	});
 	app.TowFeeView = app.ModelView.extend({
 	        template: feeitemtemplate,
-// 	   		close: function(){
-//    				var tow_fee = this.$('#tow_fee').val().trim();
-//   				var base_charge = this.$('#hook_up').val().trim();
-//    				var hourly_fee = this.$('#hourly').val().trim();  
-//     			if(tow_fee || base_charge || hourly_fee) {
-//      				this.model.save({"charge": tow_fee, "hook_up": base_charge, "hourly": hourly_fee });
-//     			}
-//            		this.$el.removeClass('editing');
-// 			}
 	});
 	app.FlightTypeView = app.ModelView.extend({
 	    template: flighttypetemplate,
-//    		close: function(){
-//    		  var title_value = this.$('#flight_type').val().trim();
-//    		  if(title_value){
-//    			this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
-//    		  }
-//   		  this.$el.removeClass('editing');
-//   		},
 	});
 	app.StatusTypeView = app.ModelView.extend({
        template: statustypetemplate,
-// 	   close: function(){
-// 		 var title_value = this.$('#status_type').val().trim();
-// 		 if(title_value){
-// 			this.model.save({ "title": title_value }, {error: function(model, response) {alert(JSON.stringify(response))}});
-// 		 }
-// 		 this.$el.removeClass('editing');
-// 	   },
 	});	
 	app.AircraftTypeView = app.ModelView.extend({
 	    template: actypetemplate,
-//    		close: function(){
-//    			var title_value = this.$('#aircraft_type').val().trim();
-//    			var sort_value = this.$('#sort_code').val().trim();
-//    	  		var base_value = this.$('#base_charge').val().trim();	
-//    	  		var first_value = this.$('#first_hour').val().trim();	
-//  	  		var hour_value = this.$('#each_hour').val().trim();	
-//  	     	var min_value = this.$('#min_charge').val().trim();		
-//    			if(title_value){
-//    				this.model.save({ "title": title_value, "sort_code": sort_value, "base_charge ": base_value,
-//    				"first_hour" : first_value, "each_hour" : hour_value, "min_charge" : min_value },
-//    				 {error: function(model, response) {alert(JSON.stringify(model))}});
-//    			}
-//   			this.$el.removeClass('editing');
-//   		},
-  		deleteItem: function(){
-			this.model.destroy(
-			{
-    			wait: true,			
-    			error: function(model, response) {
-    				var parsedmessage = JSON.parse(response.responseText);
-  //  				 alert(JSON.stringify(parsedmessage.message));
-    				},	
-    			success: (function(model, response){
-            		this.remove();  
-    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
-    			}	
-			)
- 		},
 	});
 	app.SignOffTypeView = app.ModelView.extend({
 	    template: signofftemplate,
-//    		close: function(){
-//    			var signoff_type = this.$('#signoff_type').val().trim();
-//    			var period = this.$('#period').val().trim();
-//    	  		var authority = this.$('#authority').val().trim();	
-//    	  		var fixed_date = this.$('#fixed_date').val().trim();	
-//  	  		var no_fly = this.$('#no_fly').val().trim();	
-//  	     	var applytoall = this.$('#applytoall').val().trim();		
-//    			if(signoff_type){
-//    				this.model.save({ "signoff_type": signoff_type, "period": period, "authority ": authority,
-//    				"fixed_date" : fixed_date, "no_fly" : no_fly, "applytoall" : applytoall },
-//    				 {error: function(model, response) {alert(JSON.stringify(model))}});
-//    			}
-//   			this.$el.removeClass('editing');
-//   		},
-  		deleteItem: function(){
-			this.model.destroy(
-			{
-    			wait: true,			
-    			error: function(model, response) {
-    				var parsedmessage = JSON.parse(response.responseText);
-  //  				 alert(JSON.stringify(parsedmessage.message));
-    				},	
-    			success: (function(model, response){
-            		this.remove();  
-    			 	}).bind(this) //  NTFS: ".bind(this)" makes the right "this" available to the callback. 
-    			}	
-			)
- 		},
 	});
 	
 	app.CollectionView =  Backbone.View.extend({         
@@ -369,11 +294,6 @@
         		formData[el.id] = $(el).val();
         	}
       	  } 		
-// 		  if($(el).val() != '' &&   !$(el).hasClass('checked_class')){
-//         	formData[el.id] = $(el).val();
-//       	  } else {
-//       	  	formData[el.id]=($(el).is(":checked")? true : false );
-//       	  }
       	});
       	//grab all of the <select> fields 
       	$(this.localDivTag).children('select').each(function(i, el ){
@@ -478,7 +398,6 @@
         renderItem: function(item){
             var expandedView = app.SignOffTypeView.extend({ localDivTag:this.localDivTag });
             var itemView = new expandedView({
-//      		var itemView = new app.SignOffTypeView({
       	  		model: item
       		})
       		this.$el.append( itemView.render().el);   

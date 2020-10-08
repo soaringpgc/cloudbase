@@ -64,17 +64,25 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 
 // fields to return. 
- 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
+//  	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
+//  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
+//  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
+
+	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
+
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
  	  $valid_filters = array('aircraft_id'=>'aircraft_id' , 'type'=>'t.title', 'captian_id'=>'captian_id', 'compitition_id'=>'compitition_id' );
 	  $filter_string = $this->select_filters($request, $valid_filters);
 
+// 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
+// 			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
+
 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
-			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
- 				
+			{$table_type} t on s.aircraft_type=t.id WHERE {$filter_string} " ;
+// 		
 	  $items = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
 	  	 return new \WP_REST_Response ($items);
@@ -105,7 +113,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 404 ) );
 	  }	  	  
 // 	  $captian = null;
-	  if (!empty($request['captian'])){
+	  if (!empty($request['captian_id'])){
 	  	$the_user = get_user_by( 'id', $request['captian'] ); 
 		if (!$the_user) {
 		    return new \WP_Error( 'Not Found', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
@@ -114,23 +122,23 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 		}
 	  } 	
 	  if (!empty($request['registration'])){
-	  	$registration  = $wpdb->prepare("%s" , $request['registration']);
+	  	$registration  = $request['registration'];
 	  } else{
 		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
       }
 	  if (!empty($request['make'])){
-	  	$make  = $wpdb->prepare("%s" , $request['make']);
+	  	$make  = $request['make'];
 	  } else{
  		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }	  
   	  if (!empty($request['model'])){
-	  	$make  = $wpdb->prepare("%s" , $request['model']);
+	  	$model  = $request['model'];
 	  } else{
 		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
 	  }		  	  
 	  $compitition = '';
-	  if (!empty($request['compitition'])){
-	  	$compitition  = $wpdb->prepare("%s" , $request['compitition']);
+	  if (!empty($request['compitition_id'])){
+	  	$compitition_id  = $request['compitition_id'];
 	  }   	  
 // 
 	  if (!empty($request['status'])){
@@ -146,20 +154,34 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
    	  }
 // generate new aircraft id number	  
 	  $sql = "SELECT MAX(aircraft_id)  FROM {$table_name} " ;
-	  $sqlreturn = $wpdb->get_row( $sql, OBJECT);
-	  if( $wpdb->num_rows > 0 ) {	
-		$aircraft_id = $sqlreturn->aircraft_id + 1;
-	  } else {
-	    return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
-	  }
+	  $sqlreturn =  $wpdb->get_var( $sql);
+		$aircraft_id = $sqlreturn + 1;
 // 
- 	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id, registration, aircraft_type, 
-        status, captian_id, date_updated, make, model, compitition_id, valid_until) VALUES ( %d, %s, %d, %d, %d, now(), %s, %s, %s, null) " , 
- 	    $aircraft_id, $registration, $aircraft_type, $status, $captian, $make, $model, $compitition );	  
+ 	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} 
+ 	           (aircraft_id,  registration,  aircraft_type,  status, captian_id, date_updated, make, model, compitition_id, valid_until) 
+ 	    VALUES (         %d,           %s,            %d,     %d,         %d,        now(),   %s,    %s,              %s,      null) " , 
+ 	           $aircraft_id, $registration, $aircraft_type, $status, $captian_id, $make, $model, $compitition_id );	  
+
  	  $wpdb->query($sql);
 //   // read it back to get id and send
-  	  $sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s " , $registration  );	
- 	  $items = $wpdb->get_row( $sql, OBJECT);
+
+	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
+ 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
+ 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
+
+ 	  $select_string = $this->select_fields($request, $valid_fields);   
+// 	  $filter_string = $this->select_filters($request, $valid_filters);
+// 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
+// 			{$table_type} t on s.aircraft_type=t.id WHERE  " ;
+						
+// 	  $sql =  $wpdb->prepare("SELECT {$select_string}  FROM {$table_name} s inner join 
+// 			{$table_type} t on s.aircraft_type=t.id  WHERE `registration` = %s AND valid_until IS NULL" , $registration  );	
+
+	  $sql =  $wpdb->prepare("SELECT *, t.title  AS type  FROM {$table_name} s inner join 
+			{$table_type} t on s.aircraft_type=t.id  WHERE `registration` = %s AND s.valid_until IS NULL" , $registration  );	
+	  
+	  $items = $wpdb->get_row( $sql, OBJECT);		 		 
+			 		 
  	  return new \WP_REST_Response ($items); 
 	}
 	public function cloud_base_aircraft_edit_callback( \WP_REST_Request $request) {
@@ -273,13 +295,13 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $item =  $request['aircraft_id'];
 		
 	  if ($item  != null){	
-		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,  $item );	
-		$expire_date =	date('Y-m-d H:i:s');
+		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND valid_until IS NULL " ,  $item );	
+
 		$items = $wpdb->get_row( $sql, OBJECT);
 		if( $wpdb->num_rows > 0 ) {
 			$sql =  $wpdb->prepare("UPDATE {$table_name} SET `valid_until`= now() WHERE `id` = %d " , $items->id );
 			$wpdb->query($sql);
-			wp_send_json(array('message'=>'Deleted', 'id'=>$fee_id), 202 );
+			wp_send_json(array('message'=>'Deleted', 'id'=>$items->id), 202 );
 		} else{
 			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  	}	

@@ -15,8 +15,8 @@ if( current_user_can( 'manage_options' ) ) {
           id = "id"
           size = "2"
           value = ""
-          name = "id"/>
-  	<input type = "hidden"
+          name = "id"/>  
+  	    <input type = "hidden"
           id = "aircraft_id"
           size = "2"
           value = ""

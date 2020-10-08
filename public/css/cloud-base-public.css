@@ -3,50 +3,42 @@
  * included in this file.
  */
  
-
-
 /* Sidebar/left column */
 
 
 .flex-container {
   display: flex;
-    flex-direction: column;
+  flex-direction: row;
   background-color: white;
   padding: 20px;
 }
+
 
 .aside {
-  flex: 30%;
-  background-color: #f1f1f1;
+  flex: 70%;
+/*    background-color: #f1f1f1;*/
+    background-color: whitesmoke;
   padding: 20px;
 }
-
-/* Main column */
-.main {
-  display: inline;
-  background-color: white;
-  padding: 20px;
+.editor {
   flex-direction: column;
+  background-color: white;
+  padding: 10px;
+  flex: 15%;
+}
+.form-row{
+	display: flex;
+	justify-content: flex-end;
+	padding: .5em;
+}
+.form-row > label {
+	flex: 1;
+}
+.form-row > input {
+	flex: 2;
 }
 
-/* Main column */
-.flex-main {
-  display: flex;
-  flex-direction: row;
-}
-/* Footer */
-.footer {
-  padding: 20px;
-  text-align: center;
-  background: #ddd;
-}
-label, input {
-    display: block;
-}
 
-.form_row {
-    margin-bottom: 10px;
-}
 .edit{
 	display: none;
 }

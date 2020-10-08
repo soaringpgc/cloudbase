@@ -105,7 +105,6 @@
 	app.Aircraft = app.Model.extend({
 		idAttribute : "aircraft_id",
 		initialize: function(){
-
 		},
 		wait: true,			
 	} );
@@ -168,24 +167,12 @@
   		},
 		events:{
 			'click .delete' : 'deleteItem',
-//			'dblclick label' : 'edit',
-//			'keypress .edit' : 'updateOnEnter',
-//			'blur .edit' : 'close',
 			'dblclick label' : 'update'
 		},
 		deleteItem: function(){
 			this.model.destroy();
 			this.remove();
 		},
-// 		edit: function(e){
-// 			this.$el.addClass('editing');
-//       		this.$input.focus();
-// 		},
-// 		updateOnEnter: function(e){
-//     		if(e.which == 13){
-//       			this.close();
-//     		}
-//    		},
    		update: function(){
 			var localmodel = this.model;
  			$("div.editform").addClass('editing');

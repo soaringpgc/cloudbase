@@ -2,63 +2,21 @@
 // loaded with wp_register_script  & wp_enque_script see class-cloud-base-public.php
 //
 
-// fees 
-var feeitemtemplate = _.template(`
-     <div class="Cell"><%= altitude %></div>
-     <div >
-     	 <label class="Cell"><%=  charge %></label>
-     	 <label class="Cell"><%=  hook_up %></label>
-     	 <label class="Cell"><%=  hourly %></label>
-     	 <div class="Cell"><button class="delete" ">Delete</button></div>
-      </div>
+// flight 
+var flighttemplate = _.template(`
+     <div class="edit"><%= id %></div>
+     <label class="Cell0"><%=  flight_number %></label>
+     <label class="Cell"><%=  aircraft_id %></label>
+     <label class="Cell2"><%=  pilot_id %></label>     	 
+     <label class="Cell0"> <button id="launch" class="buttonlaunch view"></button><%=  start_time %></label class="edit">
+     	 <button class="landing" ">Landing</button><div class="el_time"><%=  end_time %></label> </div>
+     	     	 <label class="Cell"><%=  end_time %></label>   
+     	 <label class="Cell"><%=  flight_fee_id %></label>   
+     	 <div class="edit" > <%= tow_pilot_id %></div>	 
+     	 <div class="edit" > <%= tow_plane_id %></div>	 
+
 `);
 
-// Aircraft Types 
-  var actypetemplate = _.template(`
-   <div class="hiding" > <%= id %></div>
-      <div >
-   	 <label class="Cell"><%=  type_id     %></label>
-     <label class="Cell"><%=  title       %> </label>
-     <label class="Cell"><%=  sort_code   %> </label>
-     <label class="Cell"><%=  base_charge %> </label>
-     <label class="Cell"><%=  first_hour  %> </label>
-     <label class="Cell"><%=  each_hour   %> </label>
-     <label class="Cell"><%=  min_charge  %> </label>
-     <div class="Cell"><button class="delete" ">Delete</button></div>
-   </div >
-`);
-
-// Flight Types 
-  var flighttypetemplate = _.template(`
-   <div class="Cell"  id = "id"> <%= id %></div>
-   <div>
-     <label class="Cell"><%= title %></label>
-     <div class="Cell"><button class="delete" ">Delete</button></div>
-   </div>
-`);
-// Status Types 
-  var statustypetemplate = _.template(`
-   <div class="Cell"  id = "id" > <%= id %></div>
-   <div >
-     <label class="Cell" ><%= title %></label>
-     <div class="Cell"><button class="delete" ">Delete</button></div>
-   </div>
-`);
-// Aircraft 
-  var aircrafttemplate = _.template(`
-   <div class="hiding" > <%= id %></div>
-   <div class="Cell" > <%= aircraft_id %></div>
-   <div class="hiding" > <%= aircraft_type %></div>
-
-   <div >
-       <label class="Cell" > <%= type   %></label>
-       <label class="Cell" > <%= registration    %></label>
-       <label class="Cell" > <%= compitition_id  %></label>
-       <label class="Cell" > <%= make            %></label>
-       <label class="Cell" > <%= model           %></label>
-       <div class="Cell"><button class="delete" ">Delete</button></div>
-   </div>
-`);
 
 // Sign off Types 
   var signofftemplate = _.template(`

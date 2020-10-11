@@ -3,7 +3,7 @@
 	var cb_admin_tab = "tow_fee";
 </script>
 
-<div style="display:inline-block"  align:left id="tow_fees"  class="TowFee editform" >
+<div style="display:inline-block"  align:left id="tow_fees"  class="editform" >
 <?php 			
 if( current_user_can( 'manage_options' ) ) {	
   echo ('   
@@ -58,7 +58,7 @@ if( current_user_can( 'manage_options' ) ) {
 }    
 ?>    
 
-<div  class="TowFee Table">
+<div  class="Table">
     <div class="Title">
         <p>Tow Fees </p>
     </div>

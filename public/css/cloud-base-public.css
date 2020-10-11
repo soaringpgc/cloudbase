@@ -37,8 +37,100 @@
 .form-row > input {
 	flex: 2;
 }
+.row > h3 {
+	flex: 1;
+}
 
-
+.buttonlaunch {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  width: 10px;
+  border-radius: 50%;
+}
+.buttonlanding {
+  background-color: red; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  width: 10px;
+  border-radius: 50%;
+}
 .edit{
 	display: none;
 }
+
+
+// table css  
+ .Table
+{
+    display: table;
+}
+.Title
+{
+    display: table-caption;
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+}
+.Heading
+{
+    display: table-row;
+    font-weight: bold;
+    text-align: center;
+}
+.Row
+{
+    display: table-row;
+}
+.Cell0
+{
+  	background-color: gray; 
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 40px;
+}
+.Cell
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 80px;
+}
+.Cell2
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 160px;
+}
+.Cell3
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 240px;
+}
+// table CSS 

@@ -66,7 +66,10 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		
 	//	SELECT * FROM wp_cloud_base_flight_sheet WHERE date(start_time) LIKE DATE(now()) ORDER BY start_time DESC
 		if (empty($request['flight_id'])){
-			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until = 0 ORDER BY end_time DESC ";		
+			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until is NULL ORDER BY end_time DESC ";		
+
+			$sql = "SELECT * FROM ". $flights_table . " WHERE valid_until is NULL ORDER BY end_time DESC ";		
+
 			$items = $wpdb->get_results( $sql, OBJECT);		
 			if( $wpdb->num_rows > 0 ) {		
 				return new \WP_REST_Response ($items);

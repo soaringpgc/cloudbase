@@ -12,11 +12,15 @@
  * @subpackage Cloud_Base/public/partials
  */
 ?>
+<script language="JavaScript">
+	var cb_admin_tab = "flights";
+</script>
+
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="flex-container">
-   <div class="editor">
-    <h3 > Flight Editor</h3>
+   <div id="eflights">
+    <h3 class="datetime"> Flight Editor</h3>
     <?php 	
         $request = new WP_REST_Request('GET', '/cloud_base/v1/flight_types');
 //        $request->set_param( 'per_page', 20 );
@@ -47,81 +51,81 @@
 		$fees = $response->get_data();		
 		
       if( current_user_can( 'read' ) ) {	
-      echo ('<form id="addFlight" action="#">
-
+      
+      echo ('<form id="editflights" action="#" ><div >
   	    <input type = "hidden"
           id = "id"
           size = "2"
-          value = ""
-          name = "id"/>       
-         <button id="add" class="view">Add</button>
-          <button id="update" class="edit">Update</button>  
-        <li class="form-row"> <label for="glider">Glider: </label>
-        <select name="glider" id="glider" form="addFlight" >');
+          value = "42"
+          name = "id"/>   
+        <div class="form-row"> <label for="glider">Glider: </label>
+        <select name="glider" id="glider" form="editflights" >');
      	foreach($aircraft as $key){ 	
      		if ($key->type == 'Glider'){
      			echo '<option value=' . $key->aircraft_id . '>'. $key->compitition_id . '</option>';
      		}
          };     
 
-        echo ( '</select>  </li> <li class="form-row">   
+        echo ( '</select>  </div> <div class="form-row">   
         <label for="pilots">Pilot: </label>
-        <select name="pilot" id="pilot" form="addFlight">
+        <select name="pilot" id="pilot" form="editflights">
         <option value="" selected>Select Member</option>');
      	foreach($pilots as $key){ 	
-     		echo '<option value=' . $key->id . '>'. $key->last_name . ', '. $key->first_name . '</option>';
+     		echo '<option value=' . $key->ID . '>'. $key->last_name . ', '. $key->first_name . '</option>';
          };   
-         echo ( '</select> </li> <li class="form-row">    
+         echo ( '</select> </div> 
+         <div class="form-row">    
         <label for="instructor">Instructor: </label>
-        <select name="instructors" id="instructors" form="addFlight">
+        <select name="instructors" id="instructors" form="editflights">
         <option value="" selected>None</option>');       
      	foreach($instructors as $key){ 	
-     		echo '<option value=' . $key->id . '>'. $key->last_name . ', '. $key->first_name . '</option>';
+     		echo '<option value=' . $key->ID . '>'. $key->last_name . ', '. $key->first_name . '</option>';
          };             
   
-         echo ( '</select> </li> <li class="form-row"> 
+         echo ( '</select> </div> <div class="form-row"> 
         <label for="altitude">Altitude: </label>
-        <select name="altitude" id="altitude" form="addFlight">');
+        <select name="altitude" id="altitude" form="editflights">');
      	foreach($fees as $key){ 	
      		echo '<option value=' . $key->id . '>'. $key->altitude . '</option>';
          };             
          
-        echo ('</select>
-        <li class="form-row">  
-        <label for="launch">Launch:</label>
-		<input type="time" id="launch" name="launch" size="5"></li> 
+        echo ('</select></div>
+        <div class="form-row">  
+       	 	<label for="launch">Launch:</label>
+			<input type="time" id="launch" name="launch" size="5">
+		</div> 
 
-		<li class="form-row"> 
-        <label for="landing">Landing:</label>
-		<input type="time" id="landing" name="landing" size="5"></li> 
-        <li class="form-row"> 
-        
+		<div class="form-row"> 
+        	<label for="landing">Landing:</label>
+			<input type="time" id="landing" name="landing" size="5">
+		</div> 
+		
+        <div class="form-row"> 
         <label for="towpilot">Tow Pilot: </label>
-        <select name="towpilot" id="towpilot" form="addFlight">');
+        <select name="towpilot" id="towpilot" form="editflights">');
      	foreach($towpiltos as $key){ 		
-     		echo '<option value=' . $key->id . '>'. $key->last_name . ', '. $key->first_name . '</option>';
+     		echo '<option value=' . $key->ID . '>'. $key->last_name . ', '. $key->first_name . '</option>';
          };     
-        echo ( '</select>  </li> <li class="form-row">   
+        echo ( '</select>  </div> 
+        <div class="form-row">   
         <label for="towplane">Tug: </label>
-        <select name="towplane" id="towplane" form="addFlight">');
+        <select name="towplane" id="towplane" form="editflights">');
      	foreach($aircraft as $key){ 	
      		if ($key->type == 'Tow'){
      			echo '<option value=' . $key->aircraft_id . '>'. $key->registration . '</option>';
      		}
-         };     
-//         echo ( '</select>    
-// 
-//        <label for="flight_type">Type: </label>
-//        <select name="flight_type" id="flight_type" form="addFlight">');
-//      	foreach($flight_types as $key){ 	
-//      		echo '<option value=' . $key->id . '>'. $key->title . '</option>';
-//          };    
-        echo ( '</select> 
-
-      </form> ');
-      echo '<label for="cloud_base_notes">Notes: </label>
-          <textarea  form="addFlight" id="cloud_base_notes" name="cloud_base_notes"  rows=2 cols=10">
-         </textarea> ' ;
+         };         
+        echo ( '</select></div> ');
+ ?>     
+        <button  id="add"  class="view">ADD</button>
+		</div></form> 
+		
+<?php     
+         echo '
+         <div id="editflights">
+         <div><label for="cloud_base_notes">Notes: </label>
+          <textarea  form="editflights" id="cloud_base_notes" name="cloud_base_notes"  rows=2 cols=10">
+         </textarea></div></div> ' ;
 
      } else {
      	Echo 'Please log in. ';
@@ -129,8 +133,32 @@
 ?>
 </div>
     <div class="aside"> 
-    flights
-    
+    <div  class="TowFee Table" id="flights">
+        <div class="Title ">
+            <p>Today's Flights <?php echo date("Y/m/d") ?></p>
+        </div>
+        <div class="Heading">
+            <div class="Cell0">
+                <p>Flight #</p>
+            </div>
+           <div class="Cell">
+                <p>Glider</p>
+            </div>
+            <div class="Cell2">
+                <p>Pilot</p>
+            </div>
+            <div class="Cell0">
+                <p></p>
+            </div>
+            <div class="Cell">
+                <p>Time</p>
+            </div>
+             <div class="Cell">
+                <p>Altitude</p>
+            </div>
+        </div>
+    </div>
+</div>
     </div>
 
 <!-- 
@@ -140,10 +168,3 @@
 </div>
 
 
-<?php		
-	 function display_flights(){
-	 
-	 return 'Flights';
-	 
-	 }
-?>

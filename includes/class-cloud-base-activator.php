@@ -98,7 +98,15 @@ function create_cb_database(){
   		valid_until datetime DEFAULT '0000-00-00 00:00:00',
 			PRIMARY KEY  (id)
 		);" . $charset_collate  . ";";
-	 dbDelta($sql);		
+	 dbDelta($sql);
+	 // prepopulate with tow plane type
+	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (type_id, title, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 
+	VALUES (%d, %s, %d, %f, %f, %f, %f, null) " , '1' 'Tow', 1, '0','0', '0', null);	
+	$wpdb->query($sql);		
+	// prepopulate with Glider Type	
+	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (type_id, title, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 
+	VALUES (%d, %s, %d, %f, %f, %f, %f, null) " , '2' 'Glider', 0, '0','0', '0', null);	
+	$wpdb->query($sql);			
 			
 	$table_name = $wpdb->prefix . "cloud_base_aircraft_status";
 	 // create aircraft type table

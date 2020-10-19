@@ -70,7 +70,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
- 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
+ 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 'title'=>'t.title  AS type' );
 
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
@@ -82,7 +82,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 
 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
 			{$table_type} t on s.aircraft_type=t.id WHERE {$filter_string} " ;
-// 		
+				
 	  $items = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
 	  	 return new \WP_REST_Response ($items);

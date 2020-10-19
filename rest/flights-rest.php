@@ -64,8 +64,23 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
 		$flights_table = $wpdb->prefix . "cloud_base_flight_sheet";	
 		
+// 	  $valid_fields = array('id'=>'s.id', 'flight_number'=>'s.flight_number' , 'flight_type'=>'s.flight_type', 
+//  	  'aircraft_id'=>'s.aircraft_id', 'pilot_id'=>'s.pilot_id',	'instructor_id'=>'s.instructor_id', 'tow_plane_id'=>'s.tow_plane_id', 
+//  	  'tow_pilot_id'=>'s.tow_pilot_id', 'launch'=>'s.start_time', 'landing'=>'s.end_time', 'compition_id'=>'t.compition_id', 'tow_plane'=>'t.registration', 
+//  	   'pilot'=>'a.display_name', 'instructor'=>'a.display_name', 'tow_pilot'=>'a.display_name'  );
+
+// 	  $sql = "SELECT {$select_string}  FROM {$flights_table} s wp_users p wp_users i wp_users t 
+// 			{$aircraft_table} a on s.aircraft_type=t.id inner join wp_users a on a.id = s.pilot_id WHERE s.pilot_id = p.id AND  s.instructor_id = i.id AND 
+//           s.tow_pilot_id = t.id " ;
+
+// 	  $sql = "SELECT  s.id, s.flight_number, s.flight_type, s.aircraft_id, a.compitition_id as glider, y.title as f_type, s.pilot_id, s.instructor_id,  s.tow_pilot_id, 
+// 	  p.display_name as pilot, i.display_name as instructor, t.display_name as tow_pilot FROM wp_cloud_base_flight_sheet s 
+// 	  INNER JOIN  wp_users p ON s.pilot_id = p.id LEFT JOIN  wp_users i ON  s.instructor_id = i.id LEFT JOIN  wp_users t ON  s.tow_pilot_id = t.id 
+// 	  INNER JOIN wp_cloud_base_flight_type y ON s.flight_type=y.id INNER JOIN wp_cloud_base_aircraft a ON s.aircraft_id=a.aircraft_id" ;
+
+
 	//	SELECT * FROM wp_cloud_base_flight_sheet WHERE date(start_time) LIKE DATE(now()) ORDER BY start_time DESC
-		if (empty($request['flight_id'])){
+		if (empty($request['flight_number'])){
 			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until is NULL ORDER BY end_time DESC ";		
 
 			$sql = "SELECT * FROM ". $flights_table . " WHERE valid_until is NULL ORDER BY end_time DESC ";		
@@ -79,7 +94,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 //	 			return rest_ensure_response( 'No flights today' );
 			}
 		} else {
-			$sql = $wpdb->prepare( "SELECT * FROM {$flights_table} WHERE  id =  %d ",  $request['flight_id']);
+			$sql = $wpdb->prepare( "SELECT * FROM {$flights_table} WHERE  id =  %d ",  $request['flight_number']);
 			$items = $wpdb->get_row( $sql, OBJECT);		
 			if( $wpdb->num_rows > 0 ) {		
 			return new \WP_REST_Response ($items);

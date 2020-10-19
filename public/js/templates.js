@@ -6,12 +6,14 @@
 var flighttemplate = _.template(`
      <div class="edit"><%= id %></div>
      <label class="Cell0"><%=  flight_number %></label>
-     <label class="Cell"><%=  aircraft_id %></label>
-     <label class="Cell2"><%=  pilot_id %></label>     	 
-     <label class="Cell0"> <button id="launch" class="buttonlaunch view"></button><%=  start_time %></label class="edit">
-     	 <button class="landing" ">Landing</button><div class="el_time"><%=  end_time %></label> </div>
+     <label class="Cell"><%=  glider %></label>
+     <label class="Cell2"><%=  p_last_name %>, <%=p_first_name %></label>     	 
+     <label class="Cell0"> <button id="launch" class="buttonlaunch view">
+     						</button><%=  start_time %></label class="edit">
+     	 					<button class="landing" ">Landing</button>
+     	 					<div class="el_time"><%=  end_time %></label> </div>
      	     	 <label class="Cell"><%=  end_time %></label>   
-     	 <label class="Cell"><%=  flight_fee_id %></label>   
+     	 <label class="Cell"><%=  towplane %></label>   
      	 <div class="edit" > <%= tow_pilot_id %></div>	 
      	 <div class="edit" > <%= tow_plane_id %></div>	 
 

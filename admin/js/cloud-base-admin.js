@@ -147,7 +147,7 @@
     }) ; 
      app.AircraftList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',			
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',	
     }) ; 
     app.SignOffList =   app.Collection.extend({
     	model: app.AircraftType,
@@ -176,12 +176,12 @@
    		update: function(){
 			var localmodel = this.model;
  			$("div.editform").addClass('editing');
-// 			
-// NTFS this requires the form id's to be the same as the model id's.
-// we are looping over the form, picking up the id's and then getting the 
-// value of the same id in the model and then loading it back into the from
-//  someone (probably me) is going to hate me in the future.  -dsj
-      		$(this.localDivTag).children('input').each(function(i, el ){
+             // 			
+             // NTFS this requires the form id's to be the same as the model id's.
+             // we are looping over the form, picking up the id's and then getting the 
+             // value of the same id in the model and then loading it back into the from
+             //  someone (probably me) is going to hate me in the future.  -dsj
+            $(this.localDivTag).children('input').each(function(i, el ){
       		   if(el.type === "checkbox" ){
       		   		if (localmodel.get(el.id) === "1" ){
       		   			$('#'+el.id).prop("checked", true);

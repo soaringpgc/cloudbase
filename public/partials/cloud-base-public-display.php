@@ -156,6 +156,9 @@
              <div class="Cell">
                 <p>Altitude</p>
             </div>
+            <div class="Cell">
+                <p>Tug</p>
+            </div>
         </div>
     </div>
 </div>

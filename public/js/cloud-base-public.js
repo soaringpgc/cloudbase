@@ -57,9 +57,40 @@
 
 	app.Flight = app.Model.extend({
 		initialize: function(){
+			_.extend(this, new Backbone.Workflow(this, {attrName:'status'})
+			);
+			this.bind('transition:from:staged', function(){
+				this.set('start_time', new Date().toISOString());
+			});
+			this.bind('transition:from:inflight', function(){
+				this.set('end_time', new Date().toISOString());
+			});
 		},	
+		workflow :{
+			initial: 'staged',
+			events:[
+			{name: 'launch',  from: 'staged',    to: 'inflight'},
+			{name: 'cancel',  from: 'staged',    to: 'canceled'},
+			{name: 'cancel',  from: 'landed',    to: 'canceled'},  // should seldom need, can cancel from inflight.
+			{name: 'landing', from: 'inflight',  to: 'landed'},
+			{name: 'edit',    from: 'staged',    to: 'editing'},
+			{name: 'edit',    from: 'inflight',  to: 'editing'},
+			{name: 'edit',    from: 'landed',    to: 'editing'},	
+			{name: 'launch',  from: 'editing',   to: 'inflight'},	
+			{name: 'landing', from: 'editing',   to: 'landed'},		
+			]												
+		},
+		validation: {
+			pilot_id: {required: true },
+			aircraft_id:  {required: true },
+		},
 		wait: true
 	});
+	app.Fees = app.Model.extend({
+		initialize: function(){
+		},	
+		wait: true
+	});	
 
 // collections	
     app.Collection = Backbone.Collection.extend({	
@@ -85,6 +116,10 @@
     	model: app.Pilots,
     	url: POST_SUBMITTER.root + 'cloud_base/v1/pilots?role=subscriber'
    	 }) ; 	
+    app.FeeList= app.Collection.extend({
+    	model: app.Pilots,
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees'
+   	 }) ; 	
 	
 // model view	
 	app.ModelView = Backbone.View.extend({
@@ -98,10 +133,14 @@
 		initialize: function(){
     		this.model.on('change', this.render, this);
   		},
+  		set_status: function(){
+  			alert('here');
+  		 	this.$el.addClass('inflight');
+  		},
 		events:{
 			'dblclick label' : 'update',
-			'click .launch' : 'launch_time',
-			'click .landing' : 'landing_time',
+			'click .buttonlaunch' : 'launch_time',
+			'click .buttonlanding' : 'landing_time',
 		},
    		update: function(){
 			var localmodel = this.model;
@@ -126,12 +165,29 @@
       		});
 		},  
 		launch_time: function(){
-			var today = new  Date();
-			var time = today.getHours()+'-'+(today.getMonth()+1); 
-		
+//		    alert('you pushed the button!');
+			var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+ 			var storelaunch = (new Date(Date.now() - tzoffset));
+			var launch = new  Date();
+			this.model.set({'start_time': storelaunch.toISOString().slice(0, 19).replace('T', ' ') });								
+			this.model.set({'start_display_time':  launch.toLocaleTimeString('en-US',  {hour12:false})});
+			this.$el.addClass('inflight'); 	
+			this.model.save();
+//		alert(JSON.stringify(this.model));
 		},
 		landing_time: function(){
-		
+			var landing = new Date(); 
+			alert (landing);
+			this.model.set({'end_time': landing.toISOString().slice(0, 19).replace('T', ' ') });								
+			var launch =  new Date((this.model.get('start_time')).replace(/-/g,"/"));
+			alert(launch);
+			var temptime = Math.abs(landing.getTime()-launch.getTime())/3.6e6; 
+			var hours = Math.round(temptime *100) / 100 ;
+			
+//			this.model.set({'start_display_time': landing.toLocaleTimeString('en-US',  {hour12:false})});
+			this.model.set({'start_display_time': hours});
+			this.$el.addClass('landed'); 
+			this.$input.focus();	
 		}
 	});
 	app.FlightView = app.ModelView.extend({
@@ -140,7 +196,6 @@
 // 		
 	app.CollectionView =  Backbone.View.extend({         
       initialize: function(){
-//      	console.log('the view has been initialized. ');
         this.collection.fetch({reset:true});
         this.render();
         this.listenTo(this.collection, 'add', this.renderItem);
@@ -179,6 +234,7 @@
       			formData[el.id] = $(el).val();
       		}
       	});
+ //     	alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       },
       updateItem: function(e){     	
@@ -224,14 +280,21 @@
 //      	console.log('the view has been initialized. ');
 	 	  this.aircraft = new app.AircraftList();
 	 	  this.pilots = new app.PilotList();
+	 	  this.fees = new app.FeeList();
 	 	  this.collection = new app.FlightList();
 //NTFS : we fetch the aircraft, if that is successful, we fetch pilots, and if that is successful 
 // fetch the flights. It took forever to figure this out. 
-		  this.aircraft.fetch({reset:true, success:function(){
-    		  self.pilots.fetch({reset:true, success:function( ){
-    		  	  self.collection.fetch({reset:true });    
-    		  }});		  
-		  }})	
+// 		  this.aircraft.fetch({reset:true, success:function(){
+//     		  self.pilots.fetch({reset:true, success:function( ){
+//     		  	  self.collection.fetch({reset:true });    
+//     		  }});		  
+// 		  }})	
+// 		  
+		  this.aircraft.fetch({reset:true, async:false} );
+    	  this.pilots.fetch({reset:true, async:false} );
+    	  this.fees.fetch({reset:true, async:false} );
+    	  this.collection.fetch({reset:true });    
+		  
           this.listenTo(this.pilots, 'reset', this.render);                
 //          this.render();
           this.listenTo(this.collection, 'add', this.renderItem);
@@ -239,21 +302,48 @@
         },
         render: function(){
       	  this.collection.each(function(item){
-//			var pmodel = this.aircraft.findWhere({aircraft_id: item.get('aircraft_id')}).get("compitition_id");			
-//             alert     (JSON.stringify (pmodel));
 // NTFS Here we are basically doing a SQL join we are copying elements from the aircraft and pilots models into the
 // flight model so it can be displayed for basic human consumption. These values are for display only so 
 // we add the silent so they are not sent back to the server, (where they will be ignored anyway. )
    		  item.set({"p_first_name" : this.pilots.findWhere({pilot_id: parseInt(item.get('pilot_id'), 10) }).get("first_name")}, {silent: true }); 
    		  item.set({"p_last_name" :this.pilots.findWhere({pilot_id: parseInt(item.get('pilot_id'), 10) }).get("last_name")}, {silent: true } ); 
-   		  item.set({"glider" :this.aircraft.findWhere({aircraft_id: item.get('aircraft_id')}).get("compitition_id")}, {silent: true }); 
-   		  item.set({"towplane" : this.aircraft.findWhere({aircraft_id: item.get('tow_plane_id')}).get("registration")}, {silent: true }); 
-   		
+
+		  if(item.get('aircraft_id') !== '0'){
+   		    item.set({"glider" :this.aircraft.findWhere({aircraft_id: item.get('aircraft_id')}).get("compitition_id")}, {silent: true }); 
+   		  } else {
+   		  	item.set({"glider" : 'PVT'}); 
+   		  }
+		  if(item.get('tow_plane_id') !== '0'){
+   		    item.set({"towplane" : this.aircraft.findWhere({aircraft_id: item.get('tow_plane_id')}).get("registration")}, {silent: true }); 
+   		  } else {
+   		  	item.set({"towplane" : ''}); 
+   		  }
   		  this.renderItem(item);    	
       	}, this );
       },
-        renderItem: function(item){      
-            var expandedView = app.FlightView.extend({ localDivTag:this.localDivTag });
+      renderItem: function(item){    
+// convert SQL time to Javascript   
+			if(item.get('start_time') != null && item.get('start_time') != 0){
+      			var launch =  new Date((item.get('start_time')).replace(/-/g,"/"));
+				// adding 'inflight' class to the row. used below.... 
+             	var expandedView = app.FlightView.extend({ localDivTag:this.localDivTag, className: 'Row inflight'});      			
+// convert javascript time to SQL
+//      		alert(launch.toISOString().slice(0, 19).replace('T', ' '));
+      			item.set({'start_display_time':  launch.toLocaleTimeString('en-US',{ hour12:false})}, {silent: true });
+      		} else {
+      			item.set({'start_display_time': ""}, {silent: true });
+      		}
+      		if(item.get('end_time') != null && item.get('end_time') != 0){
+      			var landing =  new Date(item.get('end_time'));
+      			// add 'landed' class to this row... used below. 
+      			var expandedView = app.FlightView.extend({ localDivTag:this.localDivTag, className: 'Row landed'});
+      			item.set({'end_display_time':  landing.toLocaleTimeString('en-US', { hour12:false})}, {silent: true });
+      		} else {
+      			item.set({'end_display_time': ""}, {silent: true });
+      		}
+			if(expandedView === undefined ){
+            	var expandedView = app.FlightView.extend({ localDivTag:this.localDivTag, className: 'Row'});
+            }
             var itemView = new expandedView({
       	  		model: item
       		})
@@ -274,7 +364,6 @@
 //       		this.$el.append( itemView.render().el);   
          }
 	}); 
-
  
    $(function(){
 //     var today = new Date();
@@ -282,8 +371,7 @@
 // 	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 // 	var dateTime = date+' '+time; 	
 //    	$( "<h4>"+date+"</h4>" ).insertAfter( $(".datetime") );
-
-   
+  
    if (typeof cb_admin_tab !== 'undefined' ){
    		switch(cb_admin_tab){
    			case "flights" : 
@@ -295,7 +383,5 @@
  
    	console.log("not defined");}
    });
-
-
 
 })( jQuery );

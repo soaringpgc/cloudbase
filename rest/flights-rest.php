@@ -64,14 +64,10 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
 		$flights_table = $wpdb->prefix . "cloud_base_flight_sheet";	
 		
-// 	  $valid_fields = array('id'=>'s.id', 'flight_number'=>'s.flight_number' , 'flight_type'=>'s.flight_type', 
+// 	  $valid_fields = array('id'=>'s.id', 'flight_number'=>'s.flight_number' , 'flight_type'=>'s.flight_type', 'flightyear'=>'s.flightyear',
 //  	  'aircraft_id'=>'s.aircraft_id', 'pilot_id'=>'s.pilot_id',	'instructor_id'=>'s.instructor_id', 'tow_plane_id'=>'s.tow_plane_id', 
 //  	  'tow_pilot_id'=>'s.tow_pilot_id', 'launch'=>'s.start_time', 'landing'=>'s.end_time', 'compition_id'=>'t.compition_id', 'tow_plane'=>'t.registration', 
 //  	   'pilot'=>'a.display_name', 'instructor'=>'a.display_name', 'tow_pilot'=>'a.display_name'  );
-
-// 	  $sql = "SELECT {$select_string}  FROM {$flights_table} s wp_users p wp_users i wp_users t 
-// 			{$aircraft_table} a on s.aircraft_type=t.id inner join wp_users a on a.id = s.pilot_id WHERE s.pilot_id = p.id AND  s.instructor_id = i.id AND 
-//           s.tow_pilot_id = t.id " ;
 
 // 	  $sql = "SELECT  s.id, s.flight_number, s.flight_type, s.aircraft_id, a.compitition_id as glider, y.title as f_type, s.pilot_id, s.instructor_id,  s.tow_pilot_id, 
 // 	  p.display_name as pilot, i.display_name as instructor, t.display_name as tow_pilot FROM wp_cloud_base_flight_sheet s 
@@ -106,15 +102,15 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		}	
 	}	
 		
-	public function cloud_base_flights_post_callback( \WP_REST_Request $request) {
-	
+	public function cloud_base_flights_post_callback( \WP_REST_Request $request) {	
 		global $wpdb;
 		$fee_table = $wpdb->prefix . "cloud_base_tow_fees";	
 		$aircraft_table = $wpdb->prefix . "cloud_base_aircraft";	
 		$aircraft_type_table = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$flight_types_table = $wpdb->prefix . "cloud_base_flight_type";	
-		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
+//		$flight_numbers = $wpdb->prefix . "cloud_base_flight_numbers";			
 		$flights_table = $wpdb->prefix . "cloud_base_flight_sheet";	
+		$flightyear = date("Y");
 		
 		$ip_address =  $_SERVER['REMOTE_ADDR'];	
 			
@@ -173,7 +169,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 	  			return new \WP_Error( 'invalid tow pilot', esc_html__( 'That pilot is not an tow pilot.', 'my-text-domain' ), array( 'status' => 500 ) );				
 			} 
 	    } else{
-			$tow_pilot = null;  
+			$tow_pilot = 0;  
 	  	}	
 		if (!empty($request['tug_id'])){
 		// validates and sanitizes 
@@ -185,7 +181,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 	  			return new \WP_Error( 'invalid type', esc_html__( 'That aircraft does not exist.', 'my-text-domain' ), array( 'status' => 500 ) );
 	  		}
 	    } else{
-			$tug_id = null;  
+			$tug_id = 0;  
 	  	}
 		if (!empty($request['start_time'])){
 		// validates and sanitizes 
@@ -221,7 +217,7 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 	  	}
 	  		
 	// this will select the maximum flight number for this year. If it returns nothing, HAPPY NEW YEAR! 
-		$sql = "SELECT * FROM {$flight_numbers} WHERE flight_number = (SELECT MAX(flight_number) FROM {$flight_numbers}  WHERE year = YEAR(now()))";
+		$sql = "SELECT * FROM {$flights_table} WHERE flight_number = (SELECT MAX(flight_number)  WHERE flightyear = $flightyear)";
 	
 		$items = $wpdb->get_row( $sql, OBJECT);		
 		if( $wpdb->num_rows > 0 ) { 
@@ -229,19 +225,34 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 		} else {
 			$flight_number = 1; 
 		}
-		// add new flight number
-		$wpdb->insert($flight_numbers, array('year'=>date("Y"), 'flight_number'=>$flight_number));
-		 // add flight. 
-		$wpdb->insert($flights_table, array('flight_number'=> $flight_number, 'flight_type'=>$flight_type, 'aircraft_id'=>$aircraft_id,
-			'pilot_id'=>$pilot , 'flight_fee_id'=>$altitude ,'total_charge'=>$charge ,'instructor_id'=> $instructor_id ,'tow_plane_id'=>$tug_id,
-			'tow_pilot_id'=> $tow_pilot ,'start_time'=>$start_time,'end_time'=>$end_time ,'ip'=>$ip_address ,'notes'=>$flight_notes ,'valid_until'=>'' ));
-			
-			
-			
-			
-//		return new \WP_REST_Response ($items);
-//		wp_send_json(array('flight_number'=>$flight_number), 201 );
-	
+		// add flight. 
+
+
+		$sql =  $wpdb->prepare("INSERT INTO {$flights_table} ( flight_number, flightyear, flight_type, aircraft_id,
+			pilot_id , flight_fee_id, instructor_id, tow_plane_id, tow_pilot_id, start_time, end_time, ip, notes, valid_until)
+			VALUES(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %s, %s, null)",  
+			$flight_number, $flightyear, $flight_type, $aircraft_id, $pilot , $altitude , $instructor_id ,$tug_id,
+			 $tow_pilot ,$start_time, $end_time, $ip_address, $flight_notes);
+
+
+ $wpdb->insert($flights_table, array( 'flight_number'=>$flight_number, 'flightyear' =>$flightyear, 'aircraft_id'=>$aircraft_id, 'pilot_id'=>$pilot,
+  'flight_fee_id'=>$altitude, 'instructor_id'=>$instructor_id,   'tow_plane_id'=>$tug_id, 'tow_pilot_id'=>$tow_pilot, 
+  'start_time'=>$start_time, 'end_time'=> $end_time, 'ip'=>$ip_address, 'notes'=>$flight_notes, 'valid_until'=>null  ), 
+ 	 array('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%d', '%s', '%s') );
+
+// var_dump($sql);
+// die;
+						
+//		$wpdb->query($sql);			
+// read back 
+		$sql =  $wpdb->prepare("SELECT * FROM {$flights_table} WHERE flight_number =  %d AND flightyear = %d AND valid_until IS NULL" , $flight_number, $flightyear  );	
+		$items = $wpdb->get_row( $sql, OBJECT);	
+		if( $wpdb->num_rows > 0 ) {
+			return new \WP_REST_Response ($items);
+		} else {
+    		return new \WP_Error( 'Create Failed', esc_html__( 'Create failed. ', 'my-text-domain' ), array( 'status' => 400 ) );
+		}
+		
 		/* 
 			Process your POST request here.
 		*/

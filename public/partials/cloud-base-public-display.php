@@ -56,19 +56,21 @@
   	    <input type = "hidden"
           id = "id"
           size = "2"
-          value = "42"
           name = "id"/>   
-        <div class="form-row"> <label for="glider">Glider: </label>
-        <select name="glider" id="glider" form="editflights" >');
+        <div class="form-row"> 
+        <label for="glider">Glider: </label>
+        <select name="aircraft_id" id="aircraft_id" form="editflights" >
+        <option value="" selected>Select Aircraft</option>');
      	foreach($aircraft as $key){ 	
      		if ($key->type == 'Glider'){
      			echo '<option value=' . $key->aircraft_id . '>'. $key->compitition_id . '</option>';
      		}
          };     
 
-        echo ( '</select>  </div> <div class="form-row">   
+        echo ( ' <option value="0" >PVT</option>
+        </select>  </div> <div class="form-row">   
         <label for="pilots">Pilot: </label>
-        <select name="pilot" id="pilot" form="editflights">
+        <select name="pilot_id" id="pilot_id" form="editflights">
         <option value="" selected>Select Member</option>');
      	foreach($pilots as $key){ 	
      		echo '<option value=' . $key->ID . '>'. $key->last_name . ', '. $key->first_name . '</option>';
@@ -118,6 +120,7 @@
         echo ( '</select></div> ');
  ?>     
         <button  id="add"  class="view">ADD</button>
+        <button  id="update"  class="edit">Update</button>
 		</div></form> 
 		
 <?php     
@@ -139,7 +142,7 @@
         </div>
         <div class="Heading">
             <div class="Cell0">
-                <p>Flight #</p>
+                <p>Flight</p>
             </div>
            <div class="Cell">
                 <p>Glider</p>
@@ -147,8 +150,8 @@
             <div class="Cell2">
                 <p>Pilot</p>
             </div>
-            <div class="Cell0">
-                <p></p>
+            <div class="Cell">
+                <p>Action</p>
             </div>
             <div class="Cell">
                 <p>Time</p>

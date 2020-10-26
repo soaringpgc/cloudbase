@@ -40,35 +40,54 @@
 .row > h3 {
 	flex: 1;
 }
-
 .buttonlaunch {
   background-color: #4CAF50; /* Green */
   border: none;
   color: white;
-  padding: 15px 15px;
+  padding: 12px 12px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  width: 10px;
+  font-size: 10px;
+  width: 5px;
   border-radius: 50%;
 }
 .buttonlanding {
-  background-color: red; /* Green */
+  background-color: red; /* red */
   border: none;
   color: white;
-  padding: 15px 15px;
+  padding: 12px 12px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  width: 10px;
+  font-size: 10px;
+  width: 5px;
   border-radius: 50%;
 }
+
 .edit{
 	display: none;
 }
+.viewstop{
+	display: none;
+}
 
+.viewstart{
+	display: inline;
+}
+.inflight .viewstart {
+	display: none;
+}
+.inflight .viewstop {
+	display: inline;
+}
+
+.landed .viewstart  {
+	display: none;
+}
+.landed .viewstop  {
+	display: none;
+}
 
 // table css  
  .Table

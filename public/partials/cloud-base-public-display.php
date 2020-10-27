@@ -134,39 +134,38 @@
      	Echo 'Please log in. ';
      }
 ?>
-</div>
-    <div class="aside"> 
-    <div  class="TowFee Table" id="flights">
-        <div class="Title ">
-            <p>Today's Flights <?php echo date("Y/m/d") ?></p>
-        </div>
-        <div class="Heading">
-            <div class="Cell0">
-                <p>Flight</p>
-            </div>
-           <div class="Cell">
-                <p>Glider</p>
-            </div>
-            <div class="Cell2">
-                <p>Pilot</p>
-            </div>
-            <div class="Cell">
-                <p>Action</p>
-            </div>
-            <div class="Cell">
-                <p>Time</p>
-            </div>
-             <div class="Cell">
-                <p>Altitude</p>
-            </div>
-            <div class="Cell">
-                <p>Tug</p>
-            </div>
-        </div>
-    </div>
-</div>
-    </div>
-
+     </div>
+         <div class="aside"> 
+         <div  class="TowFee Table" id="flights">
+             <div class="Title ">
+                 <p>Today's Flights <?php echo date("Y/m/d") ?></p>
+             </div>
+             <div class="Heading">
+                 <div class="Cell0">
+                     <p>Flight</p>
+                 </div>
+                <div class="Cell">
+                     <p>Glider</p>
+                 </div>
+                 <div class="Cell2">
+                     <p>Pilot</p>
+                 </div>
+                 <div class="Cell">
+                     <p>Action</p>
+                 </div>
+                 <div class="Cell">
+                     <p>Time</p>
+                 </div>
+                  <div class="Cell">
+                     <p>Altitude</p>
+                 </div>
+                 <div class="Cell">
+                     <p>Tug</p>
+                 </div>
+             </div>
+         </div>
+     </div>
+   </div>
 <!-- 
 	<div class="footer">Today's Flights </div>
   </div>

@@ -56,6 +56,7 @@
 	});
 
 	app.Flight = app.Model.extend({
+//		idAttribute : "flight_number",
 		initialize: function(){
 			_.extend(this, new Backbone.Workflow(this, {attrName:'status'})
 			);
@@ -133,10 +134,10 @@
 		initialize: function(){
     		this.model.on('change', this.render, this);
   		},
-  		set_status: function(){
-  			alert('here');
-  		 	this.$el.addClass('inflight');
-  		},
+//   		set_status: function(){
+//   			alert('here');
+//   		 	this.$el.addClass('inflight');
+//   		},
 		events:{
 			'dblclick label' : 'update',
 			'click .buttonlaunch' : 'launch_time',
@@ -177,17 +178,17 @@
 		},
 		landing_time: function(){
 			var landing = new Date(); 
-			alert (landing);
+//			alert (landing);
 			this.model.set({'end_time': landing.toISOString().slice(0, 19).replace('T', ' ') });								
 			var launch =  new Date((this.model.get('start_time')).replace(/-/g,"/"));
-			alert(launch);
+//			alert(launch);
 			var temptime = Math.abs(landing.getTime()-launch.getTime())/3.6e6; 
 			var hours = Math.round(temptime *100) / 100 ;
 			
 //			this.model.set({'start_display_time': landing.toLocaleTimeString('en-US',  {hour12:false})});
 			this.model.set({'start_display_time': hours});
 			this.$el.addClass('landed'); 
-			this.$input.focus();	
+			this.model.save();	
 		}
 	});
 	app.FlightView = app.ModelView.extend({
@@ -323,7 +324,7 @@
       },
       renderItem: function(item){    
 // convert SQL time to Javascript   
-			if(item.get('start_time') != null && item.get('start_time') != 0){
+			if(item.get('start_time') != null){
       			var launch =  new Date((item.get('start_time')).replace(/-/g,"/"));
 				// adding 'inflight' class to the row. used below.... 
              	var expandedView = app.FlightView.extend({ localDivTag:this.localDivTag, className: 'Row inflight'});      			

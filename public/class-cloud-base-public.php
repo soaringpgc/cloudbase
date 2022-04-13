@@ -73,7 +73,8 @@ class Cloud_Base_Public {
 		 * class.
 		 */
 		wp_register_style( 'datepicker',  plugins_url('/Cloud-Base/includes/datepicker.css'));
-		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-public.css', array(), $this->version, 'all' );
+//		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'datepicker');
 	}
 
 	/**
@@ -99,7 +100,7 @@ class Cloud_Base_Public {
 	    wp_register_script( 'validation',  plugins_url('/Cloud-Base/includes/backbone-validation.js'));
 	    
 //	    wp_register_script( 'backbone-relational',  plugins_url('/Cloud-Base/includes/backbone-relational.js'));
-     	wp_register_script( 'templates',  plugins_url('/Cloud-Base/public/js/templates.js'));
+     	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
 //
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api', 'zepto' ,  'backbone', 'underscore',
 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );

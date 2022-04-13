@@ -15,18 +15,32 @@ if( current_user_can( 'manage_options' ) ) {
             size = "2"
             value = ""
             name = "id"/>
+        <div class="hform">         
+       <label for="title" >Title:</label>    
         <input type = "text"
             id = "title"
             size = "8"
             title = "Type of flight." 
             name = "title"/>
+        </div>   
+        <div class="hform">     
+        <label for="description" >Description:</label>    
+        <input type = "text"
+            id = "description"
+            size = "20"
+            title = "Type of flight." 
+            name = "Description"/>
+        </div>           
         <input type = "hidden"
             id = "active"
             size = "2"
             value = ""
             name = "active"/> 
-        <button id="add" class="view">Add</button>
-        <button id="update" class="edit">Update</button>
+        <br style="clear:both;">
+        <div>
+          <button id="add" class="view">Add</button>
+          <button id="update" class="edit">Update</button>
+        </div>
        </div>
     </form> </DIV>');
 }    
@@ -40,8 +54,11 @@ if( current_user_can( 'manage_options' ) ) {
         <div class="Cell"  >
             <p>ID</p>
         </div>
-        <div class="Cell"  style="width: 13.3em">
+        <div class="Cell"">
             <p>Title</p>
+        </div>
+                <div class="Cell">
+            <p>Description</p>
         </div>
     </div>
 </div>

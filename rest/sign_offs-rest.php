@@ -104,6 +104,13 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 				$start_date->modify('+2 year');
 				$start_date->modify('last day of this month');
 			break;
+			case "dues":
+				$end_date = new \DateTime($fixed_date );
+				$year = date("Y") + 1 ;		
+				// create a new date using the month and day passed in Start Date and either 
+				// a year one or two years from now depending on what month it is now. 
+				$start_date = new \DateTime($end_date->format('m')."/". $end_date->format('d')."/".$year);
+				break;
 			default:
 		}	
 		return($start_date);	

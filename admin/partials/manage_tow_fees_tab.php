@@ -15,48 +15,59 @@ if( current_user_can( 'manage_options' ) ) {
             size = "2"
             value = ""
             name = "id"/>
-        <label for="altitude">Altitude');
+        <div class="hform">            
+          <label for="altitude">Altitude');
     		  if (get_option("glider_club_tow_units") == "m"){
     		  	echo '(m)' ;
     		  } else {
     		  	echo '(ft)' ;
     		  }          
-  echo (' </label>
-        <input type = "text"
+          echo (' </label>
+          <input type = "text"
             id = "altitude"
             name = "altitude"
             size = "8"
             title = "Rlease altitude Above Ground Level(AGL)." 
             name = "altitude"/>
-        <label for="charge">Charge: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">
+          <label for="charge">Charge: </label>
+          <input type = "number"
             step="0.01"
             id = "charge"
             name = "charge"
             style="width: 7em"
             title = "Charge for given altitude." />
-        <label for="hookup">Base fee: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">
+          <label for="hookup">Base fee: </label>
+          <input type = "number"
             step="0.01"
             id = "hook_up"
             name = "hook_up"
             style="width: 7em"
             value ="0"
             title = "base charge." />   
-        <label for="hourly_fee">Hourly: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">
+          <label for="hourly_fee">Hourly: </label>
+          <input type = "number"
             step="0.01"
             id = "hourly"
             name = "hourly"
             style="width: 7em"
             value ="0"
-            title = "additional hourly charge." />          
-        <button id="add" class="view">Add</button>
-        <button id="update" class="edit">Update</button>
-       </div>
+            title = "additional hourly charge." />  
+          </div>          
+		 <br style="clear:both;">
+         <div>
+          <button id="add" class="view">Add</button>
+          <button id="update" class="edit">Update</button>
+         </div>
     </form>');
 }    
 ?>    
+</div>
 
 <div  class="Table">
     <div class="Title">

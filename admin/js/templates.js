@@ -33,6 +33,7 @@ var feeitemtemplate = _.template(`
    <div class="Cell"  id = "id"> <%= id %></div>
    <div>
      <label class="Cell"><%= title %></label>
+     <label class="Cell"><%= description %></label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);
@@ -49,7 +50,6 @@ var feeitemtemplate = _.template(`
    <div class="hiding" > <%= id %></div>
    <div class="Cell" > <%= aircraft_id %></div>
    <div class="hiding" > <%= aircraft_type %></div>
-
    <div >
        <label class="Cell" > <%= type   %></label>
        <label class="Cell" > <%= registration    %></label>

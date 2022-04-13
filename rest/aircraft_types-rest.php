@@ -83,13 +83,9 @@ class Cloud_Base_Types extends Cloud_Base_Rest {
 
 		if( $wpdb->num_rows > 0 ) {
 			return new \WP_REST_Response ($items);
-//			wp_send_json($items);
  		 } else {
-// 		 	wp_send_json(array('message'=>'no Types avaliable.'), 204 );
 			return new \WP_Error( 'no_types', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
-		// should not get here normally but if it happens.
-//			wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );		
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 public function cloud_base_types_post_callback( \WP_REST_Request $request) {
@@ -99,7 +95,6 @@ public function cloud_base_types_post_callback( \WP_REST_Request $request) {
 		if (!empty($request['title'])){
 			$title = $request['title'];
 		} else {
-//			wp_send_json_error(array('message'=>'missing Type.'), 400 );				
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Type.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}				
 // generate new type id number	  
@@ -144,7 +139,7 @@ public function cloud_base_types_post_callback( \WP_REST_Request $request) {
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
 		if( $wpdb->num_rows > 0 ) {
-			return rest_ensure_response( 'Already exists id= '. $items->id );
+			return new \WP_Error( 'duplicate_record', esc_html__( 'Duplicate Record.', 'my-text-domain' ), array( 'status' => 409 ) );
  		 } else {		 
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title, type_id, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 		 	
 		 	VALUES ( %s, %d, %d, %f, %f, %f, %f, null) " , $title, $type_id, $sort_code, $base_charge, $first_hour, $each_hour, $min_charge);			 	 		 

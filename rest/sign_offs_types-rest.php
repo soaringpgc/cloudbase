@@ -22,7 +22,8 @@
 class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 
 	public function register_routes() {	              
-     $this->resource_path = '/sign_off_types' . '(?:/(?P<id>[\d]+))?';    register_rest_route( $this->namespace, $this->resource_path, 
+     $this->resource_path = '/sign_off_types' . '(?:/(?P<id>[\d]+))?';    
+     register_rest_route( $this->namespace, $this->resource_path, 
         array(	
       	  array(
       	    'methods'  => \WP_REST_Server::READABLE,
@@ -65,6 +66,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 // authority array is stored in WP options, It is created/updated on activation 
 
 		$sql = "SELECT * FROM {$table_name} WHERE `active` = 1 ";
+		$sql = "SELECT * FROM {$table_name} ";
  		$items = $wpdb->get_results( $sql, OBJECT);
 		if( $wpdb->num_rows > 0 ) {
 			foreach($items as $k=> $v){
@@ -74,7 +76,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 // likewise for the period. sending both dthe period and period lable. 
 // kinda a pain as these two arrays need to be in two different locations. 			
 			$items[$k]->period_label =  $this->value_lable_period[$v->period];
-			}				
+			}			
 			return new \WP_REST_Response ($items);
  		 } else {
 			return new \WP_Error( 'no_types', esc_html__( 'no Types avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );

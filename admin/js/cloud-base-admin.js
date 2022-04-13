@@ -29,6 +29,8 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 	 $(function(){
+// hide the expire date unless fixed date is selected.
+	 	$("#expire_date").hide(); 	
 	 var app = app || {};
 
 //   	$(".calendar").mouseenter(function(){	 
@@ -37,9 +39,10 @@
   		 $('.calendar').datepicker("setDate", new Date());
   	 });
 
+
 // show the expire date filed if fixed date is selected. 
 		$("#eff_period").mouseleave(function(){
-  			if ( ($("#eff_period").val() === "fixed")) {
+  			if ( ($("#eff_period").val() === "fixed") || ($("#eff_period").val() === "dues") ) {
 		  		$("#expire_date").show();
   			} else {
 	    		$("#expire_date").hide(); 	
@@ -52,8 +55,7 @@
   			} else {
 	    		$("#expire_date").hide(); 	
  			}
-		 })	;
-
+		 })	;   		 		 	 
 
 //NTFS: need to use `` or get unexpected EOF error. 	
 // needs to be here rather than 'includes' because templates are compiled into 
@@ -212,10 +214,10 @@
  		},	   
 	});
 	app.AircraftView = app.ModelView.extend({
-	        template: aircrafttemplate,     
+	    template: aircrafttemplate,     
 	});
 	app.TowFeeView = app.ModelView.extend({
-	        template: feeitemtemplate,
+	    template: feeitemtemplate,
 	});
 	app.FlightTypeView = app.ModelView.extend({
 	    template: flighttypetemplate,
@@ -268,6 +270,13 @@
       	});
 //  alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
+      	// clean out the form:
+      		$(this.localDivTag).children('input').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
+      		$(this.localDivTag).children('select').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
       },
       updateItem: function(e){     	
 		e.preventDefault();
@@ -291,13 +300,13 @@
 //      	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {wait: true});
-// clean out the form:
-//       		$(this.localDivTag).children('input').each(function(i, el ){
-// 				$('#'+el.id).val('');
-//       		});       
-//       		$(this.localDivTag).children('select').each(function(i, el ){
-// 				$('#'+el.id).val('');
-//       		});       
+	// clean out the form:
+      		$(this.localDivTag).children('input').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
+      		$(this.localDivTag).children('select').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});       
 		$("div.editform").removeClass('editing');	
       	}
 	});
@@ -404,7 +413,7 @@
    			break;
    			case "aircraft" : new app.AircraftsView();
    			break;
-   			case "sign_offs" : new app.SignOffTypesView();
+   			case "sign_off_types" : new app.SignOffTypesView();
    			break;
    		}
    	} else {

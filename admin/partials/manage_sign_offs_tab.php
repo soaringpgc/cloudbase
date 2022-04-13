@@ -1,120 +1,87 @@
 <br>
 <script language="JavaScript">
-	var cb_admin_tab = "sign_offs";
+	var cb_admin_tab = "sign_off_types";
 </script>
 
 <div style="display:inline-block"  align:left id="sign_off_types"  class="sign_off_type editform" >
 <?php 			
 if( current_user_can( 'manage_options' ) ) {	
-  echo('     <h3>Sign Offs</h3><DIV>
+  echo('<h3>Sign Offs</h3>
     <form id="addsign_off_type" action="#" >
-    	<div>
       	<input type = "hidden"
             id = "id"
             size = "2"
             value = ""
             name = "id"/>
-    	<label for="charge">Sign off: </label>
+        <div class="hform">    
+    	<label for="signoff_type" >Sign off:</label>
         <input type = "text"
             id = "signoff_type"
-            size = "20"
+            size = "10"
             title = "signoff." 
             name = "signoff_type"/>
-			<label for "authority">Authority</label>
+        </div>
+        <div class="hform">
+		<label for "authority">Authority</label>
 			<select name ="authority" id="authority"  >');
-
-// 				if (get_option ('glider_club_short_name') == 'PGC'){
-// 					$value_label_authority = array("read"=>"Self", "edit_gc_dues"=>"Treasurer", "edit_gc_operations"=>"Operations", 
-// 						"edit_gc_instruction"=>"CFI-G", "chief_flight"=>"Chief CFI-G", "chief_tow"=>"Chief Tow Pilot", "edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god");		
-// 				} else {
-// 					$value_label_authority = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
-// 						"cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");				
-// 				}
-
-				// authority array is stored in WP options, It is created/updated on activation 
+			// authority array is stored in WP options, It is created/updated on activation 
 			$value_label_authority = get_option('cloud_base_authoritys');
 
-		foreach ($value_label_authority  as $key => $authority ){
-			echo ('<option value="' . $key . '">' . $authority . '</option>');
-		}	
-							
-		$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
-		echo ('</select>
-		  <label>No Fly</label>
+			foreach ($value_label_authority  as $key => $authority ){
+				echo ('<option value="' . $key . '">' . $authority . '</option>');
+			}	
+
+		echo ('</select></div>
+		<div style="float:left;margin-right:20px;">
+		<label for="no_fly">No Fly</label>
 		  <input type="checkbox" name="no_fly" id="no_fly" value=false class="checked_class"/>
-		  </select> 
-		<label>Apply to existing</label>
-		<input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
-		<br><label>Effective Period</label>
+		</div>
+		
+		<div class="hform">
+		<label for="period">Effective Period</label>
 		<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ');
+		$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "dues"=>"Dues", "no_expire"=>"No expire", 
+		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );				
 		foreach ($value_lable_period  as $key => $period ){
 			echo ('<option value="' . $key . '">' . $period . '</option>');
 		}	
 		echo ('</select >
-	  <label>Expire Date</label>
-    	 <input type = "text"
-          id = "expire"
-          class = "calendar"
-          name ="expire"
-          size = "10"
-          title = "Enter the date the sign off expires - fixed date only"
-         />        
+		</div>	
+		<div id="expire_date" class="hform"">
+	   	   <label for="expire">Expire Date</label>
+    	   <input type = "text"
+            id = "expire"
+            class = "calendar"
+            name ="expire"
+            size = "10"
+            title = "Enter the date the sign off expires - fixed date only"/> 
+         </div> 
+         <div>
+         	<label for="applytoall">Apply to all members</label>
+			 <input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
+		 </div>
+		 <br style="clear:both;">
+		 <div>
          <button id="add" class="view">Add</button>
- 		<button id="update" class="edit">Update</button>
-			</div>
-		</form></DIV>				
+ 		 <button id="update" class="edit">Update</button>
+		</div>
+		</form>			
+	');
+}		
+?>  
 
-		');
-}				//not implemented yet....
-?>   		
-<!-- 
-         	</div>
- -->
-
-<div  class="Table">
-    <div class="Title">
-        <p>Sign Off Types</p>
-    </div>
-    <div class="Heading">
-        <div class="Cell"  >
-            <p>ID</p>
-        </div>  
-        <div class="Cell2"  >
-            <p>Title</p>
-        </div>
-         <div class="Cell2"  >
-            <p>Authority</p>
-        </div>      
-        <div class="Cell"  >
-            <p>Period</p>
-        </div>      
-        <div class="Cell"  >
-            <p>Date</p>
-        </div>      
-        <div class="Cell0"  >
-            <p>No Fly</p>
-        </div>      
-        <div class="Cell0"  >
-            <p>All</p>
-        </div>      
-    </div>
-</div>
-
-</div>
-
-    
+<h3>Current SignOff types</h3>
+ 		
+</div>    
     <h4>Instructions</h4>
-<p>    Sort code determines if an aircraft will be listed in the glider(sort code 1) list
-    or tow plane (sort code 2) lists. Future type of aircraft will use new (3+) sort codes. 
-</p><p>    
-    You can not delete a aircraft type if an aircraft is assigned to that type. 
-</p><p>  
-    To edit an existing item double click anywhere in that line. The data will be copied 
-    to the form at the top of the page and the button will change to "Update" click on
-    Update to save the new values.  
-</p><p>      
-    Fields are provided for charging by aircraft type. Base charge, first hour, each houe
-    and minimum charge fields are provided. How they are used is up to you. 
-</p>    
-
+    <p>
+    	Fill in the Sign off in the Signoff field, example: "FAA Biannual Review." For Authority the role that can sign off; Treasurer, CFI-G, etc.
+    Check "No  Fly" if lack of this sign off will put the person on the "No Fly" list. For Effective Period; When the signoff expires: Yearly(12 months from sign off)
+    Yearly-EOM(Yearly but to the end of the Month), Biennial(24 months), Biennial-EOM,(24 months + end of Month), No Expire or "Fixed Date". If "Fixed Date" is selected
+    a new field will appear. Enter the Month and Day of the year the sign off expires. Example: Dues expires March 31 (03/31) of each year. Check "Apply to Existing" if this
+    new sign off should be applied to current members. 
+    </p>
+    <p>
+    As signoffs are created they will be listed below. clicking on the "ID" of a row will populate the above form with the existing information. The submit button will 
+    change to "Update Changes." This allow an existing signoff to be corrected or updated. You can not delete a signoff once it has been created. 
+    </p>

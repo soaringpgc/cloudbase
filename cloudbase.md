@@ -188,7 +188,7 @@ Update a user sign off. Sign off Id, Effective date. Authority will be current l
 
 Delete a user sign off. Sign off Id, Authority will be current logged in user. (assuming curent user is authorized.)  
 
-###/sign\_off\_types
+###/sign_off_types
 Types of sign offs avaliable. 
 ####GET
 With no parameters will return a list of all sign offs. If an ID is supplies will return a details of a specific sign off. 

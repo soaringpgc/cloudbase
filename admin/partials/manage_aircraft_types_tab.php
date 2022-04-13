@@ -21,52 +21,67 @@ if( current_user_can( 'manage_options' ) ) {
             size = "2"
             value = ""
             name = "type_id"/>
-    	<label for="charge">Aircraft type: </label>
-        <input type = "text"
+        <div class="hform">      
+    	 <label for="title">Aircraft type: </label>
+         <input type = "text"
             id = "title"
             size = "10"
             title = "Type of Aircraft ." 
             name = "title"/>
-        <label for="charge">Sort code: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">      
+          <label for="sort_code">Sort code: </label>
+          <input type = "number"
             step="1"
             min="1"
             id = "sort_code"
             name = "sort_code"
             style="width: 3em"
             title = "Charge for given altitude." />
-        <label for="hookup">Base fee: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">      
+          <label for="base_charge">Base fee: </label>
+          <input type = "number"
             step="0.01"
             id = "base_charge"
             name = "base_charge"
             style="width: 5em"
             value ="0"
             title = "base charge." />   
-        <label for="first_hour">First Hour: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">      
+          <label for="first_hour">First Hour: </label>
+          <input type = "number"
             step="0.01"
             id = "first_hour"
             name = "first_hour"
             style="width: 5em"
             value ="0"
             title = "first hour charge." /> 
-        <label for="each_hour">Each Hour: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">      
+          <label for="each_hour">Each Hour: </label>
+          <input type = "number"
             step="0.01"
             id = "each_hour"
             name = "each_hour"
             style="width: 5em"
             value ="0"
             title = "additional hourly charge." /> 
-        <label for="each_hour">Min Charge: </label>
-        <input type = "number"
+        </div>
+        <div class="hform">      
+
+          <label for="min_charge">Min Charge: </label>
+          <input type = "number"
             step="0.01"
             id = "min_charge"
             name = "min_charge"
             style="width: 5em"
             value ="0"
             title = "miminum charge." /> 
+        </div>
+        <br style="clear:both;">
+        <div>
         <input type = "hidden"
             id = "active"
             size = "2"
@@ -74,6 +89,7 @@ if( current_user_can( 'manage_options' ) ) {
             name = "active"/>    
         <button id="add" class="view">Add</button>
         <button id="update" class="edit">Update</button>
+        </div>
      </div>
     </form></DIV>');
 }

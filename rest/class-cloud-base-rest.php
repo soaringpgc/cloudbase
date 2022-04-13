@@ -70,7 +70,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	}
 
 	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
+				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date", "dues"=>"Dues" );		
 
 //	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
 //				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");
@@ -114,7 +114,13 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	// This is a black-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
     	return true;	
 	} 
-	 
+	public function cloud_base_dummy_access_check(){
+	// put your access requirements here. You might have different requirements for each
+	// access method. I'm showing only one here. 
+	// do not use this in production!!!!
+	
+     	return true;	
+	} 	 
 	public function cloud_base_treasurer_access_check(){
 	// put your access requirements here. You might have different requirements for each
 	// access method. I'm showing only one here. 
@@ -186,6 +192,13 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 				$start_date->modify('+2 year');
 				$start_date->modify('last day of this month');
 			break;
+			case "dues":
+				$end_date = new \DateTime($fixed_date );
+				$year = date("Y") + 1 ;		
+				// create a new date using the month and day passed in Start Date and either 
+				// a year one or two years from now depending on what month it is now. 
+				$start_date = new \DateTime($end_date->format('m')."/". $end_date->format('d')."/".$year);
+				break;
 			default:
 		}	
 		return($start_date);

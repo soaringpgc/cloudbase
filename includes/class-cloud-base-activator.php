@@ -31,7 +31,7 @@ class Cloud_Base_Activator {
 	 */
 	public static function activate() {
 	
-		$min_php = '5.6.0';
+		$min_php = '7.4.0';
 		// Check PHP Version and deactivate & die if it doesn't meet minimum requirements.
 		if ( version_compare( PHP_VERSION, $min_php, '<' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
@@ -46,10 +46,10 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.7;
+   	$db_version = 0.8;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
-   	if (get_option("cloud_base_db_version") != $db_version){
+   	if (get_option("cloud_base_db_version") != $db_version){ 
       $table_name = $wpdb->prefix . "cloud_base_aircraft";
       // create aircraft table
       $sql = "CREATE TABLE ". $table_name . " (
@@ -143,6 +143,7 @@ function create_cb_database(){
 	  pilot_id int(10) UNSIGNED NOT NULL,
 	  flight_fee_id int(10) UNSIGNED,
 	  total_charge decimal(5,2),
+	  charge_detail VARCHAR(500),
 	  start_time datetime DEFAULT NULL ,
 	  end_time datetime DEFAULT NULL ,
 	  valid_until datetime DEFAULT NULL,
@@ -161,7 +162,7 @@ function create_cb_database(){
 	$sql = "CREATE TABLE ". $table_name . " (
 	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 	  title char(10),
-	  description varchar(40) NOT NULL,
+	  description varchar(40),
 	  active bit(1) DEFAULT 1,
       PRIMARY KEY (ID)
 	  );" . $charset_collate  . ";";

@@ -129,8 +129,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	}
     	// This is a black-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
     	return true;	
-	}  
-	
+	}  	
 	public function cloud_base_members_access_check(){
 	// put your access requirements here. You might have different requirements for each access method. 
 	// can read, at least a subscriber. 	
@@ -161,8 +160,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	}
     	// This is a white-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
     	return true;	
-	}
-	
+	}	
 	public function cb_expire_date($start_date, $period, $fixed_date ){
 	// function to calculate the expire date. 
 			switch($period ){

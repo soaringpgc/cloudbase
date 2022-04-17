@@ -3,7 +3,7 @@
  * included in this file.
  */
  
-// table css  
+/* table css   */ 
  .Table
 {
     display: table;
@@ -69,22 +69,30 @@
 ul { 
 list-style-type: none;
 }
+
+
 .editing .view {
 	display: none;
 }
-.edit{
+
+/* 
+this is causing "Activate" in the plugins page to vanish
+I suspect there is a edit class used by wordpress currently
+we are not using this. if we do need to use it suggest remanmin
+cb_edit. */
+.cb_edit{
 	display: none;
 }
+
 .hiding{
 	display: none;
 }
-.editing .edit {
+.editing .cb_edit {
 	display: inline;
 }
 // background color for datapicker. 
 .ui-datepicker {
   background: #FFFFFF ;
-
 }
 div-table {
   display: table;         

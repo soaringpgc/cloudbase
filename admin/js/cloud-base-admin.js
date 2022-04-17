@@ -34,14 +34,14 @@
 	 var app = app || {};
 
 //   	$(".calendar").mouseenter(function(){	 
-	 $(".calendar").click(function(){
+	 $(".calendar").on( "click", function(){
   		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd', showAnim: "slideDown"}); 
   		 $('.calendar').datepicker("setDate", new Date());
   	 });
 
 
 // show the expire date filed if fixed date is selected. 
-		$("#eff_period").mouseleave(function(){
+		$("#eff_period").on( "mouseleave", function(){
   			if ( ($("#eff_period").val() === "fixed") || ($("#eff_period").val() === "dues") ) {
 		  		$("#expire_date").show();
   			} else {

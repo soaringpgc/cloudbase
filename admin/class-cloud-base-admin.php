@@ -72,10 +72,11 @@ class Cloud_Base_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_register_style( 'cloudbase_css',  plugins_url('/cloudbase/admin/css/cloud-base-admin.css'));
-		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
-		wp_enqueue_style( 'datepicker');
-		wp_enqueue_style( 'cloudbase_css');
+	
+ 		wp_register_style( 'cloudbase_css',  plugins_url('/cloudbase/admin/css/cloud-base-admin.css'));
+ 		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
+ 		wp_enqueue_style( 'datepicker');
+ 		wp_enqueue_style( 'cloudbase_css');
 	}
 
 	/**

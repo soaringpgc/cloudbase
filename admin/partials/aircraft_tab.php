@@ -21,7 +21,6 @@ if( current_user_can( 'manage_options' ) ) {
           size = "2"
           value = ""
           name = "aircraft_id"/>
-
         <div class="hform">      
          <label for="aircraft_type">Type: </label>
          <select name="aircraft_type" id="aircraft_type" form="addAircraft">');
@@ -69,7 +68,7 @@ if( current_user_can( 'manage_options' ) ) {
   	     <br style="clear:both;">
   	     <div>
         <button id="add" class="view">Add</button>
-        <button id="update" class="edit">Update</button>
+        <button id="update" class="cb_edit">Update</button>
       </div>
      </div>
   </form> ');

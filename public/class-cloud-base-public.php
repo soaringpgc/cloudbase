@@ -72,9 +72,11 @@ class Cloud_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_register_style( 'datepicker',  plugins_url('/Cloud-Base/includes/datepicker.css'));
+		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
 //		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-public.css', array(), $this->version, 'all' );
+ 		wp_register_style( 'cloudbase_public_css',  plugins_url('/cloudbase/public/css/cloud-base-public.css'));
 		wp_enqueue_style( 'datepicker');
+		wp_enqueue_style( 'cloudbase_public_css');
 	}
 
 	/**
@@ -95,9 +97,9 @@ class Cloud_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-	    wp_register_script( 'zepto',  plugins_url('/Cloud-Base/includes/zepto.js'));
-	    wp_register_script( 'workflow',  plugins_url('/Cloud-Base/includes/workflow.js'));
-	    wp_register_script( 'validation',  plugins_url('/Cloud-Base/includes/backbone-validation.js'));
+	    wp_register_script( 'zepto',  plugins_url('/cloudbase/includes/zepto.js'));
+	    wp_register_script( 'workflow',  plugins_url('/cloudbase/includes/workflow.js'));
+	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));
 	    
 //	    wp_register_script( 'backbone-relational',  plugins_url('/Cloud-Base/includes/backbone-relational.js'));
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));

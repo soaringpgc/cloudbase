@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Cloud Base
  * Plugin URI:        http://ifrstudent.com/cloud-base/
- * Description:       This Base module for Cloud Base - A module for managin Glider Clubs.
+ * Description:       This Base module for Cloud Base - A module for managing Glider Club aircraft and flights.
  * Version:           1.0.0
  * Author:            Philadelphia Glider Council 
  * Author URI:        http://example.com/

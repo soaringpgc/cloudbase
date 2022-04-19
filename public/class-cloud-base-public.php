@@ -109,7 +109,7 @@ class Cloud_Base_Public {
 
 	//localize data for script
 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(
-			'root' => esc_url_raw( rest_url() ),
+			'root' => esc_url_raw( get_rest_url() ),
 			'nonce' => wp_create_nonce( 'wp_rest' ),
 			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
 			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),

@@ -97,12 +97,12 @@ class Cloud_Base_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-//     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
+     	wp_register_script( 'backforms',  plugins_url('/Cloud-Base/includes/backform.js'));
         wp_register_script( 'cloudbase_admin_templates',  plugins_url('/cloudbase/admin/js/templates.js'));
 
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
 		array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'cloudbase_admin_templates'), $this->version, false );
+		 'jquery-ui-datepicker', 'cloudbase_admin_templates', 'backforms'), $this->version, false );
 
 	//localize data for script
 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(

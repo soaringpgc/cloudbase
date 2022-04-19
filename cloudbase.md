@@ -2,7 +2,7 @@
 
 CloudBase is a plugin for Wordpress. All authentication is provided by Wordpress.
 Basic user interface is performed thru Wordpress or the Wordpress REST api
-CloudBase is an extension of the Wordpress API ie: wprd[ress/wp-json/cloudbase/v1/...
+CloudBase is an extension of the Wordpress API ie: wordpress/wp-json/cloudbase/v1/...
 
 ##This is version 1.0 of the interface.
 

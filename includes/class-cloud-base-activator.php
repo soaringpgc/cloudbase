@@ -46,7 +46,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.8;
+   	$db_version = 0.81;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){ 
@@ -64,6 +64,7 @@ function create_cb_database(){
       	captian_id int(10),
       	annual_due_date date DEFAULT NULL,
       	registration_due_date date DEFAULT NULL,
+      	date_updated datetime DEFAULT NULL,
       	valid_until datetime DEFAULT NULL,
       	PRIMARY KEY  (id)
       );" . $charset_collate  . ";";

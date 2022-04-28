@@ -51,7 +51,7 @@ var feeitemtemplate = _.template(`
    <div class="Cell" > <%= aircraft_id %></div>
    <div class="hiding" > <%= aircraft_type %></div>
    <div >
-       <label class="Cell" > <%= type   %></label>
+    
        <label class="Cell" > <%= registration    %></label>
        <label class="Cell" > <%= compitition_id  %></label>
        <label class="Cell" > <%= make            %></label>

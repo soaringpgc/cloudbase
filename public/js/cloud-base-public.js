@@ -384,5 +384,4 @@
  
    	console.log("not defined");}
    });
-
 })( jQuery );

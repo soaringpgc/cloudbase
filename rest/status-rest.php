@@ -23,7 +23,7 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 
 	public function register_routes() {
 	   
-     $this->resource_path = '/status' . '(?:/(?P<id>[\d]+))?';
+     $this->resource_path = '/aircraft_status' . '(?:/(?P<id>[\d]+))?';
     
      register_rest_route( $this->namespace, $this->resource_path, 
         array(	
@@ -76,7 +76,7 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 //			wp_send_json($items);
  		 } else {
 		// should not get here normally but if it happens.
-     	 	return rest_ensure_response( 'no Status avaliable.' );
+		    	return new \WP_Error( 'No Status', esc_html__( 'no Status avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
 		}
 //		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
@@ -85,8 +85,8 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 
-		if (!empty($request['type'])){
-			$title = $request['type'];
+		if (!empty($request['title'])){
+			$title = $request['title'];
 		} else {
 //			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
@@ -98,8 +98,7 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 
 			return rest_ensure_response( 'Already exists id= '. $items->id );
  		 } else {
-		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (title ) VALUES ( %s) " , $title );	
-			$wpdb->query($sql);	
+			$wpdb->insert($table_name, array('title'=>$title ), array ('%s'));
  			// read it back to get id and send
  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 			$items = $wpdb->get_row( $sql, OBJECT);				

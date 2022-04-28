@@ -129,7 +129,7 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
 		$table_name = $wpdb->prefix . "cloud_base_flight_type";	
 		if (!empty($request['id'])){
 			$id = $request['id'];
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $id) ;	
 			$items = $wpdb->get_row( $sql, OBJECT);
 			if( $wpdb->num_rows > 0 ) {
         		if (!empty($request['title'])){
@@ -142,7 +142,7 @@ class Cloud_Base_Flight_Types extends Cloud_Base_Rest {
         		} else {
         			$description = $items['description'];	
         		}						
-			$wpdb-update($table_name, array( 'title'=>$title, 'description'=> $description , 'active'=>1), array('id'=>$id));				
+			$wpdb->update($table_name, array( 'title'=>$title, 'description'=> $description , 'active'=>1), array('id'=>$id));				
 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " , $id  );	
 			$items = $wpdb->get_row( $sql, OBJECT);				
    			    return new \WP_REST_Response ($items);		

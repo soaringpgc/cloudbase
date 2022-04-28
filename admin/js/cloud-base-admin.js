@@ -145,7 +145,7 @@
     }) ; 
     app.StatusTypeList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/status',			
+    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_status',			
     }) ; 
      app.AircraftList = app.Collection.extend({
     	model: app.AircraftType,
@@ -297,7 +297,7 @@
       		formData[el.id] = $(el).val();
       	  }
       	});
-//      	alert(JSON.stringify(formData));
+ //    	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {wait: true});
 	// clean out the form:

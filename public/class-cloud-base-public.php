@@ -97,14 +97,14 @@ class Cloud_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-	    wp_register_script( 'zepto',  plugins_url('/cloudbase/includes/zepto.js'));
+//	    wp_register_script( 'zepto',  plugins_url('/cloudbase/includes/zepto.js'));
 	    wp_register_script( 'workflow',  plugins_url('/cloudbase/includes/workflow.js'));
 	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));
 	    
 //	    wp_register_script( 'backbone-relational',  plugins_url('/Cloud-Base/includes/backbone-relational.js'));
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
 //
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api', 'zepto' ,  'backbone', 'underscore',
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
 
 	//localize data for script

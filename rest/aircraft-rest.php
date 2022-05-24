@@ -62,15 +62,16 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  global $wpdb;
 	  $table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
+	  $table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
 
 // fields to return. 
 //  	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'captian'=>'a.display_name',
 //  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
 //  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
-	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
+	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'comment'=>'s.comment',
  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
- 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 'title'=>'t.title  AS type' );
+ 	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 'title'=>'t.title  AS type', 'status_t'=>'u.title AS status_t' );
 
  	  $select_string = $this->select_fields($request, $valid_fields); 
 // process filters.  	  
@@ -80,7 +81,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 // 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
 // 			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
 
-	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id WHERE {$filter_string} " ;				
+	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id WHERE {$filter_string} " ;				
 
 	  $items = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
@@ -135,7 +136,10 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  if (!empty($request['compitition_id'])){
 	  	$compitition_id  = $request['compitition_id'];
 	  }   	  
- 
+	  $comment = '';
+	  if (!empty($request['comment'])){
+	  	$comment  = $request['comment'];
+	  }   	   
 	  if (!empty($request['status'])){
 		$sql = $wpdb->prepare("SELECT id FROM {$table_status} WHERE `id` = %d " , $request['status']);
 		$sqlreturn = $wpdb->get_row( $sql, OBJECT);
@@ -150,31 +154,17 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 // generate new aircraft id number	  
 	  $sql = "SELECT MAX(aircraft_id)  FROM {$table_name} " ;
 	  $sqlreturn =  $wpdb->get_var( $sql);
-		$aircraft_id = $sqlreturn + 1;
-// 
-//  	  $sql =  $wpdb->prepare("INSERT INTO {$table_name} (aircraft_id,  registration,  aircraft_type,  status, captian_id, make, model, compitition_id, valid_until)  VALUES (%d ,%s, %d, %d, %d, %s, %s, %s, null) " , 
-//  	           $aircraft_id, $registration, $aircraft_type, $status, $captian_id, $make, $model, $compitition_id );	  
-//  	  $wpdb->query($sql);
-
+	  $aircraft_id = $sqlreturn + 1;
 	  $wpdb->insert($table_name, array('aircraft_id' => $aircraft_id , 'registration' => $registration, 'aircraft_type' => $aircraft_type, 
 			'status' => $status, 'captian_id' => $captian_id, 'date_updated' => current_time('mysql', 1), 'make' => $make, 'model' => $model, 
-			'compitition_id' => $compitition_id, 'valid_until' => null  ), 
-			array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s' ) );
- 	  
+			'compitition_id' => $compitition_id, 'comment'=>$comment,  'valid_until' => null  ), 
+			array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ) ); 	  
 //   // read it back to get id and send
-
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
  	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
  	  $select_string = $this->select_fields($request, $valid_fields);   
-// 	  $filter_string = $this->select_filters($request, $valid_filters);
-// 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
-// 			{$table_type} t on s.aircraft_type=t.id WHERE  " ;
-						
-// 	  $sql =  $wpdb->prepare("SELECT {$select_string}  FROM {$table_name} s inner join 
-// 			{$table_type} t on s.aircraft_type=t.id  WHERE `registration` = %s AND valid_until IS NULL" , $registration  );	
-
 	  $sql =  $wpdb->prepare("SELECT *, t.title  AS type  FROM {$table_name} s inner join 
 			{$table_type} t on s.aircraft_type=t.id  WHERE `registration` = %s AND s.valid_until IS NULL" , $registration  );	
 	  
@@ -228,6 +218,12 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  		} else {
 				$make = $item->make;
 			}
+			// comment 
+	    	if (!empty($request['comment'])){
+				$comment =$request['comment'];
+	  		} else {
+				$make = $item->comment;
+			}
 			// model 
 	    	if (!empty($request['model'])){
 				$model =$request['model'];
@@ -264,8 +260,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 		    // create new record with valid_until = 0. 
 			$wpdb->insert($table_name, array('aircraft_id' => $aircraft_id , 'registration' => $registration, 'aircraft_type' => $aircraft_type, 
 				'status' => $status, 'captian_id' => $captian_id, 'date_updated' => current_time('mysql', 1), 'make' => $make, 'model' => $model, 
-				'compitition_id' => $compitition_id, 'valid_until' => null  ), 
-				array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s' ) );
+				'compitition_id' => $compitition_id, 'comment'=>$comment, 'valid_until' => null  ), 
+				array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ) );
 // return new \WP_REST_Response ($wpdb->last_query	);						
 			
   // read it back to get id and send

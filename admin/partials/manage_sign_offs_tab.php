@@ -70,8 +70,34 @@ if( current_user_can( 'manage_options' ) ) {
 }		
 ?>  
 
-<h3>Current SignOff types</h3>
- 		
+<div  class="Table">
+    <div class="Title">
+        <p>Current SignOff types</p>
+    </div>
+    <div class="Heading">
+        <div class="Cell"  >
+            <p>Type ID</p>
+        </div>  
+        <div class="Cell2"  >
+            <p>Sign off</p>
+        </div>
+         <div class="Cell2"  >
+            <p>Authority</p>
+        </div>      
+        <div class="Cell"  >
+            <p>Effective Period</p>
+        </div>      
+        <div class="Cell"  >
+            <p>Fixed Date</p>
+        </div>      
+        <div class="Cell0"  >
+            <p>No Fly</p>
+        </div>      
+        <div class="Cell0"  >
+            <p>Apply to all</p>
+        </div>      
+    </div>
+</div> 		
 </div>    
     <h4>Instructions</h4>
     <p>

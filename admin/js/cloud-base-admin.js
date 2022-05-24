@@ -184,6 +184,7 @@
              // value of the same id in the model and then loading it back into the from
              //  someone (probably me) is going to hate me in the future.  -dsj
             $(this.localDivTag).children('input').each(function(i, el ){
+//            console.log( el );
       		   if(el.type === "checkbox" ){
       		   		if (localmodel.get(el.id) === "1" ){
       		   			$('#'+el.id).prop("checked", true);
@@ -195,6 +196,9 @@
       		   }  
       		});     		
       		$(this.localDivTag).children('select').each(function(i, el ){
+				$('#'+el.id).val(localmodel.get(el.id));
+      		});
+      		$(this.localDivTag).children('textarea').each(function(i, el ){
 				$('#'+el.id).val(localmodel.get(el.id));
       		});
 		},
@@ -268,6 +272,11 @@
       			formData[el.id] = $(el).val();
       		}
       	});
+      	$(this.localDivTag).children('textarea').each(function(i, el ){
+      		if($(el).val() != ''){
+      			formData[el.id] = $(el).val();
+      		}
+      	});
 //  alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true});
       	// clean out the form:
@@ -275,6 +284,9 @@
 				$('#'+el.id).val('');
       		});       
       		$(this.localDivTag).children('select').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});  
+      		$(this.localDivTag).children('textarea').each(function(i, el ){
 				$('#'+el.id).val('');
       		});       
       },
@@ -297,6 +309,11 @@
       		formData[el.id] = $(el).val();
       	  }
       	});
+      	$(this.localDivTag).children('textarea').each(function(i, el ){
+      	  if($(el).val() != ''){
+      		formData[el.id] = $(el).val();
+      	  }
+      	});
  //    	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {wait: true});
@@ -306,7 +323,10 @@
       		});       
       		$(this.localDivTag).children('select').each(function(i, el ){
 				$('#'+el.id).val('');
-      		});       
+      		}); 
+      		$(this.localDivTag).children('textarea').each(function(i, el ){
+				$('#'+el.id).val('');
+      		});           
 		$("div.editform").removeClass('editing');	
       	}
 	});

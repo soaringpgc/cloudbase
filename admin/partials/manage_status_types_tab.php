@@ -19,6 +19,11 @@ if( current_user_can( 'manage_options' ) ) {
             size = "8"
             title = "Status ." 
             name = "title"/> 
+        <input type = "color"
+            id = "color"
+            size = "8"
+            title = "Color ." 
+            name = "color"/>     
         <input type = "hidden"
             id = "active"
             size = "2"
@@ -39,9 +44,13 @@ if( current_user_can( 'manage_options' ) ) {
         <div class="Cell"  >
             <p>ID</p>
         </div>
-        <div class="Cell"  style="width: 13.3em">
+        <div class="Cell"  style="width: 6.1em">
             <p>Title</p>
         </div>
+        <div class="Cell"  style="width: 6.3em">
+            <p>Color</p>
+        </div>
+
     </div>
 </div>
 

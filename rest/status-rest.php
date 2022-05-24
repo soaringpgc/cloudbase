@@ -44,7 +44,7 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_status_put_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -73,12 +73,10 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 
 		if( $wpdb->num_rows > 0 ) {
 			return new \WP_REST_Response ($items);
-//			wp_send_json($items);
  		 } else {
 		// should not get here normally but if it happens.
 		    	return new \WP_Error( 'No Status', esc_html__( 'no Status avaliable.', 'my-text-domain' ), array( 'status' => 204 ) );
-		}
-//		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
+		}	
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
 	public function cloud_base_status_post_callback( \WP_REST_Request $request) {
@@ -91,6 +89,12 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 //			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
+		if (!empty($request['color'])){
+			$color = $request['color'];
+		} else {
+			$color = '000000';
+		}
+		
  	// check it does not exist. 
  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 		$items = $wpdb->get_row( $sql, OBJECT);		 			
@@ -98,45 +102,46 @@ class Cloud_Base_Status extends Cloud_Base_Rest {
 
 			return rest_ensure_response( 'Already exists id= '. $items->id );
  		 } else {
-			$wpdb->insert($table_name, array('title'=>$title ), array ('%s'));
+			$wpdb->insert($table_name, array('title'=>$title, 'color'=>$color ), array ('%s', '%s' ));
  			// read it back to get id and send
  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 			$items = $wpdb->get_row( $sql, OBJECT);				
-			return new \WP_REST_Response ($items);		
-//			wp_send_json($items);				
+			return new \WP_REST_Response ($items);						
 	    }
-//	    wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_status_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 		$item_id =  $request['id'];
-		if (!empty($request['title'])){
-			$title = $request['title'];
-		} else {
-			$title =null;
-		}
- 
- 		if ($item_id  != null && $title != null ) {	
+ 	
+ 		if ($item_id  != null ) {	
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
 			$items = $wpdb->get_row( $sql, OBJECT);
+				$item_id =  $request['id'];
+				if (!empty($request['title'])){
+					$title = $request['title'];
+				} else {
+					$title =$items->title;
+				}
+				if (!empty($request['color'])){
+					$color = $request['color'];
+				} else {
+					$color =$items->color;
+				}				
 			if( $wpdb->num_rows > 0 ) {
-				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `title`= %s WHERE `id` = %d " , $title, $item_id  );
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `title`= %s, `color`= %s WHERE `id` = %d " , $title, $color, $item_id  );
+//				return new \WP_REST_Response($sql);
 				$wpdb->query($sql);
 				// read it back to get id and send
  				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
 				$items = $wpdb->get_row( $sql, OBJECT);				
 				return new \WP_REST_Response ($items);		
 			} else{
-//			 	wp_send_json_error(array('message'=>'Record not found.', 'id'=>$item_id), 400);
 			 	return new \WP_Error( 'not_found', esc_html__( 'Not found. ', 'my-text-domain' ), array( 'status' => 400 ) );			
  			}
  		} else {
  			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or status missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
  		}
-// 		wp_send_json_error(array('message'=>'Something went horribly wrong.'), 500 );	
-		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong .', 'my-text-domain' ), array( 'status' => 500 ) );
 	}
 	public function cloud_base_status_delete_callback( \WP_REST_Request $request) {
 		global $wpdb;

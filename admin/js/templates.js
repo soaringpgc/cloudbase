@@ -40,22 +40,25 @@ var feeitemtemplate = _.template(`
 // Status Types 
   var statustypetemplate = _.template(`
    <div class="Cell"  id = "id" > <%= id %></div>
-   <div >
+     <div >
      <label class="Cell" ><%= title %></label>
+     <label class="Cell" ><input type="color" value= <%= color %> > </label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);
 // Aircraft 
-  var aircrafttemplate = _.template(`
-   <div class="hiding" > <%= id %></div>
-   <div class="Cell" > <%= aircraft_id %></div>
-   <div class="hiding" > <%= aircraft_type %></div>
-   <div >
-    
+  var aircrafttemplate = _.template(`  
+  <div >
+  		<div class="hiding" > <%= id %></div>
+  		<div class="Cell" > <%= aircraft_id %></div>
+  		<div class="Cell" > <%= type %></div>  
        <label class="Cell" > <%= registration    %></label>
        <label class="Cell" > <%= compitition_id  %></label>
        <label class="Cell" > <%= make            %></label>
        <label class="Cell" > <%= model           %></label>
+       <label class="hiding" > <%= status 		 %></label>
+       <label class="Cell" > <%= status_t 		 %></label> 
+       <label class="Cell3" > <%= comment 		 %></label>
        <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);

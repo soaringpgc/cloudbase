@@ -67,27 +67,8 @@ if( current_user_can( 'manage_options' ) ) {
              name = "model"
              title = "Model of aircraft." />   
         </div>
-        <div class="hform">      
-         <label for="status">Status: </label>
-         <select name="status" id="status" form="addAircraft">');
-  			global $wpdb;
-        	$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-        	$sql = "SELECT * FROM ". $table_name . " WHERE active = 1 ORDER BY title ASC ";
-        	$items = $wpdb->get_results( $sql, OBJECT);       	
-        	foreach($items as $key){ 	
-        		echo '<option value=' . $key->id . '>'. $key->title . '</option>';
-            };
-         echo ( '</select>  
-        </div>
-        <div class="hform">      
-         <label for="comment">Comment: </label>
-         <textarea
-         	rows="5"
-         	cols="40"
-             id = "comment"
-             name = "comment"
-             title = "Comment." ></textarea>   
-        </div>
+        <div">  ');    
+	echo('
   	     <br style="clear:both;">
   	     <div>
         <button id="add" class="view">Add</button>
@@ -120,13 +101,6 @@ if( current_user_can( 'manage_options' ) ) {
             <div class="Cell">
                 <p>Model</p>
             </div>
-            <div class="Cell">
-                <p>Status</p>
-            </div>
-            <div class="Cell3">
-                <p>Comment</p>
-            </div>
-
         </div>
     </div>
 </div>

@@ -119,10 +119,46 @@ class Cloud_Base_Public {
 	}
 	public function register_shortcodes() {
 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
+		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 	} // register_shortcodes()
 	public function display_flights(){
 		include_once 'partials/cloud-base-public-display.php';
 //		return display_flights();
 	}
+	public function display_status($atts = array() ){
+		ob_start();
+	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
+			include ('partials/cloud-base-aircraft_status.php');
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
 
+    }
+	/**
+	 * This function updates aircraft details. This is where glider, pilot
+	 * instructor, tow pilot and tug are selected. Also corrections can be make to 
+	 * take off/landing time and tow alitude. 
+	 */
+     public function update_aircraft(){ 
+//     exit(var_dump($_POST));
+     	global $wpdb;
+	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	    
+     	$retrieved_nonce = $_POST['_wpnonce'];
+		if (!wp_verify_nonce($retrieved_nonce, 'update_aircraft' ) ) die( 'Failed security check' );
+ 		if (!current_user_can('flight_edit') ) die( 'Failed acccess check' );    
+ 		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
+ 		   $request->set_param( 'aircraft_id', $_POST['key'] );
+ 		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
+ 		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );
+ 		   $request->set_param( 'comment', $_POST['comment'] );
+ 		   $request->set_param( 'status', $_POST['status'] );
+ 		   $response = rest_do_request( $request);
+ 		   var_dump($response);
+ 		
+ //  exit( var_dump( $wpdb->last_query ) );
+//		$wpdb->print_error();
+
+     	wp_redirect($_POST['source_page']);
+     } //updateAircraft()       
 }

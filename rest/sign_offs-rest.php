@@ -56,27 +56,37 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_get_callback( \WP_REST_Request $request) {
 		global $wpdb;
 	    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";    
+	    $table_types = $wpdb->prefix . "wp_cloud_base_signoffs_types";    
 	    $cloud_base_authoritys = get_option('cloud_base_authoritys');
 	    $filter_string ="";
-	    $valid_filters = array( 'authority'=>'authority_id', 'signoff'=>'signoff_id' );
+	    $valid_filters = array( 'authority'=>'authority_id', 'signoff'=>'signoff_id', 'no_fly'=>'no_fly' );
      	$valid_keys = array_keys($valid_filters );
-
-		if ( isset($request['id']) ) {
-			 $filter_string = "`id` = " . $request['id']  ;
+     	
+     	if (isset($request['fly_list'])){
+     		$sql = "SELECT DISTINCT m.member_id  FROM ". $table_name . " m INNER JOIN " . $table_types  . " t ON m.signoff_id = t.id WHERE t.no_fly = 1 AND m.date_expire <= NOW()" ;     		
+     	}  elseif (isset($request['no_fly'])){
+    		$sql = "SELECT DISTINCT m.member_id  FROM ". $table_name . " m INNER JOIN " . $table_types  . " t ON m.signoff_id = t.id WHERE t.no_fly = 1 AND m.date_expire >= NOW()" ;      	     		
+      	}  elseif (isset($request['missing'])){
+      		// select all active members 
+      		// loop over all members searching signoff table for requested missing signoff. 
+      		// when not found, add member to list. 
+      		// return list.  		 	
+      	} elseif (isset($request['expired'])){
+    		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name} WHERE signoff_id= %d AND date_expire <= NOW()",  $request['expired'] );      	     		      	
+       	} elseif (isset($request['signoff'])){
+     		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name } WHERE signoff_id= %d AND date_expire >= NOW()",  $request['signoff'] );      	     		      	      	
+       	} elseif (isset($request['member_id'])){
+       		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['signoff'] );     
+       	} elseif ( isset($request['id']) ) {
+       		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['id'] );     
 		} else {
-		   if (isset($request['user']) ){
-		   	 $filter_string = "`member_id` = " . $request['user'];	   
-		   } else {
-		     	$filter_string = "`member_id` = " . get_current_user_id();
-		   }	    
+			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",   get_current_user_id() );     
  	    } 
- 	    foreach($valid_keys as $key ){
-	  	  if(!empty($request[$key]) ){
-	  		$filter_string = $filter_string . ' AND '. $valid_filters[$key] .'='.  $wpdb->prepare('%s' , $request[$key]);
-	  	  }
-	    }	    
- 	   $sql = $wpdb->prepare("SELECT * FROM {$table_name} s WHERE {$filter_string} " );	 	         	    
- 	    $items = $wpdb->get_results($sql ) ; 
+ 	    	    	   	         	    
+        $items = $wpdb->get_results( $sql, OBJECT);   
+        if ($wpdb->last_error){
+					return new \WP_Error( 'unable_to_retrive_data', esc_html__( ' Unable to retrive data.', 'my-text-domain' ), array( 'status' => 500 ) );        
+        }
  	    return new \WP_REST_Response ($items);
 	   	
 	}	

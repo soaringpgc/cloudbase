@@ -56,9 +56,6 @@ var feeitemtemplate = _.template(`
        <label class="Cell" > <%= compitition_id  %></label>
        <label class="Cell" > <%= make            %></label>
        <label class="Cell" > <%= model           %></label>
-       <label class="hiding" > <%= status 		 %></label>
-       <label class="Cell" > <%= status_t 		 %></label> 
-       <label class="Cell3" > <%= comment 		 %></label>
        <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);
@@ -79,5 +76,20 @@ var feeitemtemplate = _.template(`
    </div >
 `);
 
-
+// Aircraft 
+  var aircrafttemplate_alt = _.template(`  
+  <div >
+  		<div class="hiding" > <%= id %></div>
+  		<div class="Cell" > <%= aircraft_id %></div>
+  		<div class="Cell" > <%= type %></div>  
+       <label class="Cell" > <%= registration    %></label>
+       <label class="Cell" > <%= compitition_id  %></label>
+       <label class="Cell" > <%= make            %></label>
+       <label class="Cell" > <%= model           %></label>
+       <label class="hiding" > <%= status 		 %></label>
+       <label class="Cell" > <%= status_t 		 %></label> 
+       <label class="Cell3" > <%= comment 		 %></label>
+       <div class="Cell"><button class="delete" ">Delete</button></div>
+   </div>
+`);
 //   <div class="Cell" > <%= typeof(compitition_id) !== 'undefined' ? compitition_id : ' ' %></div>

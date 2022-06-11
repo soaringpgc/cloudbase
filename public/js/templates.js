@@ -50,6 +50,7 @@ var aircraftemplate = _.template(`
      <label class="Cell2"><%=  display_status %> </label> 
      <label class="Cell2"><%=  annual_due_date %> </label>       
      <label class="Cell2"><%=  registration_due_date %> </label> 
+     <label class="Cell2"><%=  transponder_due %> </label> 
      <label class="Cell2"><%=  comments %> </label>                 	 
      <div class="Cell0" id="button"> 
      	 <button id="launch"  class="viewstart buttonlaunch "></button>

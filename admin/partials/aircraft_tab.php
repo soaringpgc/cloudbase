@@ -8,18 +8,14 @@
 
 <?php 			
 if( current_user_can( 'manage_options' ) ) {	
-  echo ('     <h3>Aircraft Basic information</h3>
+  echo ('     <h3>Equipment Basic information</h3>
    <form id="addAircraft" action="#" >
-  	<div>
+  	<div class="hform">
   	   <input type = "hidden"
           id = "id"
-          size = "2"
-          value = ""
           name = "id"/>  
   	    <input type = "hidden"
           id = "aircraft_id"
-          size = "2"
-          value = ""
           name = "aircraft_id"/>
         <div class="hform">      
          <label for="aircraft_type">Type: </label>
@@ -34,7 +30,7 @@ if( current_user_can( 'manage_options' ) ) {
          echo ( '</select>  
         </div>
         <div class="hform">      
-         <label for="registration">Registration
+         <label for="registration">Registration:
          </label>
          <input type = "text"
              id = "registration"
@@ -43,7 +39,7 @@ if( current_user_can( 'manage_options' ) ) {
              name = "registration"/>
         </div>
         <div class="hform">      
-         <label for="competition">Competition
+         <label for="competition">Competition:
          </label>
          <input type = "text"
              id = "compitition_id"

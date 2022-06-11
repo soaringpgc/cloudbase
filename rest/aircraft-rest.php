@@ -33,7 +33,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_aircraft_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),   
+         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),),   
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -45,7 +45,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_aircraft_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -70,7 +70,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 //  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'comment'=>'s.comment',
- 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
+ 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 'title'=>'t.title  AS type', 'status_t'=>'u.title AS status_t' );
 
  	  $select_string = $this->select_fields($request, $valid_fields); 
@@ -81,7 +81,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 // 	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join 
 // 			{$table_type} t on s.aircraft_type=t.id inner join wp_users a on a.id = s.captian_id WHERE {$filter_string} " ;
 
-	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id WHERE {$filter_string} ORDER by s.registration" ;				
+	  $sql = "SELECT {$select_string}  FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id WHERE {$filter_string}  ORDER BY s.aircraft_type DESC, s.registration ASC" ;				
 //return new \WP_REST_Response ($sql);
 	  $items = $wpdb->get_results( $sql, OBJECT);
 	  if( $wpdb->num_rows > 0 ) {	
@@ -145,7 +145,12 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $annual_due_date = '';
 	  if (!empty($request['annual_due_date'])){
 		$annual_due_date =$request['annual_due_date'];
-	  }    	  
+	  }  
+	  // transponder_due 
+	  $transponder_due = '';
+	  if (!empty($request['transponder_due'])){
+		$registration_due_date =$request['transponder_due'];
+	  } 	    	  
 	  $comment = '';
 	  if (!empty($request['comment'])){
 	  	$comment  = $request['comment'];
@@ -159,7 +164,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
    			return new \WP_Error( 'invalid status', esc_html__( 'That status does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
 	  } else{
-  	    	$status = null;
+  	    	$status = 1;
    	  }
 // generate new aircraft id number	  
 	  $sql = "SELECT MAX(aircraft_id)  FROM {$table_name} " ;
@@ -167,12 +172,12 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $aircraft_id = $sqlreturn + 1;
 	  $wpdb->insert($table_name, array('aircraft_id' => $aircraft_id , 'registration' => $registration, 'aircraft_type' => $aircraft_type, 
 			'status' => $status, 'captian_id' => $captian_id, 'date_updated' => current_time('mysql', 1), 'make' => $make, 'model' => $model, 'annual_due_date'=>$annual_due_date, 
-				'registration_due_date'=>$registration_due_date, 
+				'registration_due_date'=>$registration_due_date, 'transponder_due'=>$transponder_due, 
 			'compitition_id' => $compitition_id, 'comment'=>$comment,  'valid_until' => null  ), 
-			array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) ); 	  
+			array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) ); 
 //   // read it back to get id and send
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 
- 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date',
+ 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
  	  $select_string = $this->select_fields($request, $valid_fields);   
@@ -235,6 +240,12 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  		} else {
 				$annual_due_date = $item->annual_due_date;
 			}
+			// transponder_due 
+	    	if (!empty($request['transponder_due'])){
+				$transponder_due =$request['transponder_due'];
+	  		} else {
+				$transponder_due = $item->transponder_due;
+			}
 			// make 
 	    	if (!empty($request['make'])){
 				$make =$request['make'];
@@ -280,9 +291,9 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 		    // create new record with valid_until = null. 
 		    $update_result = $wpdb->insert($table_name, array('aircraft_id' => $aircraft_id , 'registration' => $registration, 'aircraft_type' => $aircraft_type, 
 				'status' => $status, 'captian_id' => $captian_id, 'date_updated' => current_time('mysql', 1), 'make' => $make, 'model' => $model, 'annual_due_date'=>$annual_due_date, 
-				'registration_due_date'=>$registration_due_date, 
+				'registration_due_date'=>$registration_due_date, 'transponder_due'=>$transponder_due, 
 				'compitition_id' => $compitition_id, 'comment'=>$comment, 'valid_until' => null  ), 
-				array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s',' %s', '%s' )); 
+				array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s',' %s', '%s', '%s' )); 
 								
 			if ( $update_result == 1 ) {
  	  		    // mark existing recored as nolonger valid by setting the valin_until to now.

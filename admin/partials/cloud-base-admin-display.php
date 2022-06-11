@@ -23,7 +23,7 @@
 		$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'config_page';
 
 		// Build the Form
-		$page_tabs = array (  "aircraft"=>"Aircraft", "manage_aircraft_types"=>"Aircraft Types",  "manage_status_types"=>"Status Types", 
+		$page_tabs = array (  "aircraft"=>"Equipment", "manage_aircraft_types"=>"Equipment Types",  "manage_status_types"=>"Status Types", 
 		"manage_flight_types "=>"Flight Types",  "manage_tow_fees" =>  "Tow Fees",  "manage_sign_offs"=>"Sign Off Types", "config_page" =>  "Basic Configuration Page" );		
 
 // 		$page_tabs = array (  "aircraft"=>"Aircraft", "manage_aircraft_types"=>"Aircraft Types",  "manage_status_types"=>"Status Types", 

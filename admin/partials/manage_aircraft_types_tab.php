@@ -8,7 +8,7 @@
     
 <?php 			
 if( current_user_can( 'manage_options' ) ) {	
-  echo ('     <h3>Aircraft Type</h3><DIV>   
+  echo ('     <h3>Equipment Type</h3><DIV>   
     <form id="addaircraft_type" action="#" >
     	<div>
 
@@ -18,7 +18,7 @@ if( current_user_can( 'manage_options' ) ) {
             value = ""
             name = "type_id"/>
         <div class="hform">      
-    	 <label for="title">Aircraft type: </label>
+    	 <label for="title">Equipment type: </label>
          <input type = "text"
             id = "title"
             size = "10"
@@ -93,7 +93,7 @@ if( current_user_can( 'manage_options' ) ) {
 
 <div  class="Table">
     <div class="Title">
-        <p>Aircraft Types</p>
+        <p>Equipment Types</p>
     </div>
     <div class="Heading">
         <div class="Cell"  >

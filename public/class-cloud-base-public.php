@@ -142,15 +142,17 @@ class Cloud_Base_Public {
 	 */
      public function update_aircraft(){ 
 //     exit(var_dump($_POST));
-     	global $wpdb;
-	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	    
+//     	global $wpdb;
+//	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	   
+	// NTFS - Note to Future Self  we are accessing the REST interface here.  
      	$retrieved_nonce = $_POST['_wpnonce'];
 		if (!wp_verify_nonce($retrieved_nonce, 'update_aircraft' ) ) die( 'Failed security check' );
- 		if (!current_user_can('flight_edit') ) die( 'Failed acccess check' );    
+ 		if (!current_user_can('edit_users') ) die( 'Failed acccess check' );    
  		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
  		   $request->set_param( 'aircraft_id', $_POST['key'] );
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
  		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );
+ 		   $request->set_param( 'transponder_due', $_POST['transponder_due'] );
  		   $request->set_param( 'comment', $_POST['comment'] );
  		   $request->set_param( 'status', $_POST['status'] );
  		   $response = rest_do_request( $request);

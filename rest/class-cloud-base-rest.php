@@ -262,7 +262,6 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 		 $filter_string = "s.valid_until > -1 ";
 	  } else {
 	  	$filter_string = "(s.valid_until = 0  or s.valid_until IS NULL ) ";
-//	    $filter_string = "(s.valid_until = 0  or s.valid_until IS NULL OR s.valid_until > NOW()) ";
 	  } 
 	  foreach($valid_keys as $key ){
 	  	if(!empty($request[$key]) ){

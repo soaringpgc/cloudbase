@@ -278,7 +278,11 @@
       		}
       	});
 //  alert(JSON.stringify(formData));
-      	this.collection.create( formData, {wait: true});
+      	this.collection.create( formData, {wait: true, error: function(model, response, error){
+      				var mresult= JSON.parse(response.responseText);     	
+      				alert(mresult["message"]) 
+      				} 
+      			});
       	// clean out the form:
       		$(this.localDivTag).children('input').each(function(i, el ){
 				$('#'+el.id).val('');
@@ -316,7 +320,11 @@
       	});
  //    	alert(JSON.stringify(formData));
       	var updateModel = this.collection.get(formData.id);
-        updateModel.save(formData, {wait: true});
+        updateModel.save(formData, {wait: true, error: function(model, response, error){
+      				var mresult= JSON.parse(response.responseText);     	
+      				alert(mresult["message"]) 
+      				}         
+        	});
 	// clean out the form:
       		$(this.localDivTag).children('input').each(function(i, el ){
 				$('#'+el.id).val('');

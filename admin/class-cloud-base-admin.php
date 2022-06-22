@@ -102,7 +102,7 @@ class Cloud_Base_Admin {
 
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
 		array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'cloudbase_admin_templates', 'backforms'), $this->version, false );
+		'cloudbase_admin_templates', 'backforms'), $this->version, false );
 
 	//localize data for script
 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(

@@ -43,7 +43,7 @@
  		if ($detail_edit) {
 
 			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
-			Echo ('<div class="table-row"><div class="table-col ">Registation</div><div class="table-col ">Comptiion</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
+			Echo ('<div class="table-row"><div class="table-col ">Registation</div><div class="table-col ">Competition</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
 			<div class="table-col ">Annual Due</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Comments</div><div class="table-col ">Update</div></div>');
 			foreach($items as $item){	
  	
@@ -81,7 +81,7 @@
 			foreach($items as $item){
 //			var_dump($item);			 			 	
 			 	echo '<div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
-			 	echo ' <div class="table-col">'.$item->compitition_id.'</div>';
+			 	echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
 				echo ' <div class="table-col">'.$item->model.'</div>';
 				echo ' <div class="table-col">'.$item->title.'</div>';				
 				echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
@@ -104,8 +104,9 @@
 		 			$ldate = $item->udate ;
 		 		}
 		 		echo ' <div class="hform" style="color:'.$item->color.'">'.$item->cid.'</div>';
-		 	}	  
-		  echo '</div><div> Last Updated: ' .$ldate. '</div>';	 
+		 	}	
+		  $date_time = strtotime($ldate) ;
+		  echo '</div><div> Updated: ' . date('d M Y', $date_time). '</div>';	 
 //		  echo '</div><div> Last Updated: ' .$ldate. '  Details </div>';	 
 	}     
 }

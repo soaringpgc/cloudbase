@@ -57,7 +57,7 @@ function create_cb_database(){
       	aircraft_id smallint(6),
       	make tinytext,
       	model tinytext,
-      	registration tinytext NOT NULL,
+      	registration tinytext,
       	compitition_id tinytext,
       	aircraft_type int(4),
       	status tinyint(4),

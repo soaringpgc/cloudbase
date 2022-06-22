@@ -6,11 +6,16 @@
 <div style="display:inline-block"  align:left id="aircrafts"  class="TowFee editform" >
 
 
-<?php 			
+<?php 		
+global $wpdb;
+$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
+$sql = "SELECT * FROM ". $table_name . " WHERE valid_until IS NULL  ORDER BY title ASC ";
+$items = $wpdb->get_results( $sql, OBJECT);       	
+
 if( current_user_can( 'manage_options' ) ) {	
-  echo ('     <h3>Equipment Basic information</h3>
+  echo ('     <h3>Aircraft Basic information</h3>
    <form id="addAircraft" action="#" >
-  	<div class="hform">
+  	<div>
   	   <input type = "hidden"
           id = "id"
           name = "id"/>  
@@ -18,18 +23,13 @@ if( current_user_can( 'manage_options' ) ) {
           id = "aircraft_id"
           name = "aircraft_id"/>
         <div class="hform">      
-         <label for="aircraft_type">Type: </label>
-         <select name="aircraft_type" id="aircraft_type" form="addAircraft">');
-  			global $wpdb;
-        	$table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
-        	$sql = "SELECT * FROM ". $table_name . " WHERE valid_until IS NULL  ORDER BY title ASC ";
-        	$items = $wpdb->get_results( $sql, OBJECT);       	
+           <label for="aircraft_type">Type: </label><br>
+           <select name="aircraft_type" id="aircraft_type" >');
         	foreach($items as $key){ 	
         		echo '<option value=' . $key->id . '>'. $key->title . '</option>';
             };
-         echo ( '</select>  
-        </div>
-        <div class="hform">      
+         echo ( '</select> </div> ');  
+         echo ('<div class="hform">      
          <label for="registration">Registration:
          </label>
          <input type = "text"

@@ -39,7 +39,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_aircraft_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -106,7 +106,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
     	   return new \WP_Error( 'No aircraft type', esc_html__( 'That type does not exist.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  	}
 	  } else{
-	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 404 ) );
+	     	return new \WP_Error( 'type_required', esc_html__( 'Type Required.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  }	  	  
  	  $captian_id = null;
 	  if (!empty($request['captian_id'])){
@@ -119,19 +119,25 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  } 	
 	  if (!empty($request['registration'])){
 	  	$registration  = $request['registration'];
-	  } else{
-		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
+	  } elseif ($aircraft_type < 3 ){
+		return new \WP_Error( 'registration required', esc_html__( 'Registration Required.', 'my-text-domain' ), array( 'status' => 400 ) );  
+      } else {
+      	$registration  = null; 
       }
 	  if (!empty($request['make'])){
 	  	$make  = $request['make'];
-	  } else{
- 		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-	  }	  
+	  } elseif ($aircraft_type < 3 ){
+ 		return new \WP_Error( 'make required', esc_html__( 'Aircraft Manufacture Required.', 'my-text-domain' ), array( 'status' => 400 ) );  
+      } else {
+      	$make  = null; 
+      }	    
   	  if (!empty($request['model'])){
 	  	$model  = $request['model'];
-	  } else{
-		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
-	  }		  	  
+	  } elseif ($aircraft_type < 3 ){
+		return new \WP_Error( 'model required', esc_html__( 'Aircraft Model Required.', 'my-text-domain' ), array( 'status' => 400 ) );  
+      } else {
+      	$model  = null; 
+      }	  	  
 	  $compitition_id = '';
 	  if (!empty($request['compitition_id'])){
 	  	$compitition_id  = $request['compitition_id'];

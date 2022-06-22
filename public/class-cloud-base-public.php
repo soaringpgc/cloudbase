@@ -133,7 +133,6 @@ class Cloud_Base_Public {
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;
-
     }
 	/**
 	 * This function updates aircraft details. This is where glider, pilot

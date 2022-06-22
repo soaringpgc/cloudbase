@@ -49,9 +49,8 @@ if( current_user_can( 'manage_options' ) ) {
 		</div>	
 		<div id="expire_date" class="hform"">
 	   	   <label for="expire">Expire Date</label>
-    	   <input type = "text"
+    	   <input type = "date"
             id = "expire"
-            class = "calendar"
             name ="expire"
             size = "10"
             title = "Enter the date the sign off expires - fixed date only"/> 

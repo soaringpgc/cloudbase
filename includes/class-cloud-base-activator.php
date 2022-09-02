@@ -37,10 +37,10 @@ class Cloud_Base_Activator {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 			wp_die( 'This plugin requires a minmum PHP Version of ' . $min_php );
 		}
-			create_cb_database();
-			create_cb_roles();
-			set_default_cb_configuration();
-//	      copy_pgc_sign_offs();		
+		create_cb_database();
+		create_cb_roles();
+		set_default_cb_configuration();
+		update_authoritys();	
 	}
 }
 function create_cb_database(){
@@ -140,9 +140,11 @@ function create_cb_database(){
 	// create flight sheet table
 	$sql = "CREATE TABLE ". $table_name ." (
  	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+ 	  flightyear smallint(6),
+ 	  date date DEFAULT NULL,
 	  flight_number INT(10) UNSIGNED NOT NULL,
 	  flight_type int(10) UNSIGNED,
-	  equipment_id int(10) UNSIGNED,
+	  aircraft_id int(10) UNSIGNED,
 	  pilot_id int(10) UNSIGNED NOT NULL,
 	  flight_fee_id int(10) UNSIGNED,
 	  total_charge decimal(5,2),
@@ -195,7 +197,8 @@ function create_cb_database(){
 		authority varchar(30),
 		no_fly BOOLEAN,
 		applytoall BOOLEAN,
-		PRIMARY KEY  (id)
+		PRIMARY KEY  (id),
+		active boolean DEFAULT 1
 		);" . $charset_collate  . ";";	
 	dbDelta($sql); 
 
@@ -336,10 +339,21 @@ function create_cb_roles(){
 			$role_object->add_cap('cb_edit_flight', true);
 		}	
 	}		
-		
+
+// Add maintenance editor role	
+	if(!role_exists('maintenance_editor')){
+		add_role('maintenance_editor' , 'Maintenance Editor', array('cb_edit_maintenance'));
+	} else {
+		//add capability to existing operations
+		$role_object = get_role('maintenance_editor' );
+		if ( !$role_object->has_cap('cb_edit_maintenance')){
+			$role_object->add_cap('cb_edit_maintenance', true);
+		}	
+	}		
+			
 	// update admin to have all roles - this may change later.
 	$role_object = get_role('administrator' );
-	$cb_roles = array('cb_edit_instruction', 'cb_edit_dues', 'cb_edit_flight', 'cb_edit_operations', 'cb_edit_towpilot', 'flight_edit' );
+	$cb_roles = array('cb_edit_instruction', 'cb_edit_dues', 'cb_edit_flight', 'cb_edit_operations', 'cb_edit_towpilot', 'flight_edit', 'cb_edit_maintenance' );
 	foreach ($cb_roles as $cb_role ){
 			if ( !$role_object->has_cap($cb_role)){
 			$role_object->add_cap($cb_role , true);
@@ -356,6 +370,13 @@ function set_default_cb_configuration(){
 		"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
 	}
 }
+function update_authoritys(){	
+	update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
+	"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", 
+	"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
+	"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
+}
+
 function role_exists( $role ) {
 		if( ! empty( $role ) ) {
 		return $GLOBALS['wp_roles']->is_role( $role );
@@ -363,41 +384,3 @@ function role_exists( $role ) {
 		return false;
 }
 
-function copy_pgc_sign_offs(){
-   	global $wpdb;
-// Sign offs	
-    $table_name = $wpdb->prefix . "cloud_base_signoffs_types";	
-    	// create signoff types table
-    $sql = "CREATE TABLE ". $table_name . " (
-      	id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    	signoff_type varchar(40) NOT NULL,
-    	period tinytext NOT NULL,
-    	fixed_date tinytext,
-    	user_id int(10) UNSIGNED NOT NULL,
-    	authority varchar(30),
-    	no_fly BOOLEAN,
-    	applytoall BOOLEAN,
-    	PRIMARY KEY  (id),
-    	active bit(1) DEFAULT 1,
-    	PRIMARY KEY  (id)
-    	)";	
-    dbDelta($sql); 
-    
-    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";
-    // create member specific signoffs 
-    $sql = "CREATE TABLE ". $table_name . " (
-      id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-      member_id int(10) NOT NULL,
-      signoff_id int(10) UNSIGNED NOT NULL,
-      authority_id int(10) NOT NULL,
-      date_entered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-      date_effective datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-      date_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-      PRIMARY KEY  (id)
-      );"; 
-     dbDelta($sql);	
-					    								    
-// 	update_option('cloud_base_authoritys', array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
-// 				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot"));								    
-			    
-}

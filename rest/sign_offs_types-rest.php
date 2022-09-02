@@ -65,8 +65,13 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 //
 // authority array is stored in WP options, It is created/updated on activation 
 
-		$sql = "SELECT * FROM {$table_name} WHERE `active` = 1 ";
-		$sql = "SELECT * FROM {$table_name} ";
+		if(isset($request['id'])){
+		   $sql= $wpdb->prepare( "SELECT * FROM {$table_name} WHERE `active` = 1 AND `id` = %d ",  $request['id'] ); 
+		} elseif (isset($request['all'])) {
+			$sql = "SELECT * FROM {$table_name} WHERE `active` = 1 AND `applytoall` = 1 ";
+		} else {
+			$sql = "SELECT * FROM {$table_name} WHERE `active` = 1 ";
+		}
  		$items = $wpdb->get_results( $sql, OBJECT);
 		if( $wpdb->num_rows > 0 ) {
 			foreach($items as $k=> $v){

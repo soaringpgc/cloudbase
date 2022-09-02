@@ -79,7 +79,6 @@ class Cloud_Base {
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_rest_hooks();
-
 	}
 
 	/**
@@ -167,7 +166,12 @@ class Cloud_Base {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_settings_page' );
 		  //  add the config tab page 
 		$this->loader->add_action( 'admin_post_config_page', $plugin_admin, 'the_config_page_response');
-
+		// when a new user is added add required signoffs.
+ 		$this->loader->add_action( 'user_register', $plugin_admin, 'cloud_base_new_signoffs', 15);
+// 'set_user_role' appears to be disabled by members plugin. 
+// 		$this->loader->add_action( 'set_user_role', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
+	 	$this->loader->add_action( 'profile_update', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
+ 		
 	}
 
 	/**
@@ -185,7 +189,6 @@ class Cloud_Base {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_public, 'register_shortcodes' );		
 		$this->loader->add_action( 'admin_post_update_aircraft', $plugin_public, 'update_aircraft' );
-
 	}
 
 	/**
@@ -226,8 +229,14 @@ class Cloud_Base {
 
 		$plugin_rest = new Cloud_Base_flight_types($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
-
-	}
+	    /**
+	     * Register the /wp-json/cloudbase/v1/posts endpoint so it will be cached.
+	     * using wp-rest-cache 
+	     */
+// 	    if ( is_plugin_active('wp-rest-cache/wp-rest-cache.php') ) {
+// 	    	  $this->loader->add_filter( 'wp_rest_cache/allowed_endpoints', $plugin_rest, 'cb_add_cloudbase_posts_endpoint');
+// 	    	}
+ 	    }
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

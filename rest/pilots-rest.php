@@ -112,7 +112,7 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 				$pilots[]=$pilot;
 				$pilot =  new stdClass();	
 			}	
-			usort($users, function($a, $b) {
+			usort($pilots, function($a, $b) {
     			return strnatcmp($a->last_name . ', ' . $a->first_name, $b->last_name . ', ' . $b->first_name);
 			});			
            return new \WP_REST_Response ($pilots);    			

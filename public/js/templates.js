@@ -19,7 +19,7 @@ var flighttemplate = _.template(`
      	 					
      	 <label class="Cell"><%=  towplane %></label>   
      	 <div class="edit" > <%= tow_pilot_id %></div>	 
-     	 <div class="edit" > <%= tow_plane_id %></div>	 
+     	 <div class="edit" > <%= tow_plane_id %></div>	
 `);
 
 

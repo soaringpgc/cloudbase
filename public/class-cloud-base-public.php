@@ -120,6 +120,7 @@ class Cloud_Base_Public {
 	public function register_shortcodes() {
 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
+		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
 	} // register_shortcodes()
 	public function display_flights(){
 		include_once 'partials/cloud-base-public-display.php';
@@ -134,6 +135,10 @@ class Cloud_Base_Public {
 		ob_end_clean();
 		return $output;
     }
+    public function cb_no_fly(){
+		include_once 'partials/cloud-base-no_fly.php';
+	}
+
 	/**
 	 * This function updates aircraft details. This is where glider, pilot
 	 * instructor, tow pilot and tug are selected. Also corrections can be make to 

@@ -66,20 +66,6 @@
 			this.bind('transition:from:inflight', function(){
 				this.set('end_time', new Date().toISOString());
 			});
-		},	
-		workflow :{
-			initial: 'staged',
-			events:[
-			{name: 'launch',  from: 'staged',    to: 'inflight'},
-			{name: 'cancel',  from: 'staged',    to: 'canceled'},
-			{name: 'cancel',  from: 'landed',    to: 'canceled'},  // should seldom need, can cancel from inflight.
-			{name: 'landing', from: 'inflight',  to: 'landed'},
-			{name: 'edit',    from: 'staged',    to: 'editing'},
-			{name: 'edit',    from: 'inflight',  to: 'editing'},
-			{name: 'edit',    from: 'landed',    to: 'editing'},	
-			{name: 'launch',  from: 'editing',   to: 'inflight'},	
-			{name: 'landing', from: 'editing',   to: 'landed'},		
-			]												
 		},
 		validation: {
 			pilot_id: {required: true },

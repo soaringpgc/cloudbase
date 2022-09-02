@@ -56,7 +56,7 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_get_callback( \WP_REST_Request $request) {
 		global $wpdb;
 	    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";    
-	    $table_types = $wpdb->prefix . "wp_cloud_base_signoffs_types";    
+	    $table_types = $wpdb->prefix . "cloud_base_signoffs_types";    
 	    $cloud_base_authoritys = get_option('cloud_base_authoritys');
 	    $filter_string ="";
 	    $valid_filters = array( 'authority'=>'authority_id', 'signoff'=>'signoff_id', 'no_fly'=>'no_fly' );
@@ -83,9 +83,20 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",   get_current_user_id() );     
  	    } 
  	    	    	   	         	    
-        $items = $wpdb->get_results( $sql, OBJECT);   
+        $items = $wpdb->get_results( $sql, OBJECT);           
+        foreach( $items as $i=>$v){
+        	$user = get_user_by('ID', $v->member_id);
+        	if ( $user != false ){
+        		$user_roles = ( array ) $user->roles;
+        		if(in_array('inactive', $user_roles )){
+        			unset($items[$i]);
+        		}      
+        	} else {
+        		unset($items[$i]);        	
+        	}
+        }        
         if ($wpdb->last_error){
-					return new \WP_Error( 'unable_to_retrive_data', esc_html__( ' Unable to retrive data.', 'my-text-domain' ), array( 'status' => 500 ) );        
+				return new \WP_Error( $wpdb->last_error, esc_html__( ' Unable to retrive data.', 'my-text-domain' ), array( 'status' => 500 ) );        
         }
  	    return new \WP_REST_Response ($items);
 	   	

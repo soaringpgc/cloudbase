@@ -161,6 +161,17 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	// This is a white-listing approach. You could alternatively do this via white-listing, by returning false here and changing the permissions check.
     	return true;	
 	}	
+
+	public function cloud_base_maintenance_access_check(){
+	// put your access requirements here. You might have different requirements for each access method. 
+	// can read, at least a subscriber. 	
+    	if (  current_user_can( 'cb_edit_maintenance' )) {
+    	    return true;
+     	}
+    	// This is a white-listing approach. You could alternatively do this via black-listing, by returning false here and changing the permissions check.	
+    	return new \WP_Error( 'rest_forbidden', esc_html__( 'Sorry, you are not authorized for that.', 'my-text-domain' ), array( 'status' => 401 ) );
+	}  
+		
 	public function cb_expire_date($start_date, $period, $fixed_date ){
 	// function to calculate the expire date. 
 			switch($period ){
@@ -269,7 +280,16 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	  	}
 	  }
 	return($filter_string);
-	}	
+	}
+	/**
+	 * Register the /wp-json/cloudbase/v1/posts endpoint so it will be cached. Posts??
+	 */
+// 	public function cb_add_cloudbase_posts_endpoint( $allowed_endpoints ) {
+// 	    if ( ! isset( $allowed_endpoints[ 'cloudbase/v1' ] ) || ! in_array( 'posts', $allowed_endpoints[ 'cloudbase/v1' ] ) ) {
+// 	        $allowed_endpoints[ 'cloudbase/v1' ][] = 'posts';
+// 	    }
+// 	    return $allowed_endpoints;
+// 	}		
 }
 include 'aircraft-rest.php';
 include 'fees-rest.php';

@@ -62,7 +62,12 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
 
-		$valid_roles = array ('cfi_g', 'tow_pilot', 'subscriber', 'active','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE');		
+// 		$valid_roles = array ('cfi_g', 'tow_pilot', 'subscriber', 'active','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE');		
+
+		$valid_roles = array ('cfi_g', 'tow_pilot', 'subscriber', 'active',  'field_manager',
+		'assistant_field_manager','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE', 
+		'FIELD_MANAGER', 'ASSISTANT_FIELD_MANAGER' );		
+
 		$pilot =  new stdClass();	
 		$pilots = []; 
 		$users =[];

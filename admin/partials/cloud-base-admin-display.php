@@ -29,7 +29,7 @@
  		array( "tab"=>"aircraft"			 , "title"=>"Equipment", 		"page"=>"cloud_base", 'plug_path'=>$plugin_path ),
  		array( "tab"=>"manage_aircraft_types", "title"=>"Equipment Types",  "page"=>"cloud_base", 'plug_path'=>$plugin_path ), 
  		array( "tab"=>"manage_status_types"  , "title"=>"Status Types", 	"page"=>"cloud_base", 'plug_path'=>$plugin_path ),
- 		array( "tab"=>"manage_flight_types " , "title"=>"Flight Types",  	"page"=>"cloud_base", 'plug_path'=>$plugin_path ),
+ 		array( "tab"=>"manage_flight_types" , "title"=>"Flight Types",  	"page"=>"cloud_base", 'plug_path'=>$plugin_path ),
  		array( "tab"=>"manage_tow_fees" 	 , "title"=> "Tow Fees",        "page"=>"cloud_base", 'plug_path'=>$plugin_path ),
  		array( "tab"=>"manage_sign_offs"     , "title"=>"Sign Off Types", 	"page"=>"cloud_base", 'plug_path'=>$plugin_path ),
  		array( "tab"=>"config_page" 		 , "title"=> "Basic Configuration", "page"=>"cloud_base", 'plug_path'=>$plugin_path ) 

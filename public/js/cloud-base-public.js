@@ -351,7 +351,7 @@
 //       		this.$el.append( itemView.render().el);   
          }
 	}); 
- 
+
    $(function(){
 //     var today = new Date();
 // 	var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -367,7 +367,7 @@
    			break;
    		}
    	} else {
- 
+
    	console.log("not defined");}
    });
 })( jQuery );

@@ -106,11 +106,11 @@ function create_cb_database(){
 	 dbDelta($sql);
 	 // prepopulate with tow plane type
 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (type_id, title, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 
-	VALUES (%d, %s, %d, %f, %f, %f, %f, null) ", '1', 'Tow', 1, '0','0', '0', null);	
+	VALUES (%d, %s, %d, %f, %f, %f, %f, null)  ON DUPLICATE KEY UPDATE id=id", '1', 'Tow', 1, '0','0', '0', null);	
 	$wpdb->query($sql);		
 	// prepopulate with Glider Type	
 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (type_id, title, sort_code, base_charge, first_hour, each_hour, min_charge, valid_until ) 
-	VALUES (%d, %s, %d, %f, %f, %f, %f, null) " , '2', 'Glider', 0, '0','0', '0', null);	
+	VALUES (%d, %s, %d, %f, %f, %f, %f, null)  ON DUPLICATE KEY UPDATE id=id" , '2', 'Glider', 0, '0','0', '0', null);	
 	$wpdb->query($sql);			
 			
 	$table_name = $wpdb->prefix . "cloud_base_aircraft_status";
@@ -310,6 +310,14 @@ function create_cb_roles(){
 			$role_object->add_cap('edit_users', true);
 		}
 	}
+// Add Field Manager role
+	if(!role_exists('field_manager')){
+		add_role('field_manager' , 'Field Manager', array('read'));
+	} 
+// Add Assistant Field Manager role
+	if(!role_exists('assistant_field_manager')){
+		add_role('assistant_field_manager' , 'Assistant Field Manager', array('read'));
+	} 	
 // Add Chief Operations role	
 	if(!role_exists('chief_of_ops')){
 		add_role('chief_of_ops' , 'Chief Of Ops', array('cb_edit_operations', 'cb_edit_towpilot', 'cb_edit_instruction', 'edit_users'));

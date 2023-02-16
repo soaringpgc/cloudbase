@@ -380,7 +380,7 @@ function set_default_cb_configuration(){
 }
 function update_authoritys(){	
 	update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
-	"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", 
+	"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", "field_manager"=>"Field Manager", "assistant_field_manager"=>"Assistant FM", 
 	"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
 	"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
 }

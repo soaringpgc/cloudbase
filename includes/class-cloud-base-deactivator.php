@@ -30,7 +30,6 @@ class Cloud_Base_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
+		deactivate_plugins("cb-pdp_schedule/cb-pdp_schedule.php");
 	}
-
 }

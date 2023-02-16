@@ -41,7 +41,7 @@
 		
 		foreach ($page_tabs_enhanced as $key){
 			echo '<a href="?page='. $key['page']. '&tab=' .  $key['tab'] . '" class="nav-tab' . ($active_tab == $key['tab'] ? 
-			`nav-tab-active` : ``) . '">' .$key['title'] . '</a>' ;
+			`nav-tab-active` : ` `) . '">' .$key['title'] . '</a>' ;
 		} 	
 				
 ?>

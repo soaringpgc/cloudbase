@@ -76,7 +76,7 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
        	} elseif (isset($request['signoff'])){
      		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name } WHERE signoff_id= %d AND date_expire >= NOW()",  $request['signoff'] );      	     		      	      	
        	} elseif (isset($request['member_id'])){
-       		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['signoff'] );     
+       		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['member_id'] );     
        	} elseif ( isset($request['id']) ) {
        		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['id'] );     
 		} else {

@@ -36,20 +36,20 @@
 	  	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
-//      			alert(POST_SUBMITTER.nonce);
-        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+//      			alert(cloud_base_public_vars.nonce);
+        		xhr.setRequestHeader( 'X-WP-NONCE', cloud_base_public_vars.nonce );
       			},
    			} ));	
    		},	
 	});
 	app.Pilots = app.Model.extend({
-//		url: POST_SUBMITTER.root + 'cloud_base/v1/pilots',
+//		url: cloud_base_public_vars.root + 'cloud_base/v1/pilots',
 		preinitialize(){	     
 	 	},		
 		wait: true
 	});
 	app.Aircraft = app.Model.extend({
-//		url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',
+//		url: cloud_base_public_vars.root + 'cloud_base/v1/aircraft',
 		preinitialize(){	     
 	 	},		
 		wait: true
@@ -84,8 +84,8 @@
     	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
- //     			alert(POST_SUBMITTER.nonce);
-        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+ //     			alert(cloud_base_public_vars.nonce);
+        		xhr.setRequestHeader( 'X-WP-NONCE', cloud_base_public_vars.nonce );
       			},
    			} ));	
    		},	
@@ -93,19 +93,19 @@
 
     app.FlightList= app.Collection.extend({
     	model: app.Flight,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/flights',  
+    	url: cloud_base_public_vars.root + 'cloud_base/v1/flights',  
    	 }) ; 
    	 app.AircraftList= app.Collection.extend({
     	model: app.Aircraft,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',  
+    	url: cloud_base_public_vars.root + 'cloud_base/v1/aircraft',  
    	 }) ; 	 	
     app.PilotList= app.Collection.extend({
     	model: app.Pilots,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/pilots?role=subscriber'
+    	url: cloud_base_public_vars.root + 'cloud_base/v1/pilots?role=subscriber'
    	 }) ; 	
     app.FeeList= app.Collection.extend({
     	model: app.Pilots,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees'
+    	url: cloud_base_public_vars.root + 'cloud_base/v1/fees'
    	 }) ; 	
 	
 // model view	

@@ -71,8 +71,8 @@
 	  	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
-//      			alert(POST_SUBMITTER.nonce);
-        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+//      			alert(cloud_base_admin_vars.nonce);
+        		xhr.setRequestHeader( 'X-WP-NONCE', cloud_base_admin_vars.nonce );
       			},
    			} ));	
    		},	
@@ -124,8 +124,8 @@
     	sync: function( method, model, options ){
     		return Backbone.sync(method, this, jQuery.extend( options, {
       			beforeSend: function (xhr) {
- //     			alert(POST_SUBMITTER.nonce);
-        		xhr.setRequestHeader( 'X-WP-NONCE', POST_SUBMITTER.nonce );
+ //     			alert(cloud_base_admin_vars.nonce);
+        		xhr.setRequestHeader( 'X-WP-NONCE', cloud_base_admin_vars.nonce );
       			},
    			} ));	
    		},	
@@ -133,27 +133,27 @@
 
     app.TowFeesList = app.Collection.extend({
     	model: app.Towfee,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/fees',  
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/fees',  
    	 }) ; 
     app.AircraftTypeList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_types',			
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/aircraft_types',			
     }) ; 
     app.FlightTypeList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/flight_types',			
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/flight_types',			
     }) ; 
     app.StatusTypeList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft_status',			
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/aircraft_status',			
     }) ; 
      app.AircraftList = app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/aircraft',	
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/aircraft',	
     }) ; 
     app.SignOffList =   app.Collection.extend({
     	model: app.AircraftType,
-    	url: POST_SUBMITTER.root + 'cloud_base/v1/sign_off_types',			
+    	url: cloud_base_admin_vars.root + 'cloud_base/v1/sign_off_types',			
     }) ;    	   	
 // model view	
 	app.ModelView = Backbone.View.extend({

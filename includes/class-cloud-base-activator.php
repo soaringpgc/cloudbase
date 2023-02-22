@@ -197,8 +197,8 @@ function create_cb_database(){
 		authority varchar(30),
 		no_fly BOOLEAN,
 		applytoall BOOLEAN,
-		PRIMARY KEY  (id),
-		active boolean DEFAULT 1
+		active boolean DEFAULT 1,
+		PRIMARY KEY  (id)
 		);" . $charset_collate  . ";";	
 	dbDelta($sql); 
 

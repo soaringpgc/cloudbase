@@ -98,25 +98,44 @@ class Cloud_Base_Admin {
 		 * class.
 		 */
         wp_register_script( 'cloudbase_admin_templates',  plugins_url('/cloudbase/admin/js/templates.js'));
+//
+// Moved below, so scripts now only load when the setting page is loaded. 
 
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
-		array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
-		'cloudbase_admin_templates'), $this->version, false );
+// 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
+// 		array( 'wp-api', 'jquery' ,  'backbone', 'underscore',
+// 		'cloudbase_admin_templates'), $this->version, false );
+
 
 	//localize data for script
-		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(
-			'root' => esc_url_raw( rest_url() ),
-			'nonce' => wp_create_nonce( 'wp_rest' ),
-			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
-			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
-			'current_user_id' => get_current_user_id()
-			)
-		);
+// 		wp_localize_script( $this->cloud_base, 'POST_SUBMITTER', array(
+// 			'root' => esc_url_raw( rest_url() ),
+// 			)
+//		);
 	}
     public function add_settings_page() {
 		$this->plugin_screen_hook_suffix = add_options_page(	
 			'Cloud Base Settings', 'Cloud Base','read', 'cloud_base',
-			array( $this, 'display_settings_page') );		
+			array( $this, 'display_settings_page') );	
+		add_action('admin_enqueue_scripts', function($hook) {
+			if($hook !== $this->plugin_screen_hook_suffix){
+				return;
+			}
+			wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
+				array( 'wp-api', 'jquery' ,  'backbone', 'underscore', 'cloudbase_admin_templates'), $this->version, false );
+// 			wp_enqueue_style( 'datepicker');
+//  			wp_enqueue_style( 'cloudbase_css');
+				//localize data for script			
+		
+     		$dateToBePassed = array(
+ 				'root' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+ 				'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+ 				'current_user_id' => get_current_user_id()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_admin_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+      	});			
 	}
 	/**
 	 * Render the options page for plugin

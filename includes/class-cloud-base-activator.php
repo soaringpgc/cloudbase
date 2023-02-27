@@ -233,7 +233,7 @@ function create_cb_roles(){
 	}
 // add Chief CFIG 
 	if(!role_exists('chief_flight')){
-		add_role('chief_flight' , 'Chief CFI', array('cb_edit_cfig', 'cb_edit_instruction'));
+		add_role('chief_flight' , 'Chief CFI', array('cb_edit_cfig', 'cb_edit_instruction', 'chief_flight'));
 	} else {
 		//add capability to existing chief_flight
 		$role_object = get_role('chief_flight' );
@@ -242,6 +242,9 @@ function create_cb_roles(){
 		}	
 		if ( !$role_object->has_cap('cb_edit_instruction')){
 			$role_object->add_cap('cb_edit_instruction', true );
+		}	
+		if ( !$role_object->has_cap('chief_flight')){
+			$role_object->add_cap('chief_flight', true );
 		}	
 	}	
 		
@@ -289,13 +292,16 @@ function create_cb_roles(){
 	}	
 // add Chief Tow Pilot role
 	if(!role_exists('chief_tow')){
-		add_role('chief_tow' , 'Chief Tow Pilot', array( 'cb_edit_towpilot'));
+		add_role('chief_tow' , 'Chief Tow Pilot', array( 'cb_edit_towpilot'), 'chief_tow');
 	} else {
 		//add capability to existing tow pilot
 		$role_object = get_role('chief_tow' );
 		if ( !$role_object->has_cap('cb_edit_towpilot')){
 			$role_object->add_cap('cb_edit_towpilot', true);
-		}	
+		}
+		if ( !$role_object->has_cap('chief_tow')){
+			$role_object->add_cap('chief_tow', true);
+		}		
 	}				
 // Add Operations role
 	if(!role_exists('operations')){
@@ -372,10 +378,10 @@ function set_default_cb_configuration(){
 	if ( get_option('glider_club_long_name') == false ){
 		update_option('glider_club_long_name', 'Generic Flying Club Name'  );
 		update_option('glider_club_short_name', 'GFCN'  );
-		update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
-		"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", 
-		"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
-		"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
+// 		update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
+// 		"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", "field_manager"=>"Field Manager", "assistant_field_manager"=>"Assistant FM", 
+// 		"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
+// 		"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
 	}
 }
 function update_authoritys(){	

@@ -115,10 +115,12 @@ class Cloud_Base_Public {
      		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
      		);
 	}
-	public function register_shortcodes() {
+	public function register_shortcodes() 
+	{
 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
+		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
 	} // register_shortcodes()
 	public function display_flights($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -148,7 +150,14 @@ class Cloud_Base_Public {
     
 		include_once 'partials/cloud-base-no_fly.php';
 	}
+	public function display_signoffs($atts = array()){
+    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
+		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
 
+		include_once 'partials/html-cb-signoffs-display.php';
+		return  display_member_signoffs();
+	}
 	/**
 	 * This function updates aircraft details. This is where glider, pilot
 	 * instructor, tow pilot and tug are selected. Also corrections can be make to 

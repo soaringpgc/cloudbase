@@ -115,6 +115,26 @@
 {
     display: table-row;
 }
+.Row-red
+ {
+     display: table-row;
+     color: red
+ }
+ .Row-orange
+ {
+     display: table-row;
+     color: orange
+ }
+ .Row-yellow
+ {
+     display: table-row;
+     color: yellow
+ } 
+ .Row-green
+ {
+     display: table-row;
+     color: green
+ }      
 .Cell0
 {
   	background-color: gray; 
@@ -135,6 +155,16 @@
     padding-left: 5px;
     padding-right: 5px;
     width: 80px;
+}
+.Cell1
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 110px;
 }
 .Cell2
 {

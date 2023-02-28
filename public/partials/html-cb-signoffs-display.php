@@ -10,20 +10,23 @@
  *
  * @author    Dave Johnson/Philadelphia Glider Council 
  */
-
-?>
-
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
-
-
-<?php		
-	 function display_member_signoffs(){
+		
+	 function display_member_signoffs($atts){
  	    global $wpdb;
      	$charset_collate = $wpdb->get_charset_collate();
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
- 	 	$pilot = wp_get_current_user();
- 	 
+
+ 	 	$cb_atts = shortcode_atts(array('all' => false), $atts, 'display_signoffs');
+
+ 	 	if( $cb_atts['all'] == true ){ // display all signoffs 
+ 	 	     $args = array('role' => 'subscriber',
+     		'orderby' => 'user_nicename',
+     		'order' => 'ASC');
+     		$pilots = get_users($args);
+ 	 	} else {
+ 	 		$pilots = array ( wp_get_current_user()); 	// default just display current pilot
+ 	 	}
  	 	ob_start();
        
 	/**
@@ -36,15 +39,17 @@
 	 *
 	 *
 	 */	 		
- 		if ($pilot != false){
-		  	$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
+
+	 	foreach ($pilots as $pilot ){		 
+	 		$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
   	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.authority_id WHERE `member_id` =  " . $pilot->id ;
+
 			$pilot_signoffs= $wpdb->get_results($sql);
 			echo '<div text-align:"center" > 
 				<div class="Table" >         
 				<div class="Heading">
+				<div  class="Cell2" >Pilot</div>
         	  	<div  class="Cell2" >Sign Off</div>
-       		   	<div  class="Cell1" >Authority</div>
           		<div  class="Cell1">Effec Date</div>
           		<div  class="Cell1">Expire Date</div>
        			</div> ';
@@ -59,8 +64,8 @@
 					} else {
 						echo '<div class="Row-green">';
 					}
-					echo '<div class="Cell2"  >'. $signoff->signoff_type  .  '</div>';
-					echo '<div class="Cell1"  >'. $signoff->display_name .  '</div>';						
+					echo '<div class="Cell2"  >'.  $pilot->first_name . ' ' . $pilot->last_name  .  '</div>';
+					echo '<div class="Cell2"  >'. $signoff->signoff_type  .  '</div>';					
 					echo '<div class="Cell1" >'. date("Y-m-d", strtotime($signoff->date_effective)) .  '</div>';
 					echo '<div class="Cell1"  >'. date("Y-m-d", strtotime($signoff->date_expire))  .  '</div> </div>';
 				}	
@@ -68,10 +73,11 @@
     	 		echo'<div>No current sign offs  '  ;   	
   			}
   			echo '</div>';
+  			}
   			$output = ob_get_contents();
   			ob_end_clean();
  			return $output ;
-  		} 
+//   		} 
  	}
 ?>
 

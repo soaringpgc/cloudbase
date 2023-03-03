@@ -12,8 +12,6 @@
   background-color: white;
   padding: 20px;
 }
-
-
 .aside {
   flex: 70%;
 /*    background-color: #f1f1f1;*/
@@ -39,6 +37,9 @@
 }
 .row > h3 {
 	flex: 1;
+}
+.signoff_state{
+	display: none;
 }
 .hform {
 	float:left;
@@ -223,4 +224,89 @@
 }
 h3.red{
 	color: red
+}
+.div-table {
+  display: table;         
+  width: auto;         
+  background-color: #eee;         
+  border: 1px solid #666666;         
+  border-spacing: 5px; /* cellspacing:poor IE support for  this */
+}
+.div-table-row {
+  display: table-row;
+  width: auto;
+  clear: both;
+}
+.div-table-col0 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 50px;         
+  background-color: #FFF;  
+}
+.div-table-col4 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 40px;         
+  background-color: #FFF;  
+}
+.div-table-col1 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 300px;         
+  background-color: #ccc;  
+}
+
+.div-table-col100 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 100px;         
+  background-color: #ccc;  
+}
+
+.div-table-col100b {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 100px;         
+  background-color: #fff;  
+}
+
+.div-table-col125 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 125px;         
+  background-color: #fff;  
+}
+
+.div-table-col75 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 75px;         
+  background-color: #fff;  
+}
+
+.div-table-col75b {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 75px;         
+  background-color: #ccc;  
+}
+.div-table-col50 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 50px;         
+  background-color: #ccc;  
+}
+
+.div-table-col {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 200px;         
+  background-color: #FFF;  
+}
+
+.div-table-col160 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 160px;         
+  background-color: #FFF;  
 }

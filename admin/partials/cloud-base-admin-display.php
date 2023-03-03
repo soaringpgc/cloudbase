@@ -38,8 +38,13 @@
 //		
 		$page_tabs_enhanced = apply_filters( 'cb_admin_add_config', $page_tabs_enhanced );		
 		echo "<h1>" . esc_html( get_admin_page_title() ) . "</h1><h2 class-'nav-tab-wrapper'> ";
-		
+
+		$i =0;		
 		foreach ($page_tabs_enhanced as $key){
+		if ($i == 5 ){
+		echo "<br><br>";
+			}
+				$i++; 
 			echo '<a href="?page='. $key['page']. '&tab=' .  $key['tab'] . '" class="nav-tab' . ($active_tab == $key['tab'] ? 
 			`nav-tab-active` : ` `) . '">' .$key['title'] . '</a>' ;
 		} 	

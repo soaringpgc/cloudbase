@@ -219,10 +219,10 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 		public function cb_expire($start_date, $signoff_id){
 // do the database look up here. the call expire_date	
 		global $wpdb;
-	 	$table_signoffs = $wpdb->prefix . "pgc_signoffs_types";
+	 	$table_signoffs = $wpdb->prefix . "cloud_base_signoffs_types";
 	 	$sql = $wpdb->prepare("SELECT * FROM {$table_signoffs} WHERE `id` = %d", $signoff_id);	 	
   		$signoff_duration = $wpdb->get_row($sql);
-		$date_expire = $this->gc_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
+		$date_expire = $this->cb_expire_date($start_date, $signoff_duration->period, $signoff_duration->fixed_date);
 		return($date_expire);	
 	}	
 		

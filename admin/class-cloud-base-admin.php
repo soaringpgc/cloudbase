@@ -194,4 +194,19 @@ class Cloud_Base_Admin {
 			$result = $this->cloud_base_new_signoffs($user_id);
 		}
  	}
+ 	// add required signoff for new members. 
+	public function cloud_base_add_new_user_signoffs($user_id, $notify) {
+		global $wpdb;  
+	    $table_types = $wpdb->prefix . "cloud_base_signoffs_types";   
+	    $table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";  
+	    $authority = get_current_user_id();    
+		$sql = "SELECT * FROM {$table_types} WHERE `active` = 1 AND `applytoall` = 1 ";
+		$items = $wpdb->get_results( $sql, OBJECT);
+		if( $wpdb->num_rows > 0 ) {
+			foreach($items as $v){			
+				$wpdb->insert( $table_signoffs, array ('member_id' => $user_id, 'signoff_id' => $v->id, 'date_entered' =>  date('Y-m-d'), 
+					'date_effective' => '1970-01-01', 'date_expire' => '1970-01-01', 'authority_id' => $authority));					
+			}
+		}		
+ 	} 	
 }

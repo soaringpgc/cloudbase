@@ -171,7 +171,7 @@ class Cloud_Base {
 // 'set_user_role' appears to be disabled by members plugin. 
 // 		$this->loader->add_action( 'set_user_role', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
 	 	$this->loader->add_action( 'profile_update', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
- 		
+	 	$this->loader->add_action( 'edit_user_created_user', $plugin_admin, 'cloud_base_add_new_user_signoffs', 5, 3);	 	
 	}
 
 	/**

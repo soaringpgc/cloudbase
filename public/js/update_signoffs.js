@@ -208,7 +208,7 @@
   	}
   	function display_signoffs(response){
   	      var html_string =  '<div class="div-table"><div class="div-table-row">'  
-  	         +  ' <div  class="div-table-col4 hform">select</div>'
+  	         +  ' <div  class="div-table-col0 hform">select</div>'
              +  ' <div  class="div-table-col160 hform" align="center">Sign Off</div>'
 //              +  ' <div  class="div-table-col125 hform" align="center">Authority</div>'
              +  ' <div  class="div-table-col125">Expire Date</div>'
@@ -217,7 +217,7 @@
             Object.keys( response ).forEach(key=>{
             	html_string = html_string + '<div class="div-table-row">';
 //             	if ( signoff_public_vars.user_can == response[key].authority ){
-            	html_string = html_string + '<div class="div-table-col4 hform" ><input type="radio" name="tobeupdated-s" value="' + response[key].id + '"/></div>';
+            	html_string = html_string + '<div class="div-table-col0 hform" ><input type="radio" name="tobeupdated-s" value="' + response[key].id + '"/></div>';
 
 // }				
 				html_string = html_string + '<div class="div-table-col160 hform"  >'+ response[key].signoff_type + '</div>';

@@ -81,21 +81,20 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
       	} 
         $items = $wpdb->get_results( $sql, OBJECT);  
          	// filter out the inactive membets.      
-        foreach( $items as $i=>$v){
-        	$user = get_user_by('ID', $v->member_id);        	
-        	if ( $user != false ){
-        		$user_roles = ( array ) $user->roles;
-        		if(in_array('inactive', $user_roles )){
-        			unset($items[$i]);
-        		}  else {
+        $no_role = wp_get_users_with_no_role(); 
+        $args = array('role'    => 'inactive', 'fields' => 'ID');
+		$inactive = get_users( $args );
+		$no_list = array_merge($inactive, $no_role );	   	
+
+        foreach( $items as $i=>$v){ // filter out users who are inactive         
+        	if (in_array( $v->member_id, $no_list)) {
+        		unset($items[$i]);          	
+        	} else {
         		    $first_name = get_user_meta($v->member_id, 'first_name', true);
         			$last_name = get_user_meta($v->member_id, 'last_name', true);
 					$v->name = $first_name . ", " . $last_name;
         		}    
-        	} else {
-        		unset($items[$i]);        	
-        	}
-        }        
+        	}         
         if ($wpdb->last_error){
 				return new \WP_Error( $wpdb->last_error, esc_html__( ' Unable to retrive data.', 'my-text-domain' ), array( 'status' => 500 ) );        
         }

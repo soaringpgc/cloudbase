@@ -123,6 +123,7 @@ class Cloud_Base_Public {
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
 		add_shortcode( 'signoff_summary', array( $this, 'signoff_summary' ) );
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
+		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
 	} // register_shortcodes()
 	public function display_flights($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -132,6 +133,19 @@ class Cloud_Base_Public {
 		include_once 'partials/cloud-base-public-display.php';
 //		return display_flights();
 	}
+	public function squawk_sheet($atts = array() ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
+		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
+		ob_start();
+		include_once 'partials/cloud-base-squawk_sheet.php';
+		display_squawk_sheet();
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+//		return squawk_sheet();
+	}
+
 	public function display_status($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',

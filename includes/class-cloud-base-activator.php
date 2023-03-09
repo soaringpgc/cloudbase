@@ -46,7 +46,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.83;
+   	$db_version = 0.85;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){ 
@@ -79,11 +79,12 @@ function create_cb_database(){
     	squawk_id int(10) NOT NULL,
     	equipment int(10) UNSIGNED NOT NULL,
     	date_entered datetime DEFAULT NULL,
-    	title tinytext NOT NULL,
-    	text text NOT NULL,
+    	date_updated datetime DEFAULT NULL,
+    	text text  NULL,
+    	comment text  NULL,
     	user_id int(10) UNSIGNED NOT NULL,
+    	user_last_update_id int(10) UNSIGNED,
     	status varchar(8),
-    	valid_until datetime DEFAULT NULL,
     	PRIMARY KEY  (id)
     	);" . $charset_collate  . ";";
     dbDelta($sql);					

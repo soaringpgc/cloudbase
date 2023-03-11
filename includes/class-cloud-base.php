@@ -172,6 +172,11 @@ class Cloud_Base {
 // 		$this->loader->add_action( 'set_user_role', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
 	 	$this->loader->add_action( 'profile_update', $plugin_admin, 'cloud_base_inactive_signoffs', 5, 3);
 	 	$this->loader->add_action( 'edit_user_created_user', $plugin_admin, 'cloud_base_add_new_user_signoffs', 5, 3);	 	
+	 	
+	 	$this->loader->add_action( 'show_user_profile', $plugin_admin, 'cloudbase_profile_additional_info', 5, 3);
+	 	$this->loader->add_action( 'edit_user_profile', $plugin_admin, 'cloudbase_profile_additional_info', 5, 3);
+	 	$this->loader->add_action( 'personal_options_update', $plugin_admin, 'cloudbae_save_profile_additional_info', 5, 3);	 	
+	 	$this->loader->add_action( 'edit_user_profile_update', $plugin_admin, 'cloudbae_save_profile_additional_info', 5, 3);	 
 	}
 
 	/**

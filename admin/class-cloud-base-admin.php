@@ -208,5 +208,30 @@ class Cloud_Base_Admin {
 					'date_effective' => '1970-01-01', 'date_expire' => '1970-01-01', 'authority_id' => $authority));					
 			}
 		}		
- 	} 	
+ 	} 
+ 	/**
+	 * add address and phone number to admin page
+	 *
+	 * @since  1.0.0
+	 */
+	  
+	public function cloudbase_profile_additional_info( $user ) {
+		include_once 'partials/profile_additions.php';
+	}	
+	function cloudbae_save_profile_additional_info( $user_id ) {
+	  $saved = false;
+	  if ( current_user_can( 'edit_user', $user_id ) ) {
+	  	update_user_meta( $user_id, 'address1', $_POST['address1'] );
+	    update_user_meta( $user_id, 'address2', $_POST['address2'] );
+	    update_user_meta( $user_id, 'city', $_POST['city'] );
+	    update_user_meta( $user_id, 'state', $_POST['state'] );
+	    update_user_meta( $user_id, 'zip', $_POST['zip'] );
+
+	    update_user_meta( $user_id, 'cel', $_POST['cel'] );
+	    update_user_meta( $user_id, 'tel', $_POST['tel'] );
+	    update_user_meta( $user_id, 'wrk', $_POST['wrk'] );
+	    $saved = true;
+	  }
+	  return true;
+	}
 }

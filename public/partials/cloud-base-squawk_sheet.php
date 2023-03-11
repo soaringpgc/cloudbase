@@ -22,9 +22,9 @@
 		$user = wp_get_current_user();
 		$user_meta = get_userdata( $user->id );
 
-// 		if( !isset($_POST['member_id'])){
-// 			return;
-// 		}
+		if( !isset($_POST['aircraft'])){
+			return;
+		}
 	
 	   	if( !wp_verify_nonce($_POST['_wpnonce'], 'submit_field_duty') ) {
    		    echo 'Did not save because your form seemed to be invalid. Sorry';
@@ -109,23 +109,22 @@
 	echo('<div id="squawks" "></div>'); 
 
   	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment,  s.user_id  FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
-  		on a.aircraft_id=s.equipment WHERE a.valid_until is NULL"; 
+  		on a.aircraft_id=s.equipment WHERE a.valid_until is NULL AND( s.status != 'Complete' OR s.date_entered > CURRENT_DATE() - INTERVAL 6 MONTH )"; 
 	$squawks = $wpdb->get_results($sql); 
-	echo('<div class="table-container"><div class="table-heading ">Recient Squawks</div>
+	echo('<form><div class="table-container"><div class="table-heading ">Recient Squawks</div>
 	<div class="table-row" style="font-size: 12px" >
 		<div class="table-col">ID</div>
 		<div class="table-col">Equip.</div>
 		<div class="table-col">Date</div> 
 		<div class="table-col">Squawk</div> 
 		<div class="table-col">Member</div>   
-		<div class="table-col">Comment</div>   
 		<div class="table-col">Status</div>     		
 		</div>');
 	foreach($squawks as $squawk){
  		echo('<div class="table-row" style="font-size: 12px" >');
 		echo('<div class="table-col">'.$squawk->squawk_id.'</div>');
 		echo('<div class="table-col">'.$squawk->compitition_id.'</div>');
-			$sdate = strtotime($squawk->date_entered);
+		$sdate = strtotime($squawk->date_entered);
 		echo('<div class="table-col">'.date("Y-m-d",$sdate).'</div>');
 		echo('<div class="table-col">'.$squawk->text.'</div>');
 			$user = get_user_by('ID',$squawk->user_id );
@@ -133,27 +132,24 @@
 			$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
 		echo('<div class="table-col">'.$display_name.'</div>');
 		if(current_user_can( 'cb_edit_maintenance')){
-		  echo('<div class="table-col">
-				<textarea id="squawk_comment" name="squawk_comment" rows="2" cols="20">' .$squawk->comment. '</textarea></div>');
+// 		  echo('<div class="table-col">
+// 				<textarea id="squawk_comment" name="squawk_comment" rows="2" cols="20">' .$squawk->comment. '</textarea></div>');
 		  echo('<div class="table-col">');
-			echo('<select id="squawk_status" name="squawk_status">  ');
+			echo('<select id="squawk_status" name="squawk_status" class="status_change">  ');
 			echo('<option value="'.$squawk->status.'" selected>'.$squawk->status.'</option>');  
-			echo('<option value="New" >New</option>');
-			echo('<option value="Open" >Open</option>');
-			echo('<option value="Pending" >Pending</option>');	
-			echo('<option value="Comlete" >Complete</option>');
-		 echo('</selected></div>');	
+			echo('<option value="'.$squawk->squawk_id.'_New" >New</option>');
+			echo('<option value="'.$squawk->squawk_id.'_Open" >Open</option>');
+			echo('<option value="'.$squawk->squawk_id.'_Pending" >Pending</option>');	
+			echo('<option value="'.$squawk->squawk_id.'_Comlete" >Complete</option>');
+		 echo('</select></div>');	
 		} else {
-			echo('<div class="table-col">'.$squawk->comment.'</div>');	
+// 			echo('<div class="table-col">'.$squawk->comment.'</div>');	
 			echo('<div class="table-col">'.$squawk->status.'</div></div>');
 		}	
 	}
-	echo('</div>');
+	echo('</div></form>');
 
 }	
  
-
 ?>
-
-
 

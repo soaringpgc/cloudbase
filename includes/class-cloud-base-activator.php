@@ -81,10 +81,9 @@ function create_cb_database(){
     	date_entered datetime DEFAULT NULL,
     	date_updated datetime DEFAULT NULL,
     	text text  NULL,
-    	comment text  NULL,
     	user_id int(10) UNSIGNED NOT NULL,
     	user_last_update_id int(10) UNSIGNED,
-    	status varchar(8),
+    	status varchar(10),
     	PRIMARY KEY  (id)
     	);" . $charset_collate  . ";";
     dbDelta($sql);					

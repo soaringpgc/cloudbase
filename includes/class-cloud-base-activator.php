@@ -182,7 +182,7 @@ function create_cb_database(){
 	  discription varchar(40) NOT NULL,
 	  date_updated datetime DEFAULT NULL,
 	  user_id int(10) UNSIGNED NOT NULL,
-      PRIMARY KEY (ID)
+      PRIMARY KEY (id)
 	  );" . $charset_collate  . ";";
 	dbDelta($sql);
 // Sign offs	
@@ -247,7 +247,26 @@ function create_cb_roles(){
 			$role_object->add_cap('chief_flight', true );
 		}	
 	}	
-		
+// add CFIG scheduler
+	if(!role_exists('cfig_scheduler')){
+		add_role('cfig_scheduler' , 'CFI-G scheduler', array('cfig_scheduler'));
+	} else {
+		//add capability to existing cfi-g
+		$role_object = get_role('cfig_scheduler' );
+		if ( !$role_object->has_cap('cfig_scheduler')){
+			$role_object->add_cap('cfig_scheduler', true );
+		}
+	}
+// add Tow Pilot scheduler
+	if(!role_exists('tow_scheduler')){
+		add_role('tow_scheduler' , 'Tow scheduler', array('tow_scheduler'));
+	} else {
+		//add capability to existing cfi-g
+		$role_object = get_role('tow_scheduler' );
+		if ( !$role_object->has_cap('tow_scheduler')){
+			$role_object->add_cap('tow_scheduler', true );
+		}
+	}			
 // add Treasurer role
 	if(!role_exists('treasurer')){
 		add_role('treasurer' , 'Treasurer', array('cb_edit_dues', 'cb_edit_flight', 'read', 'list_users', 'list_roles', 'edit_users', 'create_users'));
@@ -387,7 +406,7 @@ function set_default_cb_configuration(){
 function update_authoritys(){	
 	update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
 	"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", "field_manager"=>"Field Manager", "assistant_field_manager"=>"Assistant FM", 
-	"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
+	"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", "cfig_scheduler"=>"CFI-G scheduler",  "tow_scheduler"=>"Tow scheduler",
 	"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
 }
 

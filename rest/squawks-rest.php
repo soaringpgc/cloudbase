@@ -33,19 +33,19 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_squawks_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),), 
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_squawks_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_squawks_put_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -67,11 +67,33 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		*/
 	}	
 	public function cloud_base_squawks_post_callback( \WP_REST_Request $request) {
+
 		/* 
 			Process your POST request here.
 		*/
 	}
-	public function cloud_base_squawks_put_callback( \WP_REST_Request $request) {
+	public function cloud_base_squawks_put_edit_callback( \WP_REST_Request $request) {
+
+		global $wpdb;
+		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
+		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
+		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+// 		$user = wp_get_current_user();
+// 		$user_meta = get_userdata( $user->ID );
+// 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+ 
+		if (isset($request['id']) && isset($request['status'])){
+			if($request['status'] != ""){
+				$items = $wpdb->update($table_squawk, array('status'=>$request['status']), array('squawk_id' => $request['id']) );
+			}
+			if($items != 1 ){
+				return new \WP_REST_Response ($wpdb->last_error);
+				
+			}
+			return new \WP_REST_Response ($items);
+		} else {
+    		return new \WP_Error( 'Missing data', esc_html__( 'missing data.', 'my-text-domain' ), array( 'status' => 404 ) );  		
+		}
 		/* 
 			Process your PUT request here.
 		*/

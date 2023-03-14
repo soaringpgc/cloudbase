@@ -310,3 +310,71 @@ h3.red{
   width: 160px;         
   background-color: #FFF;  
 }
+.squawk_body {
+	background-color: #0A335C;
+    text-align: center;
+    color: #FFCC00;
+}
+.squawk_box {
+	background-color: #999999;
+}
+
+.squawk_user_name {
+	color: #FFCC00;
+	font-weight: bold;
+	font-size: 14px;
+}
+.squawk_text {
+	color: #EBEBEB; 
+	font-size: 14px; 
+	font-weight: bold; 
+	font-style: italic; 
+}
+.squawk_list_text {
+	color: #FFFFFF; 
+	font-size: 12px; 
+	font-weight: bold; 
+	font-style: italic; 
+}
+.select_list {
+	color: #1e90ff ;
+	font-size: 14px;
+	font-weight: bold;
+	font-style: italic;
+}
+input[type=submit] {
+        background-color: #1e90ff;
+        border: none;
+        color: #fff;
+        padding: 15px 30px;
+        text-decoration: none;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+.centered{
+ 	display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+a.buttons {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+} 
+.previous {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.next {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.round {
+  border-radius: 50%;
+}
+.nextPreviousButtons {
+  text-align: center;
+}

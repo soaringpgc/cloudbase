@@ -396,11 +396,7 @@ function create_cb_roles(){
 function set_default_cb_configuration(){
 	if ( get_option('glider_club_long_name') == false ){
 		update_option('glider_club_long_name', 'Generic Flying Club Name'  );
-		update_option('glider_club_short_name', 'GFCN'  );
-// 		update_option('cloud_base_authoritys', array("read"=>"Self", "edit_gc_dues"=>"Treasurer", 
-// 		"edit_gc_operations"=>"Operations", "edit_gc_instruction"=>"CFI-G", "field_manager"=>"Field Manager", "assistant_field_manager"=>"Assistant FM", 
-// 		"chief_flight"=>"Chief Flight Instructor", "chief_tow"=>"Chief Tow Pilot", 
-// 		"edit_gc_tow"=>"Tow Pilot", "manage_options"=>"god"));										    
+		update_option('glider_club_short_name', 'GFCN'  );								    
 	}
 }
 function update_authoritys(){	

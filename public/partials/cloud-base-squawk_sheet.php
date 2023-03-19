@@ -22,7 +22,10 @@
 		$user = wp_get_current_user();
 		$user_meta = get_userdata( $user->ID );
 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
-
+		$requestType = $_SERVER['REQUEST_METHOD'];
+		if($requestType == 'GET'){
+			return;
+		}
 		if (isset($_POST['id']) && isset($_POST['status'])){
 			if($_POST['status'] != ""){
 				$wpdb->update($table_squawk, array('status'=>$_POST['status']), array('id' => $_POST['id']) );
@@ -46,8 +49,9 @@
    		    return;
    		}  		
    		$squawk_id = $wpdb->get_var("SELECT MAX(squawk_id) FROM " . $table_squawk  );
-   		$sql = $wpdb->prepare("SELECT compitition_id FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
-   		$equipment_name = $wpdb->get_var($sql);
+   		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
+   		$equipment = $wpdb->get_results($sql, OBJECT);
+
    		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New');
  
     	if( $wpdb->insert($table_squawk, $data ) != 1 ){
@@ -56,8 +60,7 @@
     	} else {
 
 			$subject = "PGC SQUAWK (V3)";    	
-    		$msg = " Equipment: " .$equipment_name  . "\n\n Reported By: ". $display_name  . "\n\n Date: " . date('Y-M-d') .  "\n\n Problem Description: " . $squawk;
-	    		
+    		$msg = " Equipment: " .$equipment[0]->compitition_id  . "(".  $equipment[0]->registration . ")<br>\n Reported By: ". $display_name  . "<br>\n Date: " . date('Y-M-d') .  "<br>\n Problem Description: " . $squawk;
     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
 			$ops_emails = $wpdb->get_results($sql);
 			$to = ""; 

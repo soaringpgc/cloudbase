@@ -114,14 +114,14 @@
 					method: "DELETE",
 			        data: data,
 			        success : function( response ) {
-			           console.log( response );
-			           alert( 'Signoff deleted' );
+// 			           console.log( response );
+			           alert('Sign Off Deleted.');
 			           restore_page_settings();
 			           fetch_pilot_signoffs(pilot);
 			        },
 			        fail : function( response ) {
-			           console.log( response );
-			           alert( 'Something went wrong.' );
+// 			           console.log( response );
+			           alert( response );
 			           restore_page_settings();
 			       }
 			       
@@ -169,7 +169,7 @@
            	 	 },
             	 fail : function( response ) {
 //                 	console.log( response );
-                	alert( 'something went wrong.');
+                	alert( response);
                 	restore_page_settings();
             	}
         	});

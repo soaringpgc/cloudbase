@@ -29,15 +29,15 @@
 			}
 		}
 		if( !isset($_POST['aircraft']) || ($_POST['aircraft'] == 0)){
+			 	echo '<h3 class="red"> You must select a glider!</h3>';
 			return;
 		}		
 		
 		$equipment_id = $_POST['aircraft'];
 		if( !isset($_POST['squawk_problem']) || strlen($_POST['squawk_problem']) == 0){
-		   	echo 'You must enter an issue!';
+		   	echo '<h3 class="red"> You must enter an issue!</h3>';
    		    return;			
 		}
-		
 		
 		$squawk = $_POST['squawk_problem'];
 		$squawk=$_POST['squawk_problem'];	
@@ -70,7 +70,7 @@
 			$headers .= 'From: <webmaster@pgcsoaring.com>' . "\r\n";
 	
   			mail($to,$subject,$msg,$headers);
-			echo('<p> Yoursquawk has been recorded</p> ');
+			echo('<p> Your squawk has been recorded</p> ');
     			
     	}
 	}	

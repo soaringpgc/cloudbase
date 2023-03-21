@@ -266,6 +266,16 @@ function create_cb_roles(){
 		if ( !$role_object->has_cap('tow_scheduler')){
 			$role_object->add_cap('tow_scheduler', true );
 		}
+	}	
+// add instruction scheduling assistant manager
+	if(!role_exists('schedule_assist')){
+		add_role('schedule_assist' , 'Instruction Scheduling', array('schedule_assist'));
+	} else {
+		//add capability to existing cfi-g
+		$role_object = get_role('schedule_assist' );
+		if ( !$role_object->has_cap('schedule_assist')){
+			$role_object->add_cap('schedule_assist', true );
+		}
 	}			
 // add Treasurer role
 	if(!role_exists('treasurer')){

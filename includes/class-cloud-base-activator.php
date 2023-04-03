@@ -382,6 +382,28 @@ function create_cb_roles(){
 			$role_object->add_cap('cb_edit_flight', true);
 		}	
 	}		
+// Add secheduling assistance editor role	
+	if(!role_exists('schedule_assist')){
+		add_role('schedule_assist' , 'Instruction Schedule Assistant', array('schedule_assist'));
+	} else {
+		//add capability to existing operations
+		$role_object = get_role('schedule_assist' );
+		if ( !$role_object->has_cap('schedule_assist')){
+			$role_object->add_cap('schedule_assist', true);
+		}	
+	}		
+// Add operations desk - role limited to only entering flights. 
+	if(!role_exists('ops_desk')){
+		add_role('ops_desk' , 'Operations Desk', array('ops_desk'));
+	} else {
+		//add capability to existing operations
+		$role_object = get_role('ops_desk' );
+		if ( !$role_object->has_cap('ops_desk')){
+			$role_object->add_cap('ops_desk', true);
+			$role_object->add_cap('cb_ops_desk', true);
+			$role_object->add_cap('read', true);
+		}	
+	}		
 
 // Add maintenance editor role	
 	if(!role_exists('maintenance_editor')){

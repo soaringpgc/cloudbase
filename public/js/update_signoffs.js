@@ -103,7 +103,7 @@
             effective_date: effective_date,
             record_id: record_id
         };   // are we deleting an old record.    
-        console.log (data);
+//         console.log (data);
 		if ($('#delete_signoff').prop('checked')){
 			if( confirm("you realy want to delete?")){
 				 $.ajax({
@@ -140,13 +140,13 @@
         		data: data,
         		dataType : 'json',
             	success : function( response ) {
-                	console.log( response );
+//                 	console.log( response );
             	    alert( 'success');
             	    restore_page_settings();
             	    fetch_pilot_signoffs(pilot);
            	 	},
             	fail : function( response ) {
-                	console.log( response );
+//                 	console.log( response );
                 	alert( response );
                 	restore_page_settings();
             	}

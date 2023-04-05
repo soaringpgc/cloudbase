@@ -114,7 +114,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 		if (!$the_user) {
 		    return new \WP_Error( 'Not Found', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );
 	  	} else {
-			$captian_id = $the_user->id;
+			$captian_id = $the_user->ID;
 		}
 	  } 	
 	  if (!empty($request['registration'])){
@@ -277,7 +277,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 //					wp_send_json_error(array('message'=>'Member Not found.'), 400 );		
 	  	  		 	return new \WP_Error( 'invalid user', esc_html__( 'Member Not found.', 'my-text-domain' ), array( 'status' => 400 ) );		
 	  			} else {
-					$captian_id = $the_user->id;
+					$captian_id = $the_user->ID;
 				}
 	  		} else{
         	    	$captian_id = $item->captian_id;

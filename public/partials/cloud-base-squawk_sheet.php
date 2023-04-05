@@ -86,7 +86,7 @@
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
 	$user = wp_get_current_user();
-	$user_meta = get_userdata( $user->id );
+	$user_meta = get_userdata( $user->ID );
 	$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
   	$sql = "Select DISTINCT(a.aircraft_id), a.registration, a.compitition_id FROM {$table_aircraft} a INNER JOIN {$table_type} t on a.aircraft_type=t.type_id WHERE a.valid_until is NULL AND t.title ='Glider'"; 
 	$equipemnt = $wpdb->get_results($sql); 
@@ -101,7 +101,7 @@
 	echo('<div class="squawk_box">');
 	echo (' <div class="squawk_user_name">Reported by: ' .$display_name . '</div>');
 	echo ('<form id="squawk_sheet"  name="squawk_sheet" method="post">');
-	echo ('<input type="hidden" id="member_id" name="member_id"  value="'. $user->id . '"</input> ');
+	echo ('<input type="hidden" id="member_id" name="member_id"  value="'. $user->ID . '"</input> ');
  
 	echo ('<label for="aircraft" class="squawk_text" >Equipment: </label>');
  	echo('<select class="select_list" id="aircraft" name="aircraft" >');
@@ -144,7 +144,7 @@ echo('<div class="centered"');
 		echo('<div class="table-col" style="white-space:nowrap">'.date("Y-m-d",$sdate).'</div>');
 		echo('<div class="table-col">'.$squawk->text.'</div>');
 			$user = get_user_by('ID',$squawk->user_id );
-			$user_meta = get_userdata( $user->id );
+			$user_meta = get_userdata( $user->ID );
 			$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
 		echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
 		if(current_user_can( 'cb_edit_maintenance')){
@@ -187,7 +187,7 @@ echo('<div class="centered"');
 			echo('<div class="table-col" style="white-space:nowrap">'.date("Y-m-d",$sdate).'</div>');
 			echo('<div class="table-col">'.$squawk->text.'</div>');
 				$user = get_user_by('ID',$squawk->user_id );
-				$user_meta = get_userdata( $user->id );
+				$user_meta = get_userdata( $user->ID );
 				$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
 			echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
 			if(current_user_can( 'cb_edit_maintenance')){
@@ -245,7 +245,7 @@ echo('<div class="centered"');
    				if(!$user){
    					$user_id = 1;
    				} else {
-   					$user_id = $user->id;
+   					$user_id = $user->ID;
    				}   				
    				if( preg_match( '/\(.*?\)/',$squawk['sq_equipment'], $registration )){
    				$reg = str_replace(array('(',')'), '', $registration[0]);

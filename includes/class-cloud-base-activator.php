@@ -226,7 +226,7 @@ function create_cb_roles(){
 		add_role('cfi_g' , 'CFI-G', array('cb_edit_instruction'));
 	} else {
 		//add capability to existing cfi-g
-		$role_object = get_role('cfi-g' );
+		$role_object = get_role('cfi_g' );
 		if ( !$role_object->has_cap('cb_edit_instruction')){
 			$role_object->add_cap('cb_edit_instruction', true );
 		}

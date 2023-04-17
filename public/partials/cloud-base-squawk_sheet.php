@@ -126,7 +126,7 @@
 
 	$squawks = $wpdb->get_results($sql); 
 	$open =  $wpdb->num_rows;
-echo('<div class="centered"');
+	echo('<div class="centered"');
 	echo('<div class="table-container"><div class="table-heading squawk_body">Recient Squawks</div>
 	<div class="table-row " >
 		<div class="table-col">ID</div>
@@ -157,6 +157,7 @@ echo('<div class="centered"');
 			echo('<option value="OPEN" >OPEN</option>');
 			echo('<option value="PENDING" >PENDING</option>');	
 			echo('<option value="COMPLETED" >COMPLETED</option>');
+			echo('<option value="DELETE" >DELETE</option>');
 		 echo('</select></div></div>');	
 		} else {
 // 			echo('<div class="table-col">'.$squawk->comment.'</div>');	
@@ -200,6 +201,7 @@ echo('<div class="centered"');
 				echo('<option value="OPEN" >OPEN</option>');
 				echo('<option value="PENDING" >PENDING</option>');	
 				echo('<option value="COMPLETED" >COMPLETED</option>');
+				echo('<option value="DELETE" >DELETE</option>');
 			 echo('</select></div></div>');	
 			} else {
 				echo('<div class="table-col">'.$squawk->status.'</div></div>');
@@ -228,43 +230,43 @@ echo('<div class="centered"');
 	  this function should be run only once. It is designed to copy squawks from the old 
 	  PGC PDP system to the new Wordpess base squawk system. -dsj
 	*/
-	function convert_from_pdp(){
-		global $wpdb;
-		global $PGCi;  // database handle for PDP external db
-
-		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
-		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
-		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-//    		$old_squwks = $PGCi->get_results('SELECT * FROM pgc_squawk');
-   		$old_squawk = mysqli_query($PGCi, 'SELECT * FROM pgc_squawk') or die('Query failed!');	    
-
-  
-   		foreach($old_squawk as $squawk){
-   			if($squawk['id_entered'] != null){
-				$user = get_user_by('email', $squawk['id_entered' ]);
-   				if(!$user){
-   					$user_id = 1;
-   				} else {
-   					$user_id = $user->ID;
-   				}   				
-   				if( preg_match( '/\(.*?\)/',$squawk['sq_equipment'], $registration )){
-   				$reg = str_replace(array('(',')'), '', $registration[0]);
-
-   					$sdate = strtotime($squawk['date_entered']);
-   					$sql = $wpdb->prepare( "SELECT aircraft_id FROM  {$table_aircraft} WHERE registration = %s",  'N'.$reg );
-   					$aircraft_id = $wpdb->get_var($sql);
- 					
-   					if($aircraft_id  != NULL ){
-   						$data = array ( 'squawk_id'=>$squawk['sq_key']  , 'equipment'=> $aircraft_id, 'date_entered'=>date("Y-m-d",$sdate), 
-   							'date_updated'=>$squawk['sq_date'], 'user_last_update_id'=>'1', 'text'=>$squawk['sq_issue'], 'comment'=>'' , 
-   							'user_id'=>$user_id ,'status'=>$squawk['sq_status']); 
- 				
-      					$wpdb->insert($table_squawk , $data );   		
-					}		 				
-   				} 			
-   			}
-   		}	
-	}
+// 	function convert_from_pdp(){
+// 		global $wpdb;
+// 		global $PGCi;  // database handle for PDP external db
+// 
+// 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
+// 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
+// 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+// //    		$old_squwks = $PGCi->get_results('SELECT * FROM pgc_squawk');
+//    		$old_squawk = mysqli_query($PGCi, 'SELECT * FROM pgc_squawk') or die('Query failed!');	    
+// 
+//   
+//    		foreach($old_squawk as $squawk){
+//    			if($squawk['id_entered'] != null){
+// 				$user = get_user_by('email', $squawk['id_entered' ]);
+//    				if(!$user){
+//    					$user_id = 1;
+//    				} else {
+//    					$user_id = $user->ID;
+//    				}   				
+//    				if( preg_match( '/\(.*?\)/',$squawk['sq_equipment'], $registration )){
+//    				$reg = str_replace(array('(',')'), '', $registration[0]);
+// 
+//    					$sdate = strtotime($squawk['date_entered']);
+//    					$sql = $wpdb->prepare( "SELECT aircraft_id FROM  {$table_aircraft} WHERE registration = %s",  'N'.$reg );
+//    					$aircraft_id = $wpdb->get_var($sql);
+//  					
+//    					if($aircraft_id  != NULL ){
+//    						$data = array ( 'squawk_id'=>$squawk['sq_key']  , 'equipment'=> $aircraft_id, 'date_entered'=>date("Y-m-d",$sdate), 
+//    							'date_updated'=>$squawk['sq_date'], 'user_last_update_id'=>'1', 'text'=>$squawk['sq_issue'], 'comment'=>'' , 
+//    							'user_id'=>$user_id ,'status'=>$squawk['sq_status']); 
+//  				
+//       					$wpdb->insert($table_squawk , $data );   		
+// 					}		 				
+//    				} 			
+//    			}
+//    		}	
+// 	}
  
 ?>
 

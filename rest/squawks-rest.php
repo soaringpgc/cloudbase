@@ -39,19 +39,19 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_squawks_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_squawks_put_edit_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
              'callback' => array( $this, 'cloud_base_squawks_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
+         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),        	 		      		
       	  )
       	)
       );	                            
@@ -102,8 +102,23 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		/* 
 			Process your DELETE request here.			
 		*/
-	}	
-
+		global $wpdb;
+		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+		$id =  $request['id'];
+		if ($id  != null){	
+			$sql = $wpdb->prepare("SELECT * FROM {$table_squawk} WHERE `squawk_id` = %d " ,  $id );	
+			$items = $wpdb->get_results( $sql );
 	
+			if( $wpdb->num_rows > 0 ) {
+				if ($wpdb->delete($table_squawk, array('squawk_id'=> $id )) ==1 ){
+					return rest_ensure_response( 'Deleted');
+				} else {
+					return new \WP_Error( $wpdb->last_error, esc_html__( 'Error.', 'my-text-domain' ), array( 'status' => 404 ) );
+				}
+			}
+		} else{
+			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+		}
+	}
 }
 

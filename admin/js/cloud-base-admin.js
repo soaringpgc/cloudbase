@@ -184,7 +184,7 @@
              // value of the same id in the model and then loading it back into the from
              //  someone (probably me) is going to hate me in the future.  -dsj
             $(this.localDivTag).children('input').each(function(i, el ){
-//            console.log( el );
+//             console.log( el );
       		   if(el.type === "checkbox" ){
       		   		if (localmodel.get(el.id) === "1" ){
       		   			$('#'+el.id).prop("checked", true);
@@ -319,11 +319,15 @@
       	  }
       	});
  //    	alert(JSON.stringify(formData));
+//      console.log(formData);
       	var updateModel = this.collection.get(formData.id);
-        updateModel.save(formData, {wait: true, error: function(model, response, error){
-      				var mresult= JSON.parse(response.responseText);     	
-      				alert(mresult["message"]) 
-      				}         
+        updateModel.save(formData, {
+        	wait: true, 
+        		error: function(model, response, error){
+//         		console.log(response.responseText);
+      			var mresult= JSON.parse(response.responseText);     	
+      			alert(mresult["message"]) 
+      			}         
         	});
 	// clean out the form:
       		$(this.localDivTag).children('input').each(function(i, el ){

@@ -1,7 +1,7 @@
 (function( $ ) {
 	'use strict';
-	console.log('cloud_base_public_vars');
-console.log(cloud_base_public_vars);
+// 	console.log('cloud_base_public_vars');
+// console.log(cloud_base_public_vars);
 	/**
 	 * All of the code for your public-facing JavaScript source
 	 * should reside in this file.

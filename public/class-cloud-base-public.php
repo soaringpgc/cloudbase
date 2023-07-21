@@ -246,7 +246,7 @@ class Cloud_Base_Public {
 	// NTFS - Note to Future Self  we are accessing the REST interface here.  
      	$retrieved_nonce = $_POST['_wpnonce'];
 		if (!wp_verify_nonce($retrieved_nonce, 'update_aircraft' ) ) die( 'Failed security check' );
- 		if (!current_user_can('edit_users') ) die( 'Failed acccess check' );    
+ 		if (!current_user_can('cb_edit_maintenance') ) die( 'Failed acccess check' );    
  		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
  		   $request->set_param( 'aircraft_id', $_POST['key'] );
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
@@ -255,7 +255,7 @@ class Cloud_Base_Public {
  		   $request->set_param( 'comment', $_POST['comment'] );
  		   $request->set_param( 'status', $_POST['status'] );
  		   $response = rest_do_request( $request);
- 		   var_dump($response);
+//  		   var_dump($response);
  		
      	wp_redirect($_POST['source_page']);
      } //updateAircraft()       

@@ -29,12 +29,13 @@
  	$detail_edit=false;
 	if (isset( $status_atts['details'] )) {
 		$details = $status_atts['details']==='true' ? true : false ;
-		if ($details && current_user_can('edit_users')){
+		if ($details && current_user_can('cb_edit_maintenance')){
 			$detail_edit='true';
 		}
 	} else {
 		$details = false;
 	}
+
 //	$detail_edit='true';
 	//$details = true ;
 	if ($details )	{

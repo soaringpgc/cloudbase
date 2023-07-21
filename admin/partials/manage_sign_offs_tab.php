@@ -8,11 +8,12 @@
 if( current_user_can( 'manage_options' ) ) {	
   echo('<h3>Sign Offs</h3>
     <form id="addsign_off_type" action="#" >
+     <div class="hform">   
       	<input type = "hidden"
             id = "id"
             size = "2"
             value = ""
-            name = "id"/>
+            name = "id"/></div>
         <div class="hform">    
     	<label for="signoff_type" >Sign off:</label>
         <input type = "text"

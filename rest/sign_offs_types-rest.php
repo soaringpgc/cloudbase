@@ -215,7 +215,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 			if( $wpdb->num_rows > 0 ) {
 									
 //	NTFS: see above. 
-				$items->authority_label =  $this->cloud_base_authoritys[$items->authority];
+// 				$items->authority_label =  $this->cloud_base_authoritys[$items->authority];
 				$items->period_label =  $this->value_lable_period[$items->period];				
 				return new \WP_REST_Response ($items);
 			} else {

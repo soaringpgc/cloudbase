@@ -181,15 +181,15 @@ class Cloud_Base_Public {
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
 
-    		$dateToBePassed = array(
- 				'root' => esc_url_raw( rest_url() ),
- 				'nonce' => wp_create_nonce( 'wp_rest' ),
- 				'success' => __( 'Data Has been updated!', 'your-text-domain' ),
- 				'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
- 				'current_user_id' => get_current_user_id()    	    	
-     		);   	
-     		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
-     		);
+//     		$dateToBePassed = array(
+//  				'root' => esc_url_raw( rest_url() ),
+//  				'nonce' => wp_create_nonce( 'wp_rest' ),
+//  				'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+//  				'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+//  				'current_user_id' => get_current_user_id()    	    	
+//      		);   	
+//      		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+//      		);
 
 		include_once 'partials/html-cb-signoffs-display.php';
 		return  display_member_signoffs($atts);

@@ -16,6 +16,7 @@
      	$charset_collate = $wpdb->get_charset_collate();
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
+     	$no_fly= false; 
 
  	 	$cb_atts = shortcode_atts(array('all' => false, 'no_fly' => '0'), $atts, 'display_signoffs');
 
@@ -29,12 +30,6 @@
  	 	}
  	 	if( $cb_atts['no_fly'] == true ){ // display only no_fly signoffs. 
  	 	    $no_fly= true; 
-
-
-// 			foreach ($value_label_authority  as $key => $authority ){
-// 				echo ('<option value="' . $key . '">' . $authority . '</option>');
-// 			}	
-
  	 	}
  	 	ob_start();
        
@@ -62,6 +57,10 @@
 
 			}
 			$pilot_signoffs= $wpdb->get_results($sql);
+			
+			if($cb_atts['no_fly'] && count($pilot_signoffs) === 0 ){
+				return;
+			}
 			
 			if ( $cb_atts['all'] == false &&  $cb_atts['no_fly'] == true && count($pilot_signoffs)> 0 ){
  	 				echo'<h3 class="red" > YOU ARE ON THE NO FLY LIST!</h3>';

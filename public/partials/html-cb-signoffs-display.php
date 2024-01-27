@@ -17,7 +17,7 @@
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
 
- 	 	$cb_atts = shortcode_atts(array('all' => false), $atts, 'display_signoffs');
+ 	 	$cb_atts = shortcode_atts(array('all' => false, 'no_fly' => '0'), $atts, 'display_signoffs');
 
  	 	if( $cb_atts['all'] == true ){ // display all signoffs 
  	 	     $args = array('role' => 'subscriber',
@@ -26,6 +26,15 @@
      		$pilots = get_users($args);
  	 	} else {
  	 		$pilots = array ( wp_get_current_user()); 	// default just display current pilot
+ 	 	}
+ 	 	if( $cb_atts['no_fly'] == true ){ // display only no_fly signoffs. 
+ 	 	    $no_fly= true; 
+
+
+// 			foreach ($value_label_authority  as $key => $authority ){
+// 				echo ('<option value="' . $key . '">' . $authority . '</option>');
+// 			}	
+
  	 	}
  	 	ob_start();
        
@@ -40,11 +49,24 @@
 	 *
 	 */	 		
 
+ 	 	$value_label_authority = get_option('cloud_base_authoritys');
+ 	 	
 	 	foreach ($pilots as $pilot ){		 
-	 		$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
+			if ($no_fly ){
+	 			$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
+  	 				on s.Signoff_id = t.id inner join wp_users a on a.id = s.authority_id WHERE s.date_expire <= CURDATE() and `member_id` =  " . $pilot->id ;
+					
+			} else {
+	 			$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
   	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.authority_id WHERE `member_id` =  " . $pilot->id ;
 
+			}
 			$pilot_signoffs= $wpdb->get_results($sql);
+			
+			if ( $cb_atts['all'] == false &&  $cb_atts['no_fly'] == true && count($pilot_signoffs)> 0 ){
+ 	 				echo'<h3 class="red" > YOU ARE ON THE NO FLY LIST!</h3>';
+ 	 		}
+ 	 				
 			echo '<div text-align:"center" > 
 				<div class="Table" >         
 				<div class="Heading">
@@ -52,6 +74,7 @@
         	  	<div  class="Cell2" >Sign Off</div>
           		<div  class="Cell1">Effec Date</div>
           		<div  class="Cell1">Expire Date</div>
+          		<div  class="Cell1">Authority</div>
        			</div> ';
 			if( $wpdb->num_rows > 0 ) {
 				foreach ($pilot_signoffs as $signoff){  
@@ -67,7 +90,8 @@
 					echo '<div class="Cell2"  >'.  $pilot->first_name . ' ' . $pilot->last_name  .  '</div>';
 					echo '<div class="Cell2"  >'. $signoff->signoff_type  .  '</div>';					
 					echo '<div class="Cell1" >'. date("Y-m-d", strtotime($signoff->date_effective)) .  '</div>';
-					echo '<div class="Cell1"  >'. date("Y-m-d", strtotime($signoff->date_expire))  .  '</div> </div>';
+					echo '<div class="Cell1"  >'. date("Y-m-d", strtotime($signoff->date_expire))  .  '</div>';
+					echo '<div class="Cell1"  >'. $value_label_authority[$signoff->authority]  .  '</div> </div>';
 				}	
 			} else {
     	 		echo'<div>No current sign offs  '  ;   	

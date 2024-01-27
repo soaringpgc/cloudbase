@@ -223,7 +223,8 @@
     border: 1px solid #ca8327;
 }
 h3.red{
-	color: red
+	color: red;
+	text-align: center;
 }
 .div-table {
   display: table;         

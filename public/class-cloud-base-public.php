@@ -101,20 +101,15 @@ class Cloud_Base_Public {
 	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));	    
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
      	wp_register_script( 'squawk_scripts',  plugins_url('/cloudbase/public/js/squawk_scripts.js'));
-//
-// 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-// 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
-// 
 
-    		$dateToBePassed = array(
- 				'root' => esc_url_raw( rest_url() ),
- 				'nonce' => wp_create_nonce( 'wp_rest' ),
- 				'success' => __( 'Data Has been updated!', 'your-text-domain' ),
- 				'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
- 				'current_user_id' => get_current_user_id()    	    	
-     		);   	
-     		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
-     		); 
+ 		$dateToBePassed = array(
+ 			'root' => esc_url_raw( rest_url() ),
+ 			'nonce' => wp_create_nonce( 'wp_rest' ),
+ 			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+ 			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+ 			'current_user_id' => get_current_user_id()    	    	
+ 		);   	
+ 		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'); 
 	}
 	public function register_shortcodes() 
 	{
@@ -153,7 +148,6 @@ class Cloud_Base_Public {
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;
-//		return squawk_sheet();
 	}
 
 	public function display_status($atts = array() ){
@@ -180,16 +174,6 @@ class Cloud_Base_Public {
     	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
-
-//     		$dateToBePassed = array(
-//  				'root' => esc_url_raw( rest_url() ),
-//  				'nonce' => wp_create_nonce( 'wp_rest' ),
-//  				'success' => __( 'Data Has been updated!', 'your-text-domain' ),
-//  				'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
-//  				'current_user_id' => get_current_user_id()    	    	
-//      		);   	
-//      		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
-//      		);
 
 		include_once 'partials/html-cb-signoffs-display.php';
 		return  display_member_signoffs($atts);

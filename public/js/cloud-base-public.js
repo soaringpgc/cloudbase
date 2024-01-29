@@ -107,8 +107,7 @@
     app.FeeList= app.Collection.extend({
     	model: app.Pilots,
     	url: cloud_base_public_vars.root + 'cloud_base/v1/fees'
-   	 }) ; 	
-	
+   	 }) ; 		
 // model view	
 	app.ModelView = Backbone.View.extend({
 		tagName: 'div',

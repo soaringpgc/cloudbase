@@ -72,10 +72,10 @@ class Cloud_Base_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
-//		wp_enqueue_style( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'css/cloud-base-public.css', array(), $this->version, 'all' );
+// // datepicker needed for display_flights shortcode.		 
+// 		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
  		wp_register_style( 'cloudbase_public_css',  plugins_url('/cloudbase/public/css/cloud-base-public.css'));
-		wp_enqueue_style( 'datepicker');
+// 		wp_enqueue_style( 'datepicker');
 		wp_enqueue_style( 'cloudbase_public_css');
 	}
 
@@ -85,7 +85,6 @@ class Cloud_Base_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
 		/**
 		 * This function is provided for demonstration purposes only.
 		 *
@@ -101,19 +100,19 @@ class Cloud_Base_Public {
 	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));	    
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
      	wp_register_script( 'squawk_scripts',  plugins_url('/cloudbase/public/js/squawk_scripts.js'));
-
- 		$dateToBePassed = array(
- 			'root' => esc_url_raw( rest_url() ),
- 			'nonce' => wp_create_nonce( 'wp_rest' ),
- 			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
- 			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
- 			'current_user_id' => get_current_user_id()    	    	
- 		);   	
- 		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'); 
+// // needed for display_flights shortcode. 
+//  		$dateToBePassed = array(
+//  			'root' => esc_url_raw( rest_url() ),
+//  			'nonce' => wp_create_nonce( 'wp_rest' ),
+//  			'success' => __( 'Data Has been updated!', 'your-text-domain' ),
+//  			'failure' => __( 'Your submission could not be processed.', 'your-text-domain' ),
+//  			'current_user_id' => get_current_user_id()    	    	
+//  		);   	
+//  		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'); 
 	}
 	public function register_shortcodes() 
 	{
-		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
+// 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
@@ -121,18 +120,19 @@ class Cloud_Base_Public {
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
 	} // register_shortcodes()
-	public function display_flights($atts = array() ){
-		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
-	
-		include_once 'partials/cloud-base-public-display.php';
-//		return display_flights();
-	}
+// // needed for display_flights shortcode.
+// 	public function display_flights($atts = array() ){
+// 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+// 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
+// 		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
+// 	
+// 		include_once 'partials/cloud-base-public-display.php';
+// //		return display_flights();
+// 	}
 	public function squawk_sheet($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/squawk_scripts.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
+		), $this->version, false );
     		$dateToBePassed = array(
  				'restURL' => esc_url_raw( rest_url() ),
  				'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -152,9 +152,6 @@ class Cloud_Base_Public {
 
 	public function display_status($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
-	
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
@@ -164,24 +161,15 @@ class Cloud_Base_Public {
 		return $output;
     }
     public function cb_no_fly($atts = array() ){
-    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
     
 		include_once 'partials/cloud-base-no_fly.php';
 	}
 	public function display_signoffs($atts = array(), $content= null, $tag = '' ){
-    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
 
 		include_once 'partials/html-cb-signoffs-display.php';
 		return  display_member_signoffs($atts);
 	}
 	public function signoff_summary($atts = array(), $content= null, $tag = '' ){
-    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  'backbone', 'underscore',
-		 'jquery-ui-datepicker', 'templates', 'workflow',  'validation'), $this->version, false );
 
 		include_once 'partials/html-cb-signoff_summary.php';
 		return  signoff_summery($atts);
@@ -189,9 +177,8 @@ class Cloud_Base_Public {
 	public function display_update_signoffs($atts = array(),  $content= null, $tag = '' ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api' ), $this->version, false );
 
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-public.js', array( 'wp-api',  
-		 'jquery-ui-datepicker', 'templates', 'update_signoffs' ), $this->version, false );
     		$dateToBePassed = array(
  				'restURL' => esc_url_raw( rest_url() ),
  				'nonce' => wp_create_nonce( 'wp_rest' ),

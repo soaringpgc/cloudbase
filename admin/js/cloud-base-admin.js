@@ -279,8 +279,9 @@
       	});
 //  alert(JSON.stringify(formData));
       	this.collection.create( formData, {wait: true, error: function(model, response, error){
-      				var mresult= JSON.parse(response.responseText);     	
-      				alert(mresult["message"]) 
+//       	console.log(response);
+//       				var mresult= JSON.parse(response.responseText);     	
+//       				alert(mresult["message"]) 
       				} 
       			});
       	// clean out the form:

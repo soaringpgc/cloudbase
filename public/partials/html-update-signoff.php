@@ -23,7 +23,7 @@
  		ob_start();?>
 
    	 	<form  method="post" id="update_signoffs">
-   	 		<input type="hidden" name=action value="update_signoffs">
+   	 		<input type="hidden" name=action value="update_signoffs"/>
    	 		<input type = "hidden"
                  id = "record_id"
                  size = "5"

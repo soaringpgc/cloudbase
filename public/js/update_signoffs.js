@@ -32,10 +32,18 @@
 	 */
 	 $(function(){
 	 
-	 $(".calendar").click(function(){
-  		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd'}); 
-//		 $('.calendar').datepicker("setDate", new Date());
-  	 });
+// 	 $(".calendar").click(function(){
+//   		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd'}); 
+// //		 $('.calendar').datepicker("setDate", new Date());
+//   	 });
+// 	 $(document).on('click', ".calendar" , function(e){
+//   		 $('.calendar').datepicker({dateFormat : 'yy-mm-dd'}); 
+//   	 });
+
+ $(".calendar").click(function() {
+        $(this).datepicker().datepicker( "show", {dateFormat : 'yy-mm-dd'} )
+    });
+
 
   	 $("#pilot_to_update").change(function(){	
   		var valueSelect = $(this).val();

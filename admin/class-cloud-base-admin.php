@@ -74,8 +74,8 @@ class Cloud_Base_Admin {
 		 */
 	
  		wp_register_style( 'cloudbase_css',  plugins_url('/cloudbase/admin/css/cloud-base-admin.css'));
- 		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
- 		wp_enqueue_style( 'datepicker');
+//  		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
+//  		wp_enqueue_style( 'datepicker');
  		wp_enqueue_style( 'cloudbase_css');
 	}
 

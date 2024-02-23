@@ -73,10 +73,12 @@ class Cloud_Base_Public {
 		 * class.
 		 */
 // // datepicker needed for display_flights shortcode.		 
-// 		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
+//  		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
  		wp_register_style( 'cloudbase_public_css',  plugins_url('/cloudbase/public/css/cloud-base-public.css'));
-// 		wp_enqueue_style( 'datepicker');
+ 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css' );
+//  		wp_enqueue_style( 'datepicker');
 		wp_enqueue_style( 'cloudbase_public_css');
+    	wp_enqueue_style( 'jquery-ui' );  
 	}
 
 	/**
@@ -177,7 +179,7 @@ class Cloud_Base_Public {
 	public function display_update_signoffs($atts = array(),  $content= null, $tag = '' ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api' ), $this->version, false );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
 
     		$dateToBePassed = array(
  				'restURL' => esc_url_raw( rest_url() ),

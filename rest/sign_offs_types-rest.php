@@ -34,7 +34,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_signoffs_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -102,6 +102,7 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
     	} else{
     		return new \WP_Error( 'authority required', esc_html__( 'authority Required.', 'my-text-domain' ), array( 'status' => 404 ) );  
         }
+        $fixed_date = null;
     	if (!empty($request['period'])) {
     	  	$period  = $request['period'];
     	  	if($period == 'fixed'){
@@ -123,17 +124,18 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 		 	$sql =  $wpdb->prepare("INSERT INTO {$table_name} (signoff_type,  authority, period, fixed_date, user_id) 		 	
 		 	VALUES ( %s, %s, %s, %s, %d) " , $title, $authority, $period, $fixed_date, get_current_user_id());			 	 		 
 			$wpdb->query($sql);	
+			$last_inserted_id = $wpdb->insert_id;				
 			// handle checkboxes sepertally
 			if (!empty($request['no_fly'] && $request['no_fly']))	{
-	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly`=  true  WHERE `id` = %d ",  $id);			        					
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly`=  true  WHERE `id` = %d ",  $last_inserted_id);			        					
 			} else {
-				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly` = NULL WHERE `id` = %d ", $id);		
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `no_fly` = NULL WHERE `id` = %d ", $last_inserted_id);		
 			}
 			$wpdb->query($sql);	
 			if (!empty($request['applytoall'] && $request['applytoall']))	{
-	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall`=  true  WHERE `id` = %d ",  $id);			        					
+	        	$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall`=  true  WHERE `id` = %d ",  $last_inserted_id);			        					
 			} else {
-				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall` = NULL WHERE `id` = %d ", $id);		
+				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `applytoall` = NULL WHERE `id` = %d ", $last_inserted_id);		
 			}
 			$wpdb->query($sql);							
  		// read it back to get id and send

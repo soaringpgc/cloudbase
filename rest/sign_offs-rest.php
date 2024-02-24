@@ -208,7 +208,6 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 				}
 			}
 		}
-
 	}
 	public function cloud_base_signoffs_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;
@@ -220,22 +219,19 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 	    if( !isset($request['effective_date'] )){
 	    	return new \WP_Error( 'missing_date', esc_html__( 'Missing effective date.', 'my-text-domain' ), array( 'status' => 400 ) );
 	    }
-		$record_id = $request['record_id'];			
- 		$date_effective = new \DateTime($request['effective_date']);	
- 		$date_expire = new \DateTime($request['effective_date']);	
+		$record_id = $request['record_id'];		// id of sign off 	
+ 		$date_effective = new \DateTime($request['effective_date']); // new effective date	
+ 		$date_expire = new \DateTime($request['effective_date']);	// copy to calculate expire date. 
 
- 		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d", $record_id );	 	
+ 		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d", $record_id );	// get the sign off 	
  		$old_data = $wpdb->get_row($sql); 	
-// 	return new \WP_REST_Response ($old_data ); 
- 		$sql = $wpdb->prepare("SELECT authority FROM  {$table_types} WHERE id = %d", $old_data->authority_id);	 	
-// 	return new \WP_REST_Response (get_current_user_id() );	
- 		$authority =  $wpdb->get_var($sql);
- 		if (current_user_can($authority )){   // && (get_current_user_id() != $old_data->member_id );
+ 		$sql = $wpdb->prepare("SELECT authority FROM  {$table_types} WHERE id = %d", $old_data->signoff_id);	
+ 		$authority =  $wpdb->get_var($sql);		
+ 		if (current_user_can($authority )){   // && (get_current_user_id() != $old_data->signoff_id );
  			$date_expire = $this->cb_expire($date_expire, $old_data->signoff_id); 	
  			if ($wpdb->update( $table_name, array ( 'date_entered' => date('Y-m-d'), 'date_effective' => $date_effective->format('Y-m-d'), 'date_expire' => $date_expire->format('Y-m-d'), 'authority_id' => get_current_user_id()),
  				array('id' => $record_id)) ){				
- 				return new \WP_REST_Response ($record_id, 200);
-	
+ 				return new \WP_REST_Response ($record_id, 200);	
  			} else {
 // 				return new \WP_Error( 'update_failed', esc_html__($wpdb->last_query, 'my-text-domain' ), array( 'status' => 400 ) );	  
  				return new \WP_Error( 'update_failed', esc_html__( 'Unable to update record.', 'my-text-domain' ), array( 'status' => 400 ) );	  
@@ -252,7 +248,7 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
  	    	$record_id = $request['record_id'];		
  	    	$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d", $record_id );	 	
  			$old_data = $wpdb->get_row($sql); 	
- 			$sql = $wpdb->prepare("SELECT authority FROM  {$table_types} WHERE id = %d", $old_data->authority_id);	 	
+ 			$sql = $wpdb->prepare("SELECT authority FROM  {$table_types} WHERE id = %d", $old_data->signoff_id);	 	
   			$authority =  $wpdb->get_var($sql);
   			if (current_user_can($authority )){   
 				$record_id = $request['record_id'];	 		

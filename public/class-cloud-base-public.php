@@ -121,7 +121,7 @@ class Cloud_Base_Public {
 		add_shortcode( 'signoff_summary', array( $this, 'signoff_summary' ) );
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
-	} // register_shortcodes()
+	} // register_shortcodes()		
 // // needed for display_flights shortcode.
 // 	public function display_flights($atts = array() ){
 // 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
@@ -231,5 +231,19 @@ class Cloud_Base_Public {
 //  		   var_dump($response);
  		
      	wp_redirect($_POST['source_page']);
-     } //updateAircraft()       
+     } //updateAircraft()    
+     // add_action('template_redirect');
+	public function custom_redirect() 
+	{
+// 		$user = sp_get_current_user();
+		if(
+			!is_user_logged_in() &&
+			!is_home()&&
+			!is_login()		
+		) {
+			$url = home_url();
+			wp_redirect( $url . '/login');
+			exit;
+		}
+	} // custom_redirect()   
 }

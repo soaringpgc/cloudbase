@@ -121,18 +121,23 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
        	} elseif (isset($request['signoff'])){
      		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name } WHERE signoff_id= %d AND date_expire >= NOW()",  $request['signoff'] );      	     		      	      	
        	} elseif (isset($request['member_id'])){
-       		if(isset($request['update'])){
-     			$sql = $wpdb->prepare( "SELECT m.member_id, m.id, t.signoff_type, t.authority, m.date_expire FROM {$table_name }  m INNER JOIN {$table_types } t ON m.signoff_id = t.id 
+        	if(isset($request['update'])){
+       			if( get_current_user_id() == $request['member_id']){
+     				$sql = $wpdb->prepare( "SELECT m.member_id, m.id, t.signoff_type, t.authority, m.date_expire FROM {$table_name }  m INNER JOIN {$table_types } t ON m.signoff_id = t.id 
+     				WHERE  m.member_id = %d AND t.authority = 'read'",  $request['member_id'] ); 
+       			} else {
+     				$sql = $wpdb->prepare( "SELECT m.member_id, m.id, t.signoff_type, t.authority, m.date_expire FROM {$table_name }  m INNER JOIN {$table_types } t ON m.signoff_id = t.id 
      				WHERE  m.member_id = %d",  $request['member_id'] ); 
+				}
      		} else { 
        			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['member_id'] );    
-       		} 
+        	} 
        	} elseif ( isset($request['id']) ) {
        		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['id'] );     
 		} else {
 			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",   get_current_user_id() );     
  	    } 
- //return new \WP_REST_Response (get_user_by('ID', $request['current_user']));  	    	    	   	         	    
+//   	    return new \WP_REST_Response ($sql);  
         $items = $wpdb->get_results( $sql, OBJECT);  
  		if(isset($request['update'])){
  			foreach( $items as $i=>$v){			

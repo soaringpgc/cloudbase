@@ -34,10 +34,11 @@
         	<?php
     	  		echo  '<option selected="selected"  value="0">Choose Member</option>';	
     	  		foreach ($pilots as $pilot ){
-    	  		// no one can sign of for themselves...
-    	  			if( $pilot->id != get_current_user_id()){
+    	  		// no one can sign of for themselves... update March 2024 one can sign off "self" signoffs. 
+    	  		// also update the rest interface at this time. 
+//     	  			if( $pilot->id != get_current_user_id()){
     	  				echo '<option value=' .$pilot->ID .'>'. $pilot->last_name . ", " . $pilot->first_name . '</option>';	
-    	  			}	    		
+//     	  			}	    		
   	   	  		} 
  		  	echo '</select><br>';	
  		  	$table_name = $wpdb->prefix . "cloud_base_signoffs_types";

@@ -235,6 +235,10 @@ class Cloud_Base {
 
 		$plugin_rest = new Cloud_Base_flight_types($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
+		
+		$plugin_rest = new Cloud_Base_Aircraft_Events($this->get_cloud_base(), $this->get_version());
+		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');		
+
 	    /**
 	     * Register the /wp-json/cloudbase/v1/posts endpoint so it will be cached.
 	     * using wp-rest-cache 

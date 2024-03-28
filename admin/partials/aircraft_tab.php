@@ -10,10 +10,15 @@
 global $wpdb;
 $table_name = $wpdb->prefix . "cloud_base_aircraft_type";	
 $sql = "SELECT * FROM ". $table_name . " WHERE valid_until IS NULL  ORDER BY title ASC ";
-$items = $wpdb->get_results( $sql, OBJECT);       	
-
+$items = $wpdb->get_results( $sql, OBJECT);     
+$members = get_users(['role__in' => 'subscriber'] );	
+$users = [];
+		foreach( $members as $member ){	
+			$user_meta = get_userdata( $member->ID );
+			$users[ $member->ID]=  $user_meta->first_name .' '.  $user_meta->last_name ;
+		}  	
 if( current_user_can( 'manage_options' ) ) {	
-  echo ('     <h3>Aircraft Basic information</h3>
+  echo ('     <h3>Equipment Basic information</h3>
    <form id="addAircraft" action="#" >
   	<div>
   	   <input type = "hidden"
@@ -63,12 +68,18 @@ if( current_user_can( 'manage_options' ) ) {
              name = "model"
              title = "Model of aircraft." />   
         </div>
-        <div">  ');    
-	echo('
+       <div class="hform">      
+           <label for="captian_id">Captian: </label><br>
+           <select name="captian_id" id="captian_id" >');
+        	foreach($users as $key => $value){ 	
+        		echo ('<option value=' . $key . '>'. $value . '</option>');
+            };
+         echo ( '</select> </div><div">');          
+      	 echo('
   	     <br style="clear:both;">
   	     <div>
         <button id="add" class="view">Add</button>
-        <button id="update" class="cb_edit">Update</button>
+        <button id="update_cb" class="cb_edit">Update</button>
       </div>
      </div>
   </form> ');
@@ -96,6 +107,9 @@ if( current_user_can( 'manage_options' ) ) {
             </div>
             <div class="Cell">
                 <p>Model</p>
+            </div>
+            <div class="Cell">
+                <p>Captian</p>
             </div>
         </div>
     </div>

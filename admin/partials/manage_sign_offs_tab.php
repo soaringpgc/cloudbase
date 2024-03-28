@@ -18,12 +18,12 @@ if( current_user_can( 'manage_options' ) ) {
     	<label for="signoff_type" >Sign off:</label>
         <input type = "text"
             id = "signoff_type"
-            size = "10"
+            size = "25"
             title = "signoff." 
             name = "signoff_type"/>
         </div>
         <div class="hform">
-		<label for "authority">Authority</label>
+		<label for "authority">Authority</label><br>
 			<select name ="authority" id="authority"  >');
 			// authority array is stored in WP options, It is created/updated on activation 
 			$value_label_authority = get_option('cloud_base_authoritys');
@@ -33,13 +33,13 @@ if( current_user_can( 'manage_options' ) ) {
 			}	
 
 		echo ('</select></div>
-		<div style="float:left;margin-right:20px;">
-		<label for="no_fly">No Fly</label>
+		<div style="float:left;margin-right:5px;">
+		<label for="no_fly">No Fly</label><br>
 		  <input type="checkbox" name="no_fly" id="no_fly" value=false class="checked_class"/>
 		</div>
 		
-		<div class="hform">
-		<label for="period">Effective Period</label>
+		<div class="hform" >
+		<label for="period">Effective Period</label><br>
 		<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ');
 		$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "dues"=>"Dues", "no_expire"=>"No expire", 
 		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );				
@@ -56,14 +56,14 @@ if( current_user_can( 'manage_options' ) ) {
             size = "10"
             title = "Enter the date the sign off expires - fixed date only"/> 
          </div> 
-         <div>
-         	<label for="applytoall">Apply to all members</label>
+         <div  style="float:left;margin-right:10px;">
+         	<label for="applytoall">Apply to all members</label><br>
 			 <input type="checkbox" name="applytoall" id="applytoall" value="false" class="checked_class">
 		 </div>
 		 <br style="clear:both;">
 		 <div>
          <button id="add" class="view">Add</button>
- 		 <button id="update" class="cb_edit">Update</button>
+ 		 <button id="update_cb" class="cb_edit">Update</button>
 		</div>
 		</form>			
 	');

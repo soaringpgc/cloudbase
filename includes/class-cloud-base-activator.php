@@ -20,6 +20,7 @@
  * @subpackage Cloud_Base/includes
  * @author     Your Name <email@example.com>
  */
+
 class Cloud_Base_Activator {
 
 	/**
@@ -46,7 +47,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.85;
+   	$db_version = 0.90;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){ 
@@ -172,6 +173,39 @@ function create_cb_database(){
       PRIMARY KEY (ID)
 	  );" . $charset_collate  . ";";
 	dbDelta($sql);
+	
+	$table_name = $wpdb->prefix . "cloud_base_aircraft_event_types";
+	// create audit table for flight sheet
+	$sql = "CREATE TABLE ". $table_name . " (
+	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	  title char(10),
+	  description varchar(40),
+	  frequency decimal(5,2),
+	  frequency_units varchar(20),
+	  aircraft_type int(10) UNSIGNED,
+	  active bit(1) DEFAULT 1,
+      PRIMARY KEY (ID)
+	  );" . $charset_collate  . ";";
+	dbDelta($sql);	
+
+	$table_name = $wpdb->prefix . "cloud_base_aircraft_events";
+	// create audit table for flight sheet
+	$sql = "CREATE TABLE ". $table_name . " (
+	  id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	  event_id int(10) UNSIGNED NOT NULL,
+	  event_date datetime DEFAULT NULL,
+	  hobbs decimal(5,2),
+	  tach decimal(5,2),
+	  pilot_id int(10) UNSIGNED NOT NULL,
+	  instructor_id int(10) UNSIGNED,
+	  notes varchar(250),	  	  
+	  description varchar(40),
+	  aircraft_type int(10) UNSIGNED,
+	  date_updated datetime DEFAULT NULL,
+	  valid_until datetime DEFAULT NULL,
+      PRIMARY KEY (ID)
+	  );" . $charset_collate  . ";";
+	dbDelta($sql);	
 
 	$table_name = $wpdb->prefix . "cloud_base_sqw_work";
 	// create audit table for flight sheet
@@ -257,6 +291,16 @@ function create_cb_roles(){
 			$role_object->add_cap('cfig_scheduler', true );
 		}
 	}
+// add CFI role (power)
+	if(!role_exists('cfi')){
+		add_role('cfi' , 'CFI', array('cb_power_instruction'));
+	} else {
+		//add capability to existing cfi
+		$role_object = get_role('cfi' );
+		if ( !$role_object->has_cap('cb_power_instruction')){
+			$role_object->add_cap('cb_power_instruction', true );
+		}
+	}	
 // add Tow Pilot scheduler
 	if(!role_exists('tow_scheduler')){
 		add_role('tow_scheduler' , 'Tow scheduler', array('tow_scheduler'));

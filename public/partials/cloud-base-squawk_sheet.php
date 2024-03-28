@@ -42,8 +42,7 @@
    		    return;			
 		}
 		
-		$squawk = $_POST['squawk_problem'];
-		$squawk=$_POST['squawk_problem'];	
+		$squawk = $_POST['squawk_problem'];	
 	   	if( !wp_verify_nonce($_POST['_wpnonce'], 'submit_field_duty') ) {
    		    echo 'Did not save because your form seemed to be invalid. Sorry';
    		    return;
@@ -51,7 +50,15 @@
    		$squawk_id = $wpdb->get_var("SELECT MAX(squawk_id) FROM " . $table_squawk  );
    		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
    		$equipment = $wpdb->get_results($sql, OBJECT);
-
+   		
+   		if ( $equipment[0]->captian_id != null) {   		
+   			$captian_id = $equipment[0]->captian_id;    		
+   			$captian = get_users_by('ID', $captian_id );	
+			$captian_meta = get_userdata( $member->ID );
+			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
+ 			$captian_email = $captian_meta->user_email;
+		}
+		
    		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New');
  
     	if( $wpdb->insert($table_squawk, $data ) != 1 ){
@@ -61,12 +68,19 @@
 
 			$subject = "PGC SQUAWK (V3)";    	
     		$msg = " Equipment: " .$equipment[0]->compitition_id  . "(".  $equipment[0]->registration . ")<br>\n Reported By: ". $display_name  . "<br>\n Date: " . date('Y-M-d') .  "<br>\n Problem Description: " . $squawk;
-    		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
-			$ops_emails = $wpdb->get_results($sql);
-			$to = ""; 
-			foreach ( $ops_emails as $m ){
-				$to .= $m->user_email .', ';
+//     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
+
+			$members = get_users(['role__in' => 'maintenance_editor'] );	
+			$to = ""; 		
+			foreach( $members as $member ){	
+			    $user_meta = get_userdata( $member->ID );
+// 			    $users[ $member->ID]=  $user_meta->first_name .' '.  $user_meta->last_name ;						
+				$to .= $user_meta->user_email .', ';
 			};
+// 			$ops_emails = $wpdb->get_results($sql);			
+// 			foreach ( $ops_emails as $m ){
+// 				$to .= $m->user_email .', ';
+// 			};
 			$to .= $user_meta->user_email; 
 			$headers = "MIME-Version: 1.0" . "\r\n";
 			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -143,9 +157,12 @@
 		$sdate = strtotime($squawk->date_entered);
 		echo('<div class="table-col" style="white-space:nowrap">'.date("Y-m-d",$sdate).'</div>');
 		echo('<div class="table-col">'.$squawk->text.'</div>');
-			$user = get_user_by('ID',$squawk->user_id );
+		if (	$user = get_user_by('ID',$squawk->user_id )){
 			$user_meta = get_userdata( $user->ID );
 			$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+			} else {
+				$display_name ="unknown";
+			}
 		echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
 		if(current_user_can( 'cb_edit_maintenance')){
 // 		  echo('<div class="table-col">

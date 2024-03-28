@@ -105,7 +105,7 @@
 		wait: true		
 	} );
 	app.Aircraft = app.Model.extend({
-		idAttribute : "aircraft_id",
+// 		idAttribute : "aircraft_id",
 		initialize: function(){
 		},
 		wait: true,			
@@ -251,7 +251,7 @@
       },
       events:{
       	'click #add' : 'addItem',
-      	'click #update' : 'updateItem'
+      	'click #update_cb' : 'updateItem'
       },
       addItem: function(e){
       	e.preventDefault();
@@ -295,7 +295,8 @@
 				$('#'+el.id).val('');
       		});       
       },
-      updateItem: function(e){     	
+      updateItem: function(e){    
+      alert("here");	
 		e.preventDefault();
  		var formData ={};
 		// grab all of the input fields
@@ -320,15 +321,20 @@
       	  }
       	});
  //    	alert(JSON.stringify(formData));
-//      console.log(formData);
+      console.log(formData);
       	var updateModel = this.collection.get(formData.id);
         updateModel.save(formData, {
         	wait: true, 
-        		error: function(model, response, error){
+        	error: function(model, response, error){
 //         		console.log(response.responseText);
       			var mresult= JSON.parse(response.responseText);     	
       			alert(mresult["message"]) 
-      			}         
+      			},
+//       		success:  function(model, response){
+// //         		console.log(response.responseText);
+//       			var mresult= JSON.parse(response.responseText);     	
+//       			alert(mresult["message"]) 
+//       			}       
         	});
 	// clean out the form:
       		$(this.localDivTag).children('input').each(function(i, el ){

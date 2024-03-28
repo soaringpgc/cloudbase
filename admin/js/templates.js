@@ -6,6 +6,7 @@
 var feeitemtemplate = _.template(`
      <div class="Cell"><%= altitude %></div>
      <div >
+          <div class="hiding" > <%= id %></div>
      	 <label class="Cell"><%=  charge %></label>
      	 <label class="Cell"><%=  hook_up %></label>
      	 <label class="Cell"><%=  hourly %></label>
@@ -14,9 +15,9 @@ var feeitemtemplate = _.template(`
 `);
 
 // Aircraft Types 
-  var actypetemplate = _.template(`
-   <div class="hiding" > <%= id %></div>
-      <div >
+  var actypetemplate = _.template(`  
+   <div >
+     <div class="hiding" > <%= id %></div>
    	 <label class="Cell"><%=  type_id     %></label>
      <label class="Cell"><%=  title       %> </label>
      <label class="Cell"><%=  sort_code   %> </label>
@@ -29,18 +30,18 @@ var feeitemtemplate = _.template(`
 `);
 
 // Flight Types 
-  var flighttypetemplate = _.template(`
-   <div class="Cell"  id = "id"> <%= id %></div>
+  var flighttypetemplate = _.template(`  
    <div>
+     <div class="Cell"  id = "id"> <%= id %></div>
      <label class="Cell"><%= title %></label>
      <label class="Cell"><%= description %></label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);
 // Status Types 
-  var statustypetemplate = _.template(`
-   <div class="Cell"  id = "id" > <%= id %></div>
+  var statustypetemplate = _.template(`  
      <div >
+      <div class="Cell"  id = "id" > <%= id %></div>
      <label class="Cell" ><%= title %></label>
      <label class="Cell" ><input type="color" value= <%= color %> > </label>
      <div class="Cell"><button class="delete" ">Delete</button></div>
@@ -51,19 +52,23 @@ var feeitemtemplate = _.template(`
   <div >
   		<div class="hiding" > <%= id %></div>
   		<div class="Cell" > <%= aircraft_id %></div>
+  		<div class="hiding" > <%= aircraft_type %></div>
   		<div class="Cell" > <%= type %></div>  
        <label class="Cell" > <%= registration    %></label>
        <label class="Cell" > <%= compitition_id  %></label>
        <label class="Cell" > <%= make            %></label>
        <label class="Cell" > <%= model           %></label>
+        <div class="hiding" > <%= captian_id %></div>  
+        <label class="Cell" > <%= captian_name      %></label>
        <div class="Cell"><button class="delete" ">Delete</button></div>
    </div>
 `);
 
 // Sign off Types 
   var signofftemplate = _.template(`
-   <div class="Cell" > <%= id %></div>
+  
    <div>
+    <div class="Cell" > <%= id %></div>
      <label class="Cell2"><%=  signoff_type  %> </label>
      <div class="hiding" > <%= authority %></div>
      <label class="Cell2"><%=  authority_label  %> </label>

@@ -11,7 +11,9 @@ if( current_user_can( 'manage_options' ) ) {
   echo ('     <h3>Equipment Type</h3><DIV>   
     <form id="addaircraft_type" action="#" >
     	<div>
-
+  	   <input type = "hidden"
+          id = "id"
+          name = "id"/>  
     	<input type = "hidden"
             id = "type_id"
             size = "2"
@@ -84,7 +86,7 @@ if( current_user_can( 'manage_options' ) ) {
             value = ""
             name = "active"/>    
         <button id="add" class="view">Add</button>
-        <button id="update" class="cb_edit">Update</button>
+        <button id="update_cb" class="cb_edit">Update</button>
         </div>
      </div>
     </form></DIV>');

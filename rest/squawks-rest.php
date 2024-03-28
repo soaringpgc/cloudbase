@@ -61,16 +61,112 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 // call back for squawks:	
 	public function cloud_base_squawks_get_callback( \WP_REST_Request $request) {
 	
-	 return rest_ensure_response( 'Hello World, this is the Cloud Based Squawk REST API' . $request['id']);
-		/* 
-			Process your GET request here.		
-		*/
+		global $wpdb;
+		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
+		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
+		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+		$table_members = $wpdb->prefix . "_users";
+		isset($request['pages']) ? $page = ($request['pages']) : $page = 1 ;
+		isset($request['limit']) ? $limit = ($request['limit']) : $limit = 12 ;
+		$offset = ($page - 1 ) * $limit; 
+
+		if(isset($request['id'])){  // by squawk record id 
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment INNER JOIN {$table_type } t on a.aircraft_type = t.type_id WHERE s.id = " . $request['id'] ; 					
+		} elseif(isset($request['squawk_id'])){ // by squawk id 
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE s.squawk_id = " . $request['squawk_id'] ; 					
+		} elseif(isset($request['aircraft_id'])){ // by_ equipment id 
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE a.aircraft_id = " . $request['aircraft_id'] ; 					
+		} elseif(isset($request['captian_id'])){// by captian id 
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE a.captian_id = " . $request['captian_id'] ; 					
+		} elseif(isset($request['type_id'])){// by type id
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE t.type_id = " . $request['type_id '] ; 	
+		} else {		
+ 			$sql = "Select s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE a.valid_until is NULL AND s.status != 'COMPLETED' ORDER BY s.date_entered DESC
+  			LIMIT ". $limit ." OFFSET " . $offset; 	
+		}
+// 					return new \WP_REST_Response ( $sql );		
+		$items = $wpdb->get_results($sql); 
+			foreach( $items as $key =>  $item ){	
+				if( $item->captian_id != null  ){
+			    	$user_meta = get_userdata( $item->captian_id );
+					$items[$key]->captian_name =  $user_meta->first_name .' '.  $user_meta->last_name;			
+				} else {
+					$items[$key]->captian_name = "";
+				}
+			}
+			return new \WP_REST_Response ( $items );
 	}	
 	public function cloud_base_squawks_post_callback( \WP_REST_Request $request) {
+		global $wpdb;
+		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
+		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
+		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+		$user = wp_get_current_user();
+		$user_meta = get_userdata( $user->ID );
+		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+// 		$requestType = $_SERVER['REQUEST_METHOD'];
 
-		/* 
-			Process your POST request here.
-		*/
+		if( !isset($request['aircraft']) || ($request['aircraft'] == 0)){
+			 return new \WP_Error( 'Missing data', esc_html__( 'Equipment id missing', 'my-text-domain' ), array( 'status' => 400 ) );  		
+		}				
+		$equipment_id = $request['aircraft'];
+		if( !isset($request['squawk_problem']) || strlen($request['squawk_problem']) == 0){
+			return new \WP_Error( 'Missing data', esc_html__( 'missing data - enter an issue.', 'my-text-domain' ), array( 'status' => 400 ) );  			
+		}		
+		$squawk = $request['squawk_problem'];	
+   		$squawk_id = $wpdb->get_var("SELECT MAX(squawk_id) FROM " . $table_squawk  );
+   		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
+   		$equipment = $wpdb->get_results($sql, OBJECT);
+ 
+ 		$to = "";   		
+   		if ( $equipment[0]->captian_id != null) {   		
+   			$captian_id = $equipment[0]->captian_id;    		
+   			$captian = get_users_by('ID', $captian_id );	
+			$captian_meta = get_userdata( $member->ID );
+			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
+ 			$captian_email = $captian_meta->user_email;
+ 			$to .= $captian_email;
+		} 
+		if(!isset($request['notify']) || $equipment[0]->aircraft_type=2 ) {
+			foreach ( $ops_emails as $m ){
+				$to .= $m->user_email .', ';
+			};
+
+		}		
+   		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New');
+		$members = get_users(['role__in' => 'maintenance_editor'] );	
+		$to = ""; 		
+		foreach( $members as $member ){	
+		    $user_meta = get_userdata( $member->ID );
+// 		    $users[ $member->ID]=  $user_meta->first_name .' '.  $user_meta->last_name ;						
+			$to .= $user_meta->user_email .', ';
+		};
+ 
+    	if( $wpdb->insert($table_squawk, $data ) != 1 ){
+    		return new \WP_Error( 'Insert Failed ', esc_html__( 'Unable to create record', 'my-text-domain' ), array( 'status' => 400 ) );  		   	
+    	} else {
+    		$sql = "SELECT * FROM {$table_squawk} WHERE id=" . $wpdb->insert_id;   		
+    		$wpdb->get_results($sql);
+
+			$subject = "PGC SQUAWK (V3)";    	
+    		$msg = " Equipment: " .$equipment[0]->compitition_id  . "(".  $equipment[0]->registration . ")<br>\n Reported By: ". $display_name  . "<br>\n Date: " . date('Y-M-d') .  "<br>\n Problem Description: " . $squawk;
+//     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
+// 			$ops_emails = $wpdb->get_results($sql);
+// 
+// 			$to .= $user_meta->user_email; 
+			$headers = "MIME-Version: 1.0" . "\r\n";
+			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+			$headers .= 'From: <webmaster@pgcsoaring.com>' . "\r\n";
+	
+  			mail($to,$subject,$msg,$headers);			
+			return new \WP_REST_Response ( $items );	
+		}
 	}
 	public function cloud_base_squawks_put_edit_callback( \WP_REST_Request $request) {
 
@@ -78,9 +174,6 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-// 		$user = wp_get_current_user();
-// 		$user_meta = get_userdata( $user->ID );
-// 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
  
 		if (isset($request['id']) && isset($request['status'])){
 			if($request['status'] != ""){
@@ -94,9 +187,6 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		} else {
     		return new \WP_Error( 'Missing data', esc_html__( 'missing data.', 'my-text-domain' ), array( 'status' => 404 ) );  		
 		}
-		/* 
-			Process your PUT request here.
-		*/
 	}
 	public function cloud_base_squawks_delete_callback( \WP_REST_Request $request) {
 		/* 
@@ -117,7 +207,7 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 				}
 			}
 		} else{
-			return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'ID missing', esc_html__( 'Id missing.', 'my-text-domain' ), array( 'status' => 400 ) );
 		}
 	}
 }

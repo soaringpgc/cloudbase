@@ -114,6 +114,7 @@ CloudBase depends on Wordpress user roles, see next section. In order to assign 
 ## Roles
 CloudBase expands on Wordpress user roles.
 * CFIG
+* CFI
 * Tow Pilot
 * Operations
 * Chief CFIG
@@ -175,6 +176,7 @@ CloudBase provides a settings page. Once activated it will appear in the Wordpre
 * Status types
 * Flight Types
 * Tow Fees
+* Aircraft Events
 
 This list may be extended by other plugins.
 
@@ -182,7 +184,7 @@ This list may be extended by other plugins.
 Enter the origination name, abbreviation name and if you use feet or meters.
 
 #### Equipment types
-Default types are tow planes and gliders. Any additional equipment en t can be added here, self-launching glider, tractor, fuel tank etc.
+Default types are tow planes and gliders. Any additional equipment can be added here, self-launching glider, tractor, fuel tank etc.
 
 #### Sign-off types
 Sign-offs as required for your operation. Enter the authority to endorse the sign-off, date entered and period. Expiration dates will be calculated. It knows the difference between yearly and yearly end of the month. The sign-off can also be marked apply to all, in which case it will be added to all existing members with an expired date and will be added to all new members.
@@ -199,9 +201,28 @@ Again such as regular, instructional, AOF.
 #### Tow Fees
 This is the big one, every organization appears to have a different tow fee structure. I’ve tried to make this as flex. able vas possible, but im sure as this gets used new option will be required.  
 
+#### Aircraft Events types
+Configure events that might occur to an aircraft. Annual inspections, 100 hour inspections, registration, oil changes, etc. 
+
 ## RESTfull interface
 
 The CloudBase plugin provides a RESTfull interface for many of its features.   
+
+Base address is IP/wp-json/cloud_base/v1 
+
+* Aircraft Events /event\_types 
+* Aircraft Types /aircraft\_types
+* aircraft /aircraft
+* Aircraft Event types /event\_types
+* Tow Fees /fees 
+* Flight Types /flight_types
+* Flights (log) /flights'
+* Pilots /pilots'
+* Sign off types /sign\_off\_types
+* Sign offs /sign\_off
+* Equipment squawks /squawks
+* Aircraft Status /aircraft\_status (perhaps should be folded into aircraft?)
+
 == Frequently Asked Questions ==
 
 = A question that someone might have =
@@ -243,19 +264,6 @@ You may provide arbitrary sections, in the same format as the ones above.  This 
 plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
 "installation."  Arbitrary sections will be shown below the built-in sections outlined above.
 
-== A brief Markdown Example ==
-
-Ordered list:
-
-1. Some feature
-1. Another feature
-1. Something else about the plugin
-
-Unordered list:
-
-* something
-* something else
-* third thing
 
 Here's a link to [WordPress](http://wordpress.org/ "Your favorite software") and one to [Markdown's Syntax Documentation][markdown syntax].
 Titles are optional, naturally.

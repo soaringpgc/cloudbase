@@ -30,7 +30,7 @@ if( current_user_can( 'manage_options' ) ) {
             value = ""
             name = "active"/> 
         <button id="add" class="view">Add</button>
-        <button id="update" class="cb_edit">Update</button>
+        <button id="update_cb" class="cb_edit">Update</button>
        </div>
     </form></DIV>');
 }    

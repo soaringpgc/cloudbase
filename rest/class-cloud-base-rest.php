@@ -301,5 +301,7 @@ include 'pilots-rest.php';
 include 'status-rest.php';
 include 'sign_offs-rest.php';
 include 'sign_offs_types-rest.php';
+include 'event_types_rest.php';
+include 'aircraft_events_rest.php';
 
 

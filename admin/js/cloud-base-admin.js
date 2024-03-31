@@ -295,8 +295,7 @@
 				$('#'+el.id).val('');
       		});       
       },
-      updateItem: function(e){    
-      alert("here");	
+      updateItem: function(e){    	
 		e.preventDefault();
  		var formData ={};
 		// grab all of the input fields

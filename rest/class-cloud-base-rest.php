@@ -281,6 +281,21 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	  }
 	return($filter_string);
 	}
+	// i've beeen using this code over and over to get real name, amdk it s subroutine 
+	public function cb_member_info($id){
+		if($id != 0 && !is_null($id)){
+			$member_data  = get_userdata( $id);
+			$oBj = (object)[ "name"=>$member_name =  $member_data->first_name .' '.  $member_data->last_name ,
+			       "email"=> $member_data->user_email,
+			       "weight"=> $member_data->weight			       
+			        ];
+		} else {
+			$oBj = (object)[  "name"=>"none",
+			       "email"=> "",
+			       "weight"=> 0 ];
+		}
+		return $oBj;
+	}	
 	/**
 	 * Register the /wp-json/cloudbase/v1/posts endpoint so it will be cached. Posts??
 	 */

@@ -60,7 +60,13 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 	
 // call back for squawks:	
 	public function cloud_base_squawks_get_callback( \WP_REST_Request $request) {
-	
+	// id - return specific squawk by id
+	// squawk_id  - return specific squake by squawk_id
+	// aircraft_id all squawks aginst specific aircraft
+	// captian_id squawks a captian is responsible for
+	// type_id squawks against equipment type
+	// compleated -- compleated squawks -- all of the above do not return compleated squawks 
+	// default all squawks not compleated. 
 		global $wpdb;
 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
@@ -69,6 +75,18 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		isset($request['pages']) ? $page = ($request['pages']) : $page = 1 ;
 		isset($request['limit']) ? $limit = ($request['limit']) : $limit = 12 ;
 		$offset = ($page - 1 ) * $limit; 
+
+
+	  $valid_fields = array('id'=>'s.id', 'squawk_id'=>'s.squawk_id' , 'aircraft_id'=>'s.aircraft_id', 'captian_id'=>'s.captian_id',
+ 	  'type_id'=>'s.type_id', 'status'=>'s.status',	'user_id'=>'s.user_id', 'date_entered'=>'s.date_entered' );
+
+	  $sql = "SELECT  s.id, s.flight_number, s.flight_type, s.aircraft_id, a.compitition_id as glider, y.title as f_type, s.pilot_id, s.instructor_id,  s.tow_pilot_id, 
+	  p.display_name as pilot, i.display_name as instructor, t.display_name as tow_pilot FROM wp_cloud_base_flight_sheet s 
+	  INNER JOIN  wp_users p ON s.pilot_id = p.id LEFT JOIN  wp_users i ON  s.instructor_id = i.id LEFT JOIN  wp_users t ON  s.tow_pilot_id = t.id 
+	  INNER JOIN wp_cloud_base_flight_type y ON s.flight_type=y.id INNER JOIN wp_cloud_base_aircraft a ON s.aircraft_id=a.aircraft_id" ;
+
+
+
 
 		if(isset($request['id'])){  // by squawk record id 
 			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
@@ -85,20 +103,27 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		} elseif(isset($request['type_id'])){// by type id
 			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
   			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE t.type_id = " . $request['type_id '] ; 	
-		} else {		
- 			$sql = "Select s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+		} elseif(isset($request['compleated'])){// by type id
+			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE t.type_id = " . $request['type_id '] ; 	
+		} else  {		
+ 			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id   FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
   			on a.aircraft_id=s.equipment  INNER JOIN {$table_type } t on a.aircraft_type = t.type_id  WHERE a.valid_until is NULL AND s.status != 'COMPLETED' ORDER BY s.date_entered DESC
   			LIMIT ". $limit ." OFFSET " . $offset; 	
 		}
-// 					return new \WP_REST_Response ( $sql );		
+// 		return new \WP_REST_Response ( $sql );		
+// merge in the captians of the aircraft. 
 		$items = $wpdb->get_results($sql); 
+		
+
 			foreach( $items as $key =>  $item ){	
-				if( $item->captian_id != null  ){
-			    	$user_meta = get_userdata( $item->captian_id );
-					$items[$key]->captian_name =  $user_meta->first_name .' '.  $user_meta->last_name;			
-				} else {
-					$items[$key]->captian_name = "";
-				}
+				$items[$key]->captian_name = $this->cb_member_info($item->captian_id)->name ;						
+// 				if( $item->captian_id != null  ){
+// 			    	$user_meta = get_userdata( $item->captian_id );
+// 					$items[$key]->captian_name =  $user_meta->first_name .' '.  $user_meta->last_name;			
+// 				} else {
+// 					$items[$key]->captian_name = "";
+// 				}
 			}
 			return new \WP_REST_Response ( $items );
 	}	
@@ -108,8 +133,10 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
 		$user = wp_get_current_user();
-		$user_meta = get_userdata( $user->ID );
-		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+// 		$user_meta = get_userdata( $user->ID );
+// 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+		
+		$display_name = $this->cb_member_info($user->ID )->name ;	
 // 		$requestType = $_SERVER['REQUEST_METHOD'];
 
 		if( !isset($request['aircraft']) || ($request['aircraft'] == 0)){
@@ -125,19 +152,21 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
    		$equipment = $wpdb->get_results($sql, OBJECT);
  
  		$to = "";   		
-   		if ( $equipment[0]->captian_id != null) {   		
-   			$captian_id = $equipment[0]->captian_id;    		
-   			$captian = get_users_by('ID', $captian_id );	
-			$captian_meta = get_userdata( $member->ID );
-			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
- 			$captian_email = $captian_meta->user_email;
- 			$to .= $captian_email;
-		} 
+//    		if ( $equipment[0]->captian_id != null) {   		
+//    			$captian_id = $equipment[0]->captian_id;    		
+//    			$captian = get_users_by('ID', $captian_id );	
+// 			$captian_meta = get_userdata( $member->ID );
+// 			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
+//  			$captian_email = $captian_meta->user_email;
+//  			$to .= $captian_email;
+// 		} 
+		
+		$to .= $this->cb_member_info($equipment[0]->captian_id )->email ;	
+				
 		if(!isset($request['notify']) || $equipment[0]->aircraft_type=2 ) {
 			foreach ( $ops_emails as $m ){
 				$to .= $m->user_email .', ';
 			};
-
 		}		
    		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New');
 		$members = get_users(['role__in' => 'maintenance_editor'] );	

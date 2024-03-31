@@ -20,8 +20,11 @@
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
 		$user = wp_get_current_user();
-		$user_meta = get_userdata( $user->ID );
-		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+// 		$user_meta = get_userdata( $user->ID );
+// 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+
+$display_name = cb_member_info($user->ID )->name;
+
 		$requestType = $_SERVER['REQUEST_METHOD'];
 		if($requestType == 'GET'){
 			return;
@@ -50,37 +53,35 @@
    		$squawk_id = $wpdb->get_var("SELECT MAX(squawk_id) FROM " . $table_squawk  );
    		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
    		$equipment = $wpdb->get_results($sql, OBJECT);
-   		
+
+	// email to notify captian 
    		if ( $equipment[0]->captian_id != null) {   		
    			$captian_id = $equipment[0]->captian_id;    		
    			$captian = get_users_by('ID', $captian_id );	
 			$captian_meta = get_userdata( $member->ID );
-			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
- 			$captian_email = $captian_meta->user_email;
+// 			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
+ 			$to = $captian_meta->user_email.', ';
+		} else {
+			$to = ""; 	   
 		}
 		
-   		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New');
- 
+   		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New'); 
     	if( $wpdb->insert($table_squawk, $data ) != 1 ){
     		echo 'An error occured, your squawk was not entered. See system Programmer...... ';
    		    return;		    	
     	} else {
-
 			$subject = "PGC SQUAWK (V3)";    	
     		$msg = " Equipment: " .$equipment[0]->compitition_id  . "(".  $equipment[0]->registration . ")<br>\n Reported By: ". $display_name  . "<br>\n Date: " . date('Y-M-d') .  "<br>\n Problem Description: " . $squawk;
 //     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
 
 			$members = get_users(['role__in' => 'maintenance_editor'] );	
-			$to = ""; 		
+		// email to notify maintance crew	
 			foreach( $members as $member ){	
 			    $user_meta = get_userdata( $member->ID );
 // 			    $users[ $member->ID]=  $user_meta->first_name .' '.  $user_meta->last_name ;						
 				$to .= $user_meta->user_email .', ';
 			};
-// 			$ops_emails = $wpdb->get_results($sql);			
-// 			foreach ( $ops_emails as $m ){
-// 				$to .= $m->user_email .', ';
-// 			};
+ 		// email to submitter. 
 			$to .= $user_meta->user_email; 
 			$headers = "MIME-Version: 1.0" . "\r\n";
 			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -93,29 +94,32 @@
 	}	
 
  function display_squawk_sheet(){	 
-//     convert_from_pdp();      
-
 	global $wpdb;
+	$cuser = wp_get_current_user();
+	$cuser_meta = get_userdata( $cuser->ID );
+	$display_name = $cuser_meta->first_name .' '.  $cuser_meta->last_name;
+
 	$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-	$user = wp_get_current_user();
-	$user_meta = get_userdata( $user->ID );
-	$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
-  	$sql = "Select DISTINCT(a.aircraft_id), a.registration, a.compitition_id FROM {$table_aircraft} a INNER JOIN {$table_type} t on a.aircraft_type=t.type_id WHERE a.valid_until is NULL AND t.title ='Glider'"; 
+  	$sql = "Select DISTINCT(a.aircraft_id), a.registration, a.compitition_id, a.captian_id FROM {$table_aircraft} a INNER JOIN {$table_type} t on a.aircraft_type=t.type_id WHERE a.valid_until is NULL AND t.title ='Glider'"; 
 	$equipemnt = $wpdb->get_results($sql); 
+
 	$limit  = 12;	
 	isset($_GET['pages']) ? $page = ($_GET['pages']) : $page = 1 ;
 
 	$offset = ($page - 1 ) * $limit; 
-
+//  	$rest_request = new \WP_REST_REQUEST( 'POST', '/cloud_base/v1/squawks' ) ;  
+//   	$rest_request->set_query_params(array('limit'=> $limit, 'page'=> $page,'s3'=> $s3, 'e3'=> $e3));
+//    	$rest_response = rest_do_request( $rest_request);      		
+// 
 	echo('<div class="squawk_body"><h4 class="squawk_text">PGC EQUIPMENT / OPERATIONS SQUAWK (V3)</h4>');
 	echo('<div>A Squawk e-mail notification will be sent to the PGC Maintenance Team.</div>');
 	echo('<div>Your issue will be tracked  in the PGC maintenance  database  through resolution.</div>');
 	echo('<div class="squawk_box">');
 	echo (' <div class="squawk_user_name">Reported by: ' .$display_name . '</div>');
 	echo ('<form id="squawk_sheet"  name="squawk_sheet" method="post">');
-	echo ('<input type="hidden" id="member_id" name="member_id"  value="'. $user->ID . '"</input> ');
+	echo ('<input type="hidden" id="member_id" name="member_id"  value="'. $cuser->ID . '"</input> ');
  
 	echo ('<label for="aircraft" class="squawk_text" >Equipment: </label>');
  	echo('<select class="select_list" id="aircraft" name="aircraft" >');
@@ -133,8 +137,7 @@
 	echo('<div class="squawk_text">Please check the previous squawks, below, before submiting to prevent duplicates.</div>');	
 
 // display/update				
-
-  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment,  s.user_id  FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment, a.captian_id, s.user_id  FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
   		on a.aircraft_id=s.equipment  WHERE a.valid_until is NULL AND s.status != 'COMPLETED' ORDER BY s.date_entered DESC
   		LIMIT ". $limit ." OFFSET " . $offset; 
 
@@ -148,6 +151,7 @@
 		<div class="table-col">Date</div> 
 		<div class="table-col">Squawk</div> 
 		<div class="table-col">Member</div>   
+		<div class="table-col">Captain</div>   
 		<div class="table-col">Status</div>     		
 		</div>');
 	foreach($squawks as $squawk){
@@ -157,14 +161,23 @@
 		$sdate = strtotime($squawk->date_entered);
 		echo('<div class="table-col" style="white-space:nowrap">'.date("Y-m-d",$sdate).'</div>');
 		echo('<div class="table-col">'.$squawk->text.'</div>');
-		if (	$user = get_user_by('ID',$squawk->user_id )){
+		if ($user = get_user_by('ID',$squawk->user_id )){
 			$user_meta = get_userdata( $user->ID );
 			$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
-			} else {
+		} else {
 				$display_name ="unknown";
-			}
+		}
 		echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
-		if(current_user_can( 'cb_edit_maintenance')){
+	// display captain 		
+ 		if ($cap_user = get_user_by('ID',$squawk->captian_id )){
+			$cap_user_meta = get_userdata( $cap_user->ID );
+			$display_name = $cap_user_meta->first_name .' '.  $cap_user_meta->last_name;
+		} else {
+				$display_name ="unknown";
+ 		}
+		echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
+		
+		if(current_user_can( 'cb_edit_maintenance') || $cuser->ID === (int)$squawk->captian_id ){
 // 		  echo('<div class="table-col">
 // 				<textarea id="squawk_comment" name="squawk_comment" rows="2" cols="20">' .$squawk->comment. '</textarea></div>');
 		  echo('<div class="table-col">');
@@ -192,7 +205,7 @@
 	 	$offset = ($page - 1 ) * $limit - $open_count; 
 	 	$offset < 0 ? $offset=0: $offset=$offset;
 
-	  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment,  s.user_id  FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
+	  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, a.captian_id FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
 	  		on a.aircraft_id=s.equipment  WHERE a.valid_until is NULL AND s.status = 'COMPLETED' ORDER BY s.date_entered DESC
 	  		LIMIT ". $limit ." OFFSET " . $offset; 
 		$closed_squawks = $wpdb->get_results($sql); 
@@ -208,7 +221,16 @@
 				$user_meta = get_userdata( $user->ID );
 				$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
 			echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
-			if(current_user_can( 'cb_edit_maintenance')){
+
+// display captain 		
+ 		if ($user = get_user_by('ID',$squawk->captian_id )){
+			$user_meta = get_userdata( $user->ID );
+			$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
+		} else {
+				$display_name ="unknown";
+ 		}
+		echo('<div class="table-col" style="white-space:nowrap">'.$display_name.'</div>');
+			if(current_user_can( 'cb_edit_maintenance') || $cuser->ID === $squawk->captian_id ){
 // 			  echo('<div class="table-col">
 // 					<textarea id="squawk_comment" name="squawk_comment" rows="2" cols="20">' .$squawk->comment. '</textarea></div>');
 			  echo('<div class="table-col">');
@@ -242,48 +264,19 @@
 	echo('</div></div>' );
 	
 }	
-
-	/*
-	  this function should be run only once. It is designed to copy squawks from the old 
-	  PGC PDP system to the new Wordpess base squawk system. -dsj
-	*/
-// 	function convert_from_pdp(){
-// 		global $wpdb;
-// 		global $PGCi;  // database handle for PDP external db
-// 
-// 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
-// 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
-// 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-// //    		$old_squwks = $PGCi->get_results('SELECT * FROM pgc_squawk');
-//    		$old_squawk = mysqli_query($PGCi, 'SELECT * FROM pgc_squawk') or die('Query failed!');	    
-// 
-//   
-//    		foreach($old_squawk as $squawk){
-//    			if($squawk['id_entered'] != null){
-// 				$user = get_user_by('email', $squawk['id_entered' ]);
-//    				if(!$user){
-//    					$user_id = 1;
-//    				} else {
-//    					$user_id = $user->ID;
-//    				}   				
-//    				if( preg_match( '/\(.*?\)/',$squawk['sq_equipment'], $registration )){
-//    				$reg = str_replace(array('(',')'), '', $registration[0]);
-// 
-//    					$sdate = strtotime($squawk['date_entered']);
-//    					$sql = $wpdb->prepare( "SELECT aircraft_id FROM  {$table_aircraft} WHERE registration = %s",  'N'.$reg );
-//    					$aircraft_id = $wpdb->get_var($sql);
-//  					
-//    					if($aircraft_id  != NULL ){
-//    						$data = array ( 'squawk_id'=>$squawk['sq_key']  , 'equipment'=> $aircraft_id, 'date_entered'=>date("Y-m-d",$sdate), 
-//    							'date_updated'=>$squawk['sq_date'], 'user_last_update_id'=>'1', 'text'=>$squawk['sq_issue'], 'comment'=>'' , 
-//    							'user_id'=>$user_id ,'status'=>$squawk['sq_status']); 
-//  				
-//       					$wpdb->insert($table_squawk , $data );   		
-// 					}		 				
-//    				} 			
-//    			}
-//    		}	
-// 	}
- 
+function cb_member_info($id){
+	if($id != 0 && !is_null($id)){
+		$member_data  = get_userdata( $id);
+		$oBj = (object)[ "name"=>$member_name =  $member_data->first_name .' '.  $member_data->last_name ,
+		       "email"=> $member_data->user_email,
+		       "weight"=> $member_data->weight			       
+		        ];
+	} else {
+		$oBj = (object)[  "name"=>"none",
+		       "email"=> "",
+		       "weight"=> 0 ];
+	}
+	return $oBj;
+}	 
 ?>
 

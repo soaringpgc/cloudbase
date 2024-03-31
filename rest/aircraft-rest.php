@@ -81,12 +81,13 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $items = $wpdb->get_results( $sql, OBJECT);
 	  // patch in captian Name 	
 		foreach( $items as $key =>  $item ){	
-			if( $item->captian_id != null  ){
-		    	$user_meta = get_userdata( $item->captian_id );
-				$items[$key]->captian_name =  $user_meta->first_name .' '.  $user_meta->last_name;			
-			} else {
-				$items[$key]->captian_name = "";
-			}
+			$items[$key]->captian_name = $this->cb_member_info($item->captian_id )->name ;			
+// 			if( $item->captian_id != null  ){
+// 		    	$user_meta = get_userdata( $item->captian_id );
+// 				$items[$key]->captian_name =  $user_meta->first_name .' '.  $user_meta->last_name;			
+// 			} else {
+// 				$items[$key]->captian_name = "";
+// 			}
 		}
 	  if( $wpdb->num_rows > 0 ) {	
 	  	 return new \WP_REST_Response ($items);

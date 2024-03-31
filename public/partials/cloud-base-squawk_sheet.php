@@ -19,12 +19,8 @@
 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-		$user = wp_get_current_user();
-// 		$user_meta = get_userdata( $user->ID );
-// 		$display_name = $user_meta->first_name .' '.  $user_meta->last_name;
-
-$display_name = cb_member_info($user->ID )->name;
-
+		$user = cb_member_info(wp_get_current_user()->id );
+		$display_name = $user->name;
 		$requestType = $_SERVER['REQUEST_METHOD'];
 		if($requestType == 'GET'){
 			return;
@@ -51,21 +47,12 @@ $display_name = cb_member_info($user->ID )->name;
    		    return;
    		}  		
    		$squawk_id = $wpdb->get_var("SELECT MAX(squawk_id) FROM " . $table_squawk  );
-   		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d" , $equipment_id);   		
+   		$sql = $wpdb->prepare("SELECT * FROM {$table_aircraft} WHERE aircraft_id=%d AND valid_until IS NULL" , $equipment_id);   		
    		$equipment = $wpdb->get_results($sql, OBJECT);
-
 	// email to notify captian 
-   		if ( $equipment[0]->captian_id != null) {   		
-   			$captian_id = $equipment[0]->captian_id;    		
-   			$captian = get_users_by('ID', $captian_id );	
-			$captian_meta = get_userdata( $member->ID );
-// 			$captian_name =  $captian_meta->first_name .' '.  $captian_meta->last_name ;
- 			$to = $captian_meta->user_email.', ';
-		} else {
-			$to = ""; 	   
-		}
-		
+		$to = cb_member_info( $equipment[0]->captian_id)->email . ", " ;		
    		$data = array( 'squawk_id'=>$squawk_id+1, 'equipment'=>$equipment_id, 'date_entered'=>current_time('mysql'), 'text'=> $squawk, 'user_id'=> $user->ID, 'status'=>'New'); 
+
     	if( $wpdb->insert($table_squawk, $data ) != 1 ){
     		echo 'An error occured, your squawk was not entered. See system Programmer...... ';
    		    return;		    	
@@ -75,21 +62,20 @@ $display_name = cb_member_info($user->ID )->name;
 //     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
 
 			$members = get_users(['role__in' => 'maintenance_editor'] );	
+			
 		// email to notify maintance crew	
 			foreach( $members as $member ){	
-			    $user_meta = get_userdata( $member->ID );
-// 			    $users[ $member->ID]=  $user_meta->first_name .' '.  $user_meta->last_name ;						
-				$to .= $user_meta->user_email .', ';
+				$to .= cb_member_info( $member->id)->email . ", " ;		
 			};
  		// email to submitter. 
-			$to .= $user_meta->user_email; 
+			$to .= $user->email; 
+			
 			$headers = "MIME-Version: 1.0" . "\r\n";
 			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 			$headers .= 'From: <webmaster@pgcsoaring.com>' . "\r\n";
 	
   			mail($to,$subject,$msg,$headers);
-			echo('<p> Your squawk has been recorded</p> ');
-    			
+			echo('<p> Your squawk has been recorded</p> ');    			
     	}
 	}	
 
@@ -269,12 +255,15 @@ function cb_member_info($id){
 		$member_data  = get_userdata( $id);
 		$oBj = (object)[ "name"=>$member_name =  $member_data->first_name .' '.  $member_data->last_name ,
 		       "email"=> $member_data->user_email,
-		       "weight"=> $member_data->weight			       
+		       "weight"=> $member_data->weight,
+		       "ID"=>$member_data->ID		       
 		        ];
 	} else {
 		$oBj = (object)[  "name"=>"none",
 		       "email"=> "",
-		       "weight"=> 0 ];
+		       "weight"=> 0 ,
+		       "ID"=>0	
+		       ];		       
 	}
 	return $oBj;
 }	 

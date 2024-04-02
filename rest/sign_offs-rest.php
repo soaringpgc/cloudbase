@@ -29,7 +29,7 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_signoffs_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
+         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),), 
           array(
       	    'methods'  => \WP_REST_Server::CREATABLE,
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
@@ -66,19 +66,22 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 		global $wpdb;
 	    $table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";    
 	    $table_types = $wpdb->prefix . "cloud_base_signoffs_types";    
+	    $wp_users = $wpdb->prefix . "users";   
 	    $cloud_base_authoritys = get_option('cloud_base_authoritys');
 	    $filter_string ="";
 	    $valid_filters = array( 'authority'=>'authority_id', 'signoff'=>'signoff_id', 'no_fly'=>'no_fly' );
      	$valid_keys = array_keys($valid_filters );
-     	
      	if (isset($request['summary'])){
      		// actually want the fly list. 
      		$sql = "SELECT DISTINCT s.member_id FROM " . $table_signoffs . " s inner join " . $table_types . " t 
-   	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.member_id WHERE t.no_fly = 1 AND s.date_expire <= NOW()" ;           			
+   	 			on s.Signoff_id = t.id inner join  " . $wp_users . " a on a.id = s.member_id WHERE t.no_fly = 1 AND s.date_expire <= NOW()" ;           			
      	} else {
      		$sql = "SELECT s.member_id, t.signoff_type, s.date_expire FROM " . $table_signoffs . " s inner join " . $table_types . " t 
-   	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.member_id WHERE t.no_fly = 1 AND s.date_expire <= NOW()" ;      
+   	 			on s.Signoff_id = t.id inner join " . $wp_users . " a on a.id = s.member_id WHERE t.no_fly = 1 AND s.date_expire <= NOW()" ;      
       	} 
+//     return new \WP_REST_Response ($sql);	     	
+   	
+      	
         $items = $wpdb->get_results( $sql, OBJECT);  
          	// filter out the inactive membets.      
         $no_role = wp_get_users_with_no_role(); 

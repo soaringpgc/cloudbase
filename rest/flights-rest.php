@@ -36,19 +36,19 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_flights_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),       	
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_flights_put_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),),
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),),
           array (
          	 'methods'  => \WP_REST_Server::DELETABLE,
               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
              'callback' => array( $this, 'cloud_base_flights_delete_callback' ),
              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_dummy_access_check' ),        	 		      		
+         	'permission_callback' => array($this, 'cloud_base_private_access_check' ),        	 		      		
       	  )
       	)
       );	                         
@@ -68,11 +68,6 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
 //  	  'aircraft_id'=>'s.aircraft_id', 'pilot_id'=>'s.pilot_id',	'instructor_id'=>'s.instructor_id', 'tow_plane_id'=>'s.tow_plane_id', 
 //  	  'tow_pilot_id'=>'s.tow_pilot_id', 'launch'=>'s.start_time', 'landing'=>'s.end_time', 'compition_id'=>'t.compition_id', 'tow_plane'=>'t.registration', 
 //  	   'pilot'=>'a.display_name', 'instructor'=>'a.display_name', 'tow_pilot'=>'a.display_name'  );
-
-// 	  $sql = "SELECT  s.id, s.flight_number, s.flight_type, s.aircraft_id, a.compitition_id as glider, y.title as f_type, s.pilot_id, s.instructor_id,  s.tow_pilot_id, 
-// 	  p.display_name as pilot, i.display_name as instructor, t.display_name as tow_pilot FROM wp_cloud_base_flight_sheet s 
-// 	  INNER JOIN  wp_users p ON s.pilot_id = p.id LEFT JOIN  wp_users i ON  s.instructor_id = i.id LEFT JOIN  wp_users t ON  s.tow_pilot_id = t.id 
-// 	  INNER JOIN wp_cloud_base_flight_type y ON s.flight_type=y.id INNER JOIN wp_cloud_base_aircraft a ON s.aircraft_id=a.aircraft_id" ;
     	if (!empty($request['flightyear'])){
     		$flightyear = $request['flightyear'];
     	} else {

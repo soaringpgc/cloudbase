@@ -5,7 +5,6 @@
 
 <div style="display:inline-block"  align:left id="aircrafts"  class="TowFee editform" >
 
-
 <?php 		
 global $wpdb;
 $table_name = $wpdb->prefix . "cloud_base_aircraft_type";	

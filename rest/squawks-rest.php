@@ -71,7 +71,7 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 		$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 		$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 		$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-		$table_members = $wpdb->prefix . "_users";
+		$wp_users = $wpdb->prefix . "users";
 		isset($request['pages']) ? $page = ($request['pages']) : $page = 1 ;
 		isset($request['limit']) ? $limit = ($request['limit']) : $limit = 12 ;
 		$offset = ($page - 1 ) * $limit; 
@@ -82,11 +82,8 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 
 	  $sql = "SELECT  s.id, s.flight_number, s.flight_type, s.aircraft_id, a.compitition_id as glider, y.title as f_type, s.pilot_id, s.instructor_id,  s.tow_pilot_id, 
 	  p.display_name as pilot, i.display_name as instructor, t.display_name as tow_pilot FROM wp_cloud_base_flight_sheet s 
-	  INNER JOIN  wp_users p ON s.pilot_id = p.id LEFT JOIN  wp_users i ON  s.instructor_id = i.id LEFT JOIN  wp_users t ON  s.tow_pilot_id = t.id 
+	  INNER JOIN  ". $wp_users ." p ON s.pilot_id = p.id LEFT JOIN  ". $wp_users ." i ON  s.instructor_id = i.id LEFT JOIN  ". $wp_users ." t ON  s.tow_pilot_id = t.id 
 	  INNER JOIN wp_cloud_base_flight_type y ON s.flight_type=y.id INNER JOIN wp_cloud_base_aircraft a ON s.aircraft_id=a.aircraft_id" ;
-
-
-
 
 		if(isset($request['id'])){  // by squawk record id 
 			$sql = "Select DISTINCT s.id, s.squawk_id, a.registration, a.aircraft_id, a.compitition_id, a.captian_id, s.date_entered, s.status, s.text, s.comment,  s.user_id, t.type_id FROM {$table_aircraft} a INNER JOIN {$table_squawk} s 
@@ -185,10 +182,7 @@ class Cloud_Base_Squawks extends Cloud_Base_Rest {
 
 			$subject = "PGC SQUAWK (V3)";    	
     		$msg = " Equipment: " .$equipment[0]->compitition_id  . "(".  $equipment[0]->registration . ")<br>\n Reported By: ". $display_name  . "<br>\n Date: " . date('Y-M-d') .  "<br>\n Problem Description: " . $squawk;
-//     		$sql = "SELECT wp_users.user_email FROM wp_users INNER JOIN wp_usermeta ON wp_users.ID = wp_usermeta.user_id WHERE wp_usermeta.meta_value like '%maintenance_editor%' "; 
-// 			$ops_emails = $wpdb->get_results($sql);
 // 
-// 			$to .= $user_meta->user_email; 
 			$headers = "MIME-Version: 1.0" . "\r\n";
 			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 			$headers .= 'From: <webmaster@pgcsoaring.com>' . "\r\n";

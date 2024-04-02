@@ -22,17 +22,18 @@
      	$charset_collate = $wpdb->get_charset_collate();
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
+     	$wp_users = $wpdb->prefix . "users";
      	
      	$cb_atts = shortcode_atts(array('no_fly' => '0','signoff' => ''), $atts, 'signoff_summery');
 
 	 	if( $cb_atts['signoff'] != '' ){ // display all signoffs 
  	 		$sql = $wpdb->prepare( "SELECT a.user_nicename, a.id, t.signoff_type,  s.date_expire  FROM {$table_signoffs } s inner join {$table_types } t 
-  	 		on s.Signoff_id = t.id inner join wp_users a on a.id = s.member_id  WHERE  t.signoff_type  = %s AND s.date_expire < current_date() ORDER BY a.user_nicename ", esc_HTML__($cb_atts['signoff']));	 	
+  	 		on s.Signoff_id = t.id inner join ". $wp_users ." a on a.id = s.member_id  WHERE  t.signoff_type  = %s AND s.date_expire < current_date() ORDER BY a.user_nicename ", esc_HTML__($cb_atts['signoff']));	 	
 			$header = "<h3>" . get_option ('glider_club_short_name'). " Sign Off Summey for, " . $cb_atts['signoff'] . " as of ". date("Y/m/d"). "</h3>";
 
  	 	} else { 	 		
   	 		$sql = $wpdb->prepare( "SELECT a.user_nicename, a.id, t.signoff_type,  s.date_expire  FROM {$table_signoffs } s inner join {$table_types } t 
-  	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.member_id  WHERE t.no_fly  = %d AND s.date_expire < current_date() ORDER BY a.user_nicename ", $cb_atts['no_fly']);
+  	 			on s.Signoff_id = t.id inner join ". $wp_users ." a on a.id = s.member_id  WHERE t.no_fly  = %d AND s.date_expire < current_date() ORDER BY a.user_nicename ", $cb_atts['no_fly']);
 			if(  $cb_atts['no_fly'] == '1' ){
 				$header ="<h3 class='red'>" . get_option ('glider_club_short_name'). " NO Fly List as of : ". date("Y/m/d"). "</h3>";
 			} else {

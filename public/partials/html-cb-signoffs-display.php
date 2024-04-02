@@ -16,6 +16,7 @@
      	$charset_collate = $wpdb->get_charset_collate();
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
+     	$wp_users = $wpdb->prefix . "users";
      	$no_fly= false; 
 
  	 	$cb_atts = shortcode_atts(array('all' => false, 'no_fly' => '0'), $atts, 'display_signoffs');
@@ -49,11 +50,11 @@
 	 	foreach ($pilots as $pilot ){		 
 			if ($no_fly ){
 	 			$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
-  	 				on s.Signoff_id = t.id inner join wp_users a on a.id = s.authority_id WHERE s.date_expire <= CURDATE() and `member_id` =  " . $pilot->id . ' AND t.no_fly = 1 ';
+  	 				on s.Signoff_id = t.id inner join ". $wp_users ." a on a.id = s.authority_id WHERE s.date_expire <= CURDATE() and `member_id` =  " . $pilot->id . ' AND t.no_fly = 1 ';
 					
 			} else {
 	 			$sql = "SELECT s.id, t.signoff_type, a.display_name, s.date_effective, s.date_expire, t.authority, t.no_fly FROM " . $table_signoffs . " s inner join " . $table_types . " t 
-  	 			on s.Signoff_id = t.id inner join wp_users a on a.id = s.authority_id WHERE `member_id` =  " . $pilot->id ;
+  	 			on s.Signoff_id = t.id inner join ". $wp_users ." a on a.id = s.authority_id WHERE `member_id` =  " . $pilot->id ;
 
 			}
 			$pilot_signoffs= $wpdb->get_results($sql);

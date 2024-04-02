@@ -61,11 +61,12 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 		global $wpdb;
      	$table_signoffs = $wpdb->prefix . "cloud_base_member_signoffs";
      	$table_types = $wpdb->prefix . "cloud_base_signoffs_types";
+     	$wp_users = $wpdb->prefix . "users";
 
 // 		$valid_roles = array ('cfi_g', 'tow_pilot', 'subscriber', 'active','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE');		
 
 		$valid_roles = array ('cfi_g', 'tow_pilot', 'subscriber', 'active',  'field_manager',
-		'assistant_field_manager','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE', 
+		'assistant_field_manager','CFI_G', 'TOW_PILOT', 'SUBSCRIBER', 'ACTIVE', 'cfi',
 		'FIELD_MANAGER', 'ASSISTANT_FIELD_MANAGER' );		
 
 		$pilot =  new stdClass();	
@@ -78,7 +79,7 @@ class Cloud_Base_pilots extends Cloud_Base_Rest {
 			$no_flying = $wpdb->get_results( "SELECT DISTINCT a.id  
 				FROM {$table_signoffs } s 
 				INNER JOIN {$table_types } t ON s.Signoff_id = t.id 
-				INNER JOIN wp_users a ON a.id = s.member_id 
+				INNER JOIN ". $wp_users ." a ON a.id = s.member_id 
 				INNER JOIN wp_usermeta ON s.member_id  = wp_usermeta.user_id 										
 				WHERE wp_usermeta.meta_key = 'wp_capabilities' 
 				AND wp_usermeta.meta_value LIKE '%subscriber%'  

@@ -107,20 +107,16 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 		global $wpdb;
 	    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";    
 	    $table_types = $wpdb->prefix . "cloud_base_signoffs_types";    
+ 		$wp_users = $wpdb->prefix . "users";  
+ 		$wp_usermeta = $wpdb->prefix . "usermeta";             
+
 	    $cloud_base_authoritys = get_option('cloud_base_authoritys');
 	    $filter_string ="";
 	    $valid_filters = array( 'authority'=>'authority_id', 'signoff'=>'signoff_id', 'no_fly'=>'no_fly' );
      	$valid_keys = array_keys($valid_filters );
-     	
-//      	if (isset($request['fly_list'])){
-//      		$sql = "SELECT DISTINCT m.member_id  FROM ". $table_name . " m INNER JOIN " . $table_types  . " t ON m.signoff_id = t.id WHERE t.no_fly = 1 AND m.date_expire <= NOW()" ;     		
-//      	}  elseif (isset($request['no_fly'])){
-//     		$sql = "SELECT DISTINCT m.member_id  FROM ". $table_name . " m INNER JOIN " . $table_types  . " t ON m.signoff_id = t.id WHERE t.no_fly = 1 AND m.date_expire >= NOW()" ;      	     		
-//       	}  elseif (isset($request['missing'])){
-		 	
-  	     		      	      	      	
+     	  	     		      	      	      	
       	if (isset($request['expired'])){
-    		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name} WHERE signoff_id= %d AND date_expire <= NOW()",  $request['expired'] );      	     		      	
+    		$sql = $wpdb->prepare( "SELECT * FROM {$table_name} WHERE signoff_id= %d AND date_expire <= NOW()",  $request['expired'] );      	     		      	
        	} elseif (isset($request['signoff'])){
      		$sql = $wpdb->prepare( "SELECT member_id  FROM {$table_name } WHERE signoff_id= %d AND date_expire >= NOW()",  $request['signoff'] );      	     		      	      	
        	} elseif (isset($request['member_id'])){
@@ -137,19 +133,25 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
         	} 
        	} elseif ( isset($request['id']) ) {
        		$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",  $request['id'] );     
+		} elseif ( isset($request['batch']) ) {
+       		
+// in theory we are filtering out members who are not subscribres. 
+		$sql = $wpdb->prepare( "SELECT DISTINCT s.id, u.ID as member_id, u.user_nicename, s.date_expire FROM {$wp_users} u INNER JOIN {$wp_usermeta} m ON u.ID = m.user_id INNER JOIN {$table_name} s ON s.member_id = u.ID 
+			WHERE  m.meta_key = 'wp_capabilities'AND m.meta_value LIKE %s AND signoff_id= %d AND member_id != %d;", '%' . 'subscriber' .'%', $request['batch'], wp_get_current_user()->ID );     
 		} else {
 			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",   get_current_user_id() );     
- 	    } 
-//   	    return new \WP_REST_Response ($sql);  
+ 	    }   
+
         $items = $wpdb->get_results( $sql, OBJECT);  
+                   
  		if(isset($request['update'])){
  			foreach( $items as $i=>$v){			
 				if(!current_user_can($v->authority))	{
 					unset($items[$i]);   
 				}		
  			}
- 		}
-
+ 		}   
+ 
         $no_role = wp_get_users_with_no_role(); 
         $args = array('role'    => 'inactive', 'fields' => 'ID');
 		$inactive = get_users( $args );
@@ -159,7 +161,13 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
         	if (in_array( $v->member_id, $no_list)) {
         		unset($items[$i]);          	
         	}; 
-        }        
+        	$mdata = $this->cb_member_info($v->member_id);
+        	$items[$i]->name  =  $mdata->name;
+        	$items[$i]->last_name  =  $mdata->last_name;
+        }   
+        
+        usort($items, function($a, $b) {return strcmp($a->last_name, $b->last_name);});   
+          
         if ($wpdb->last_error){
 				return new \WP_Error( $wpdb->last_error, esc_html__( ' Unable to retrive data.', 'my-text-domain' ), array( 'status' => 500 ) );        
         }
@@ -222,10 +230,10 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 	    $table_name = $wpdb->prefix . "cloud_base_member_signoffs";    
 	    $table_types = $wpdb->prefix . "cloud_base_signoffs_types";    
 	    if( !isset($request['record_id'] )){
-	    	return new \WP_Error( 'missing_record_id', esc_html__( 'Missing record Id.', 'my-text-domain' ), array( 'status' => 400 ) );
-	    }
+	    	return new \WP_Error( 'missing_record_id', esc_html__( 'Missing record Id.', 'my-text-domain' ), array( 'status' => 422 ) );
+	    }	
 	    if( !isset($request['effective_date'] )){
-	    	return new \WP_Error( 'missing_date', esc_html__( 'Missing effective date.', 'my-text-domain' ), array( 'status' => 400 ) );
+	    	return new \WP_Error( 'missing_date', esc_html__( 'Missing effective date.', 'my-text-domain' ), array( 'status' => 422 ) );
 	    }
 		$record_id = $request['record_id'];		// id of sign off 	
  		$date_effective = new \DateTime($request['effective_date']); // new effective date	

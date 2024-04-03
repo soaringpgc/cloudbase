@@ -120,6 +120,7 @@ class Cloud_Base_Public {
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
 		add_shortcode( 'signoff_summary', array( $this, 'signoff_summary' ) );
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
+		add_shortcode( 'batch_signoffs', array( $this, 'batch_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
 	} // register_shortcodes()		
 // // needed for display_flights shortcode.
@@ -192,6 +193,23 @@ class Cloud_Base_Public {
 		include_once 'partials/html-update-signoff.php';
 		return update_signoff_display($atts);
 	}
+	public function batch_signoffs($atts = array(),  $content= null, $tag = '' ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
+
+    		$dateToBePassed = array(
+ 				'restURL' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'current_user_id' => get_current_user_id(),
+ 				'user_can' => $this->user_can()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+		include_once 'partials/html-cb-batch-signoffs.php';
+		return batch_signoff($atts);
+	}
+	
 	 public function user_can()
      {
      	$capabiliteis = array( 'manage_options', 'chief_flight', 'chief_tow', 

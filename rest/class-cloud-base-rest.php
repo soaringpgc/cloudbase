@@ -287,12 +287,17 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 			$member_data  = get_userdata( $id);
 			$oBj = (object)[ "name"=>$member_name =  $member_data->first_name .' '.  $member_data->last_name ,
 			       "email"=> $member_data->user_email,
-			       "weight"=> $member_data->weight			       
+			       "weight"=> $member_data->weight,
+			       "last_name"=>  $member_data->last_name,
+			       "first_name"=>  $member_data->first_name 					       
 			        ];
 		} else {
 			$oBj = (object)[  "name"=>"none",
 			       "email"=> "",
-			       "weight"=> 0 ];
+			       "weight"=> 0 ,
+			       "last_name"=> "",
+			       "first_name"=> "" 	
+			        ];
 		}
 		return $oBj;
 	}	

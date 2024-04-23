@@ -74,6 +74,22 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
     		$flightyear =  date("Y");
     	}
 
+
+    	if (!empty($request['flightdate'])){
+    		$flightdate = $request['flightdate'];
+    	} else {
+    		$flightdate =  date("Y-m-d");
+    	}
+    	
+		$sql = "SELECT DISTINCT f.id,f.flight_number,f.flight_type,f.aircraft_id, a.compitition_id as GLIDER,f.pilot_id,f.flight_fee_id,f.total_charge,f.start_time,f.end_time,f.instructor_id,f.tow_plane_id, b.compitition_id as TOW_PLANE, f.tow_pilot_id,
+f.notes  FROM ". $flights_table . " f INNER JOIN ". $aircraft_table . " a  ON f.aircraft_id = a.aircraft_id INNER JOIN ". $aircraft_table . " b  ON f.tow_plane_id = b.aircraft_id WHERE date = '" . $flightdate  . "'";		
+$items = $wpdb->get_results( $sql, OBJECT);		
+   return new \WP_REST_Response ($items );  	
+ return new \WP_REST_Response ($sql);    	
+    	
+
+
+
 	//	SELECT * FROM wp_cloud_base_flight_sheet WHERE date(start_time) LIKE DATE(now()) ORDER BY start_time DESC
 		if (empty($request['flight_number'])){
 			$sql = "SELECT * FROM ". $flights_table . " WHERE DATE(date_entered) = DATE(now()) AND valid_until is NULL ORDER BY end_time DESC ";		

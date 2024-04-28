@@ -231,7 +231,7 @@ class Cloud_Base_Public {
 	 * take off/landing time and tow alitude. 
 	 */
      public function update_aircraft(){ 
-//     exit(var_dump($_POST));
+//       exit(var_dump($_POST));
 //     	global $wpdb;
 //	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	   
 	// NTFS - Note to Future Self  we are accessing the REST interface here.  
@@ -245,9 +245,10 @@ class Cloud_Base_Public {
  		   $request->set_param( 'transponder_due', $_POST['transponder_due'] );
  		   $request->set_param( 'comment', $_POST['comment'] );
  		   $request->set_param( 'status', $_POST['status'] );
+//   		   var_dump($request);
  		   $response = rest_do_request( $request);
-//  		   var_dump($response);
- 		
+//   		   var_dump($response);
+// 		   die();		
      	wp_redirect($_POST['source_page']);
      } //updateAircraft()    
      // add_action('template_redirect');

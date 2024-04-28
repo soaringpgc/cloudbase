@@ -214,11 +214,11 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	  $table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
 	  
-	  $item =  $request['id'];
+	  $item =  $request['aircraft_id'];
 	  if ($item  != null){	
 	  	// belt and suspenders? As ID was supplied to the client in the first place. 
 	  	// although someone trying to hack the REST interface... 
-		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d AND valid_until IS NULL " ,  $item );	
+		$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,  $item );	
 		$item = $wpdb->get_row( $sql, OBJECT);			
 		if( $wpdb->num_rows > 0 ) {					
         	if (!empty($request['aircraft_type'])){

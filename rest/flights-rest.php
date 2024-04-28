@@ -81,9 +81,16 @@ class Cloud_Base_Flights extends Cloud_Base_Rest {
     		$flightdate =  date("Y-m-d");
     	}
     	
-		$sql = "SELECT DISTINCT f.id,f.flight_number,f.flight_type,f.aircraft_id, a.compitition_id as GLIDER,f.pilot_id,f.flight_fee_id,f.total_charge,f.start_time,f.end_time,f.instructor_id,f.tow_plane_id, b.compitition_id as TOW_PLANE, f.tow_pilot_id,
+		$sql = "SELECT DISTINCT f.id,f.flight_number,f.flight_type,f.aircraft_id, a.compitition_id as Glider,f.pilot_id,f.flight_fee_id,f.total_charge,f.start_time,f.end_time,f.instructor_id,f.tow_plane_id, b.compitition_id as Tow_Plane, f.tow_pilot_id,
 f.notes  FROM ". $flights_table . " f INNER JOIN ". $aircraft_table . " a  ON f.aircraft_id = a.aircraft_id INNER JOIN ". $aircraft_table . " b  ON f.tow_plane_id = b.aircraft_id WHERE date = '" . $flightdate  . "'";		
 $items = $wpdb->get_results( $sql, OBJECT);		
+
+	foreach($items as $key =>  $item ){
+		$items[$key]->Pilot1 = $this->cb_member_info($item->pilot_id)->name;
+		$items[$key]->Pilot2 = $this->cb_member_info($item->instructor_id)->name;
+ 		$items[$key]->Tow_Pilot = $this->cb_member_info($item->tow_pilot_id)->name;
+	}
+
 return new \WP_REST_Response ($items );  	
  return new \WP_REST_Response ($sql);    	
     	

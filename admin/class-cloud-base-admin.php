@@ -162,8 +162,7 @@ class Cloud_Base_Admin {
     	update_option('cloud_base_fy_month', $cloud_base_fy_month ); 
     	update_option('cloud_base_fy_day', $cloud_base_fy_day ); 
     	update_option('cloud_base_session_month', $cloud_base_se_month ); 
-    	update_option('cloud_base_session_day', $cloud_base_se_day); 
-	
+    	update_option('cloud_base_session_day', $cloud_base_se_day); 	
     	wp_redirect('options-general.php?page=cloud_base&tab=config_page');
     	exit();    		
     }  
@@ -189,9 +188,10 @@ class Cloud_Base_Admin {
 		  	}
 		  }
 	}    
- 	public function cloud_base_inactive_signoffs($user_id, $role, $old_roles) {
-		if(in_array('inactive', $old_roles ) && $role = 'subscriber'){
-			$result = $this->cloud_base_new_signoffs($user_id);
+ 	public function cloud_base_inactive_signoffs($user_id, $old_user_data, $user_data) { 
+ 		if(in_array('inactive', $old_user_data->roles )) {
+ 		$notify =0;
+ 			$result = $this->cloud_base_add_new_user_signoffs($user_id, $notify);
 		}
  	}
  	// add required signoff for new members. 

@@ -70,7 +70,8 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 //  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'comment'=>'s.comment', 'captian_id'=>'s.captian_id',
- 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'last_100_hour'=>'s.last_100_hour','registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
+ 	  'make'=>'s.make', 'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'last_100_hour'=>'s.last_100_hour', 'totalhours'=>'s.totalhours',
+ 	  'registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 'title'=>'t.title  AS type', 'status_t'=>'u.title AS status_t' );
 
  	  $select_string = $this->select_fields($request, $valid_fields); 
@@ -160,8 +161,13 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	// last 100 hour
 	  $last_100_hour = '';
 	  if (!empty($request['last_100_hour'])){
-		$annual_due_date =$request['last_100_hour'];
+		$last_100_hour =$request['last_100_hour'];
 	  }  
+	  // total hours
+	  $totalhours = '';
+	  if (!empty($request['totalhours'])){
+		$totalhours =$request['totalhours'];
+	  }    
 	  // captian id
 	  if (!empty($request['captian'])){
 	  	$the_user = get_user_by( 'ID', $request['captian_id'] ); 
@@ -201,6 +207,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  									'captian_id'=> $captian_id, 
 										'status' => $status, 
 										'last_100_hour'=>$last_100_hour,  
+										'totalhours'=>$totalhours,  
 										'date_updated' => current_time('mysql', 1), 
 										'make' => $make, 
 										'model' => $model, 
@@ -210,10 +217,11 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 										'compitition_id' => $compitition_id, 
 										'comment'=>$comment,  
 										'valid_until' => null  ), 
-			array( '%d', '%s', '%d', '%d', '%d', '%d','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) ); 
+			array( '%d', '%s', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) ); 
 //   // read it back to get id and send
 	  $valid_fields = array('id'=>'s.id', 'aircraft_id'=>'s.aircraft_id' , 'registration'=>'s.registration', 'captian_id'=>'s.captian_id', 'make'=>'s.make', 
-	  'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'last_100_hour'=>'s.last_100_hour', 'registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
+	  'model'=>'s.model',	'compitition_id'=>'s.compitition_id', 'annual_due_date'=>'s.annual_due_date', 'last_100_hour'=>'s.last_100_hour',  'totalhours'=>'s.totalhours', 
+	  'registration_due_date'=>'s.registration_due_date', 'transponder_due'=>'s.transponder_due',
  	  'status'=>'s.status', 'aircraft_type'=>'s.aircraft_type', 't.title'=>'t.title  AS type' );
 
  	  $select_string = $this->select_fields($request, $valid_fields);   
@@ -285,6 +293,12 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  		} else {
 				$last_100_hour = $item->last_100_hour;
 			}
+			// total hour
+		    if (!empty($request['totalhours'])){
+				$totalhours =$request['totalhours'];
+	  		} else {
+				$totalhours = $item->totalhours;
+			}
 			// transponder_due 
 	    	if (!empty($request['transponder_due'])){
 				$transponder_due =$request['transponder_due'];
@@ -331,24 +345,26 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 	  		} else{
         	    	$status = $item->status;
          	}
-  		
+		
 		    // create new record with valid_until = null. 
-		    $update_result = $wpdb->insert($table_name, array('aircraft_id' => $aircraft_id , 
+		    $update_result = $wpdb->insert($table_name, array(
+		    	'aircraft_id' => $aircraft_id , 
 		    	'registration' => $registration, 
 		    	'aircraft_type' => $aircraft_type, 
 				'status' => $status, 
 				'captian_id' => $captian_id, 
 				'date_updated' => current_time('mysql', 1), 
-				'make' => $make, 'model' => $model, 
+				'make' => $make, 
+				'model' => $model, 
 				'annual_due_date'=>$annual_due_date, 
 				'last_100_hour'=>$last_100_hour, 
+				'totalhours'=>$totalhours, 
 				'registration_due_date'=>$registration_due_date, 
 				'transponder_due'=>$transponder_due, 
 				'compitition_id' => $compitition_id, 
 				'comment'=>$comment, 
-				'valid_until' => null  ), 
-				array( '%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s',' %s', '%s')); 
-								
+				'valid_until' => null  ), 				
+				array('%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s'));												
 			if ( $update_result == 1 ) {
  	  		    // mark existing recored as nolonger valid by setting the valin_until to now.
   	       		$wpdb->update($table_name, array('valid_until' => current_time( 'mysql' )), array( 'id' =>  $item->id) );

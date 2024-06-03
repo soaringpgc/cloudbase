@@ -45,7 +45,7 @@
 
 			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
 			Echo ('<div class="table-row smallerFont"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
-			<div class="table-col ">Annual Due</div><div class="table-col ">Last 100hr</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Comments</div><div class="table-col ">Update</div></div>');
+			<div class="table-col ">Annual Due</div><div class="table-col ">Last 100hr</div><div class="table-col ">Total Hours</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Comments</div><div class="table-col ">Update</div></div>');
 			foreach($items as $item){	
  	
 			 	echo ' <form class="table-row"  action="'.admin_url("admin-post.php").'" method="post" id="update_aircraft"> <input type="hidden" name=action value="update_aircraft">
@@ -65,6 +65,7 @@
          		echo ( '</select> </div>');
 				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="number" step=".1" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="number" step=".1" id="totalhour" name="totalhour" value="'.$item->totalhours.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
@@ -88,6 +89,7 @@
 				echo ' <div class="table-col">'.$item->title.'</div>';				
 				echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
+				echo ' <div class="table-col">'.$item->totalhour.'</div>';
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.$item->comment.'</div>';

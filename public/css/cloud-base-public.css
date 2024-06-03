@@ -379,3 +379,9 @@ a.buttons {
 .nextPreviousButtons {
   text-align: center;
 }
+.smallerFont {
+	font-size: 14px;
+}
+input[type='number']{
+    width: 100px;
+} 

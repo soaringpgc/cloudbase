@@ -44,15 +44,15 @@
  		if ($detail_edit) {
 
 			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
-			Echo ('<div class="table-row"><div class="table-col ">Registation</div><div class="table-col ">Competition</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
-			<div class="table-col ">Annual Due</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Comments</div><div class="table-col ">Update</div></div>');
+			Echo ('<div class="table-row smallerFont"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
+			<div class="table-col ">Annual Due</div><div class="table-col ">Last 100hr</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Comments</div><div class="table-col ">Update</div></div>');
 			foreach($items as $item){	
  	
 			 	echo ' <form class="table-row"  action="'.admin_url("admin-post.php").'" method="post" id="update_aircraft"> <input type="hidden" name=action value="update_aircraft">
-			 		<div class="table-col">'.$item->registration.'</div>';
-			 	echo ' <div class="table-col">'.$item->compitition_id.'</div>';
-				echo ' <div class="table-col">'.$item->model.'</div>';			
-                echo '<div class="table-col"> <select name="status" id="status" >' ;
+			 		<div class="table-col smallerFont">'.$item->registration.'</div>';
+			 	echo ' <div class="table-col smallerFont">'.$item->compitition_id.'</div>';
+				echo ' <div class="table-col smallerFont">'.$item->model.'</div>';			
+                echo '<div class="table-col smallerFont"> <select name="status" id="status" >' ;
         			$sql = "SELECT * FROM ". $table_status . " WHERE active = 1 ORDER BY title ASC ";
         			$astats = $wpdb->get_results( $sql, OBJECT);       	
         			foreach($astats as $key){ 	
@@ -63,12 +63,13 @@
         				}
             		};
          		echo ( '</select> </div>');
-				echo ' <div class="table-col"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
-				echo ' <div class="table-col"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
-				echo ' <div class="table-col"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
-				echo ' <div class="table-col"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
+				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="number" step=".1" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
 				echo ' <input type="hidden" id="key" name="key" value="'.$item->aircraft_id.'">';
-				echo ' <div class="table-col"><button type="submit" value="submit">Update</button></div>';
+				echo ' <div class="table-col smallerFont"><button type="submit" value="submit">Update</button></div>';
 				echo '<input type="hidden" name="source_page" value="';
 				echo  the_permalink() . '">';
 			    wp_nonce_field('update_aircraft'); 
@@ -86,6 +87,7 @@
 				echo ' <div class="table-col">'.$item->model.'</div>';
 				echo ' <div class="table-col">'.$item->title.'</div>';				
 				echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
+				echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.$item->comment.'</div>';

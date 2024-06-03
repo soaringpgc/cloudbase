@@ -241,10 +241,12 @@ class Cloud_Base_Public {
  		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
  		   $request->set_param( 'aircraft_id', $_POST['key'] );
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
+ 		   $request->set_param( 'last_100_hour', $_POST['last_100_hour'] );
  		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );
  		   $request->set_param( 'transponder_due', $_POST['transponder_due'] );
  		   $request->set_param( 'comment', $_POST['comment'] );
  		   $request->set_param( 'status', $_POST['status'] );
+ 		    		   
 //   		   var_dump($request);
  		   $response = rest_do_request( $request);
 //   		   var_dump($response);

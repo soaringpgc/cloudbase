@@ -241,6 +241,7 @@ class Cloud_Base_Public {
  		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
  		   $request->set_param( 'aircraft_id', $_POST['key'] );
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
+ 		   $request->set_param( 'last_100_date', $_POST['last_100_date'] );
  		   $request->set_param( 'last_100_hour', $_POST['last_100_hour'] );
  		   $request->set_param( 'totalhours', $_POST['totalhour'] );
  		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );

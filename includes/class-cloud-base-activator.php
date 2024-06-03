@@ -47,7 +47,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.92;
+   	$db_version = 0.93;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){ 
@@ -64,6 +64,7 @@ function create_cb_database(){
       	status tinyint(4),
       	captian_id int(10),
       	annual_due_date date DEFAULT NULL,
+      	last_100_date date DEFAULT NULL,
       	last_100_hour  decimal(7,2),
       	totalhours  decimal(7,2),
       	registration_due_date date DEFAULT NULL,

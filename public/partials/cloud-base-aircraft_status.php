@@ -65,8 +65,9 @@
             		};
          		echo ( '</select> </div>');
 				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="number" step=".1" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="last_100_date" value="'.$item->last_100_date.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="number" step=".01" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="date" id="last_100_date" name="last_100_date" value="'.$item->last_100_date.'"></div>';
+				echo ' <div class="table-col smallerFont"><input type="number" step=".01" " id="totalhour" name="totalhour" value="'.$item->totalhour.'"></div>';		
 				echo ' <div class="table-col smallerFont"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
@@ -77,7 +78,6 @@
 			    wp_nonce_field('update_aircraft'); 
 		 		echo(' </form>');
 		 	}
-
  		} else {
 			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
 			Echo ('<div class="table-row"><div class="table-col ">Registation</div><div class="table-col ">Compition</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
@@ -98,8 +98,7 @@
 		 		echo('</div>');
 		 	}
 		 }
-	} else {
-		
+	} else {		
 	 if( current_user_can( 'read' ) ) {	      
 	     $sql = "SELECT s.compitition_id as cid, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL " ;				
 	//     $sql = "SELECT s.compitition_id as cid, u.title as status, u.color as color  FROM wp_cloud_base_aircraft s inner join wp_cloud_base_aircraft_type t on s.aircraft_type=t.id inner join wp_cloud_base_aircraft_status u on s.status=u.id  WHERE s.valid_until is NULL " ;				

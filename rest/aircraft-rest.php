@@ -370,7 +370,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 				'make' => $make, 
 				'model' => $model, 
 				'annual_due_date'=>$annual_due_date, 
-				'last_100_date'=>$annual_due_date, 
+				'last_100_date'=>$last_100_date, 
 				'last_100_hour'=>$last_100_hour, 
 				'totalhours'=>$totalhours, 
 				'registration_due_date'=>$registration_due_date, 

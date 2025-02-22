@@ -473,9 +473,17 @@ function create_cb_roles(){
 	}
 }
 function set_default_cb_configuration(){
-	if ( get_option('glider_club_long_name') == false ){
-		update_option('glider_club_long_name', 'Generic Flying Club Name'  );
-		update_option('glider_club_short_name', 'GFCN'  );								    
+	if ( get_option('glider_club_long_name') === false ){
+		add_option('glider_club_long_name', 'Generic Flying Club Name', 'no' );								    
+	}
+	if ( get_option('glider_club_short_name') === false ){
+		add_option('glider_club_short_name', 'GFCN', 'no' );							    
+	}
+	if ( get_option('glider_club_tow_units') === false ){
+		add_option('glider_club_tow_units', 'Ft', 'no' );							    
+	}
+	if ( get_option('glider_club_strict_no_fly') === false ){
+		add_option('glider_club_strict_no_fly', 'N', 'no' );							    
 	}
 }
 function update_authoritys(){	

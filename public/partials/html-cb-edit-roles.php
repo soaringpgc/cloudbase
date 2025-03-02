@@ -52,7 +52,7 @@
     		 			$user->remove_role("subscriber");   
 				}  		
     		}
-    		if( isset($_POST['field_role']) && (current_user_can('cb_edit_operations') )){
+    		if( isset($_POST['duty']) && (current_user_can('cb_edit_operations') )){
     		 	$field_role  = sanitize_text_field($_POST["duty"]); 
     		 	switch($field_role  ){
     		 		case "exempt": 
@@ -161,7 +161,7 @@
       				echo '<option value=' .$pilot->ID .'>'. $pilot->last_name . ", " . $pilot->first_name . '</option>';		    		
   	   		} 
  		echo '</select><br>';	
- 		if (current_user_can('edit_users')){
+ 		if (current_user_can('cb_edit_dues')){
  			$args = array('role__not_in' => ['subscriber'], 'orderby'=>'meta_value', 'meta_key'=>'last_name', 'order' => 'ASC') ; 
     		$pilots = get_users($args);	   	
  			?>

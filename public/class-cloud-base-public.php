@@ -122,6 +122,7 @@ class Cloud_Base_Public {
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
 		add_shortcode( 'batch_signoffs', array( $this, 'batch_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
+ 		add_shortcode( 'edit_user_roles', array( $this, 'edit_user_roles' ) );
 	} // register_shortcodes()		
 // // needed for display_flights shortcode.
 // 	public function display_flights($atts = array() ){
@@ -132,6 +133,27 @@ class Cloud_Base_Public {
 // 		include_once 'partials/cloud-base-public-display.php';
 // //		return display_flights();
 // 	}
+	public function edit_user_roles($atts = array() ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/edit_roles_scripts.js', array( 'wp-api',  'backbone', 'underscore',
+		), $this->version, false );
+    		$dateToBePassed = array(
+ 				'restURL' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'current_user_id' => get_current_user_id(),
+ 				'user_can' => $this->user_can()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+		ob_start();
+		include_once 'partials/html-cb-edit-roles.php';
+// 		include_once 'partials/cloud-edit_user_roles.php';
+//  			process_squawk_sheet();
+//   			display_squawk_sheet();
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
 	public function squawk_sheet($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/squawk_scripts.js', array( 'wp-api',  'backbone', 'underscore',

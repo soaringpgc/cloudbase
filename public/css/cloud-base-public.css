@@ -5,7 +5,6 @@
  
 /* Sidebar/left column */
 
-
 .flex-container {
   display: flex;
   flex-direction: row;
@@ -384,4 +383,36 @@ a.buttons {
 }
 input[type='number']{
     width: 100px;
-} 
+}
+///////
+fieldset {
+      overflow: hidden
+    }
+    
+    .some-class {
+      float: left;
+      clear: none;
+    }
+    
+    label {
+      float: left;
+      width: 120px;
+      clear: none;
+      display: block;
+      padding: 4px 4em 0px 8px;
+    }
+    
+    input[type=radio],
+    input.radio {
+      width: 10px;
+      float: left;
+      clear: none;
+      margin: 0px 4px 0 8px;
+    }
+    input[type=checkbox],
+    input.checkbox {
+      width: 10px;
+      float: left;
+      clear: none;
+      margin: 0px 4px 0 8px;
+    }

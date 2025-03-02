@@ -170,7 +170,6 @@ class Cloud_Base_Admin {
     
 	public function cloud_base_new_signoffs($user_id){
 	// this function adds required sign off the new members automatically. 
-
 		  global $wpdb;
 		  $table_types = $wpdb->prefix . "cloud_base_signoffs_types";
 		  $signoffs = $wpdb->get_results(" SELECT * From " . $table_types . " WHERE applytoall = 1" );
@@ -182,7 +181,7 @@ class Cloud_Base_Admin {
 		  	$results = $wpdb->get_results( 
                     $wpdb->prepare("SELECT * FROM {$table_member} WHERE member_id = %d AND Signoff_id=%d", $user_id, $signoff->id) );
 		  	if ($results == NULL ){		  
-		  		$result = $wpdb->insert($table_name, array('date_entered'=> $today, 'date_effective'=> $today, 'date_expire'=>$expire_date, 
+		  		$result = $wpdb->insert( $table_member , array('date_entered'=> $today, 'date_effective'=> $today, 'date_expire'=>$expire_date, 
 		  			'member_id'=> $user_id, 'authority_id'=>get_current_user_id(), 'Signoff_id'=>$signoff->id ));  
 		  	}
 		  }

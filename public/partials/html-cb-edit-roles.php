@@ -142,7 +142,7 @@
 <?php
 
 	global $wpdb;
-	$args = array('role' => 'subscriber', 'orderby'=>'meta_value', 'meta_key'=>'last_name', 'order' => 'ASC') ; 
+	$args = array('role_in' => ['subscriber', 'canidate'], 'orderby'=>'meta_value', 'meta_key'=>'last_name', 'order' => 'ASC') ; 
     $pilots = get_users($args);	   	
 	?>
 

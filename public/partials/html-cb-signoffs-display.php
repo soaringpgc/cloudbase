@@ -22,7 +22,7 @@
  	 	$cb_atts = shortcode_atts(array('all' => false, 'no_fly' => '0'), $atts, 'display_signoffs');
 
  	 	if( $cb_atts['all'] == true ){ // display all signoffs 
- 	 	     $args = array('role' => 'subscriber',
+ 	 	     $args = array('role__in' => ['subscriber', 'candidate'],
      		'orderby' => 'user_nicename',
      		'order' => 'ASC');
      		$pilots = get_users($args);

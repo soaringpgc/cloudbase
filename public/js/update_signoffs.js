@@ -49,7 +49,13 @@
   		var valueSelect = $(this).val();
   		fetch_pilot_signoffs(valueSelect);
   		cancel_update() ;		
-	 })	  
+	 })	; 
+
+	 $("#signoff_type").change( function(){	
+  		$("#effective_date").removeClass("signoff_state");  
+  		$("#effective_date_label").removeClass("signoff_state");    						
+	 })	; 
+	   
 	 $("#signOffToUpdate").change(function(){	
   		var valueSelect = $(this).val();
   		$('#signoff').val(valueSelect);
@@ -83,6 +89,8 @@
     		$("#update_signoff").css({'display': 'inline-block' ,  'text-decoration': 'underline', "font-weight": "bold"});
 
     		$(".show_delete").css({'display': 'inline-block',  "visibility": "visible" });
+  		$("#effective_date").removeClass("signoff_state");  
+  		$("#effective_date_label").removeClass("signoff_state");    						
     			
  		//  In the handler for the form submit if the record_id is null we create a new record
  		//  if it is set we update the existing.  
@@ -350,6 +358,9 @@
     	$("#update_signoff").text("");
       	$("#update_signoff").css({'display': 'hide' });
       	$(".show_delete").css({'display': 'hide',  "visibility": "hidden" });     
+      	$("#effective_date").addClass("signoff_state");  
+  		$("#effective_date_label").addClass("signoff_state");    						
+
   	}
   	function cancel_update(){
   	// if a signoff update is canceled this resets the fields. 

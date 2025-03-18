@@ -42,7 +42,7 @@ if( current_user_can( 'manage_options' ) ) {
 		<label for="period">Effective Period</label><br>
 		<select name ="period"  id="period" title="EOM - End Of Month, select Fixed Date for specific date"> ');
 		$value_lable_period = array("Choose"=>"", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "dues"=>"Dues", "no_expire"=>"No expire", 
-		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );				
+		"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date", "year3" =>"Triennially", "year4" =>"Quadrennial(4)", "year5" =>"Quinquennial(5)" );				
 		foreach ($value_lable_period  as $key => $period ){
 			echo ('<option value="' . $key . '">' . $period . '</option>');
 		}	

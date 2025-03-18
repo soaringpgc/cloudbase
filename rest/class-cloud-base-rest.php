@@ -70,7 +70,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	}
 
 	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date", "dues"=>"Dues" );		
+				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date", "dues"=>"Dues", "year3" =>"Triennially", "year4" =>"Quadrennial", "year5" =>"Quinquennial)" );		
 
 //	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
 //				    "cb_edit_instruction"=>"CFI-G", "cb_edit_cfig"=>"Chief CFI-G", "cb_chief_tow"=>"Chief Tow Pilot");

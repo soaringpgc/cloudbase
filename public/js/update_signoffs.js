@@ -333,7 +333,7 @@
   	      var html_string =  '<div class="div-table"><div class="div-table-row">'  
   	         +  ' <div  class="div-table-col0 hform">select</div>'
              +  ' <div  class="div-table-col160 hform" align="center">Pilot</div>'
-//              +  ' <div  class="div-table-col125 hform" align="center">Authority</div>'
+             +  ' <div  class="div-table-col200 hform" align="center">Email</div>'
              +  ' <div  class="div-table-col125">Expire Date</div>'
   	      	 + '</div>';
   	      	  
@@ -345,6 +345,7 @@
             } // sending the id fo the signoff record not the member id 
             	html_string = html_string + '<div class="div-table-col0 hform" ><input type="checkbox" name="tobeupdated[]" value="' + response[key].id+ '"/></div>';				
 				html_string = html_string + '<div class="div-table-col160 hform"  >'+ response[key].name + '</div>';
+				html_string = html_string + '<div class="div-table-col200 hform"  >'+ response[key].user_email + '</div>';
  				html_string = html_string + '<div class="div-table-col125b" >' + response[key].date_expire.substring(0,10) +  '</div></div>';
             });
 			return(html_string );  		

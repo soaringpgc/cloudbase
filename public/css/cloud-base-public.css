@@ -310,6 +310,12 @@ h3.red{
   width: 160px;         
   background-color: #FFF;  
 }
+.div-table-col200 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 200px;         
+  background-color: #FFF;  
+}
 .squawk_body {
 	background-color: #0A335C;
     text-align: center;

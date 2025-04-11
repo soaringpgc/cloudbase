@@ -43,8 +43,6 @@
  $(".calendar").click(function() {
         $(this).datepicker().datepicker( "show", {dateFormat : 'yy-mm-dd'} )
     });
-
-
   	 $("#pilot_to_update").change(function(){	
   		var valueSelect = $(this).val();
   		fetch_pilot_signoffs(valueSelect);
@@ -57,6 +55,7 @@
 	 })	; 
 	   
 	 $("#signOffToUpdate").change(function(){	
+		$('#download').removeClass('edit');
   		var valueSelect = $(this).val();
   		$('#signoff').val(valueSelect);
   		fetch_signoff_pilots(valueSelect);
@@ -107,6 +106,16 @@
   	$('#cancel').on('click', function(){ 
 //     alert("button is clicked");
     restore_page_settings();
+    });
+    $('#download').on('click', function(){ 
+    	 var downloadLink = document.createElement("a");
+         var blob = new Blob(["\ufeff", phildata]);
+         var url = URL.createObjectURL(blob);
+         downloadLink.href = url;
+         downloadLink.download = "DataDump.csv";  //Name the file here
+         document.body.appendChild(downloadLink);
+         downloadLink.click();
+         document.body.removeChild(downloadLink);                        
     });
 // this function submits the update signoffs form to the REST endpoint It determines
 // if it is an update, a delete or create new.   	
@@ -327,9 +336,11 @@
         	  $(" #batchcontainer ").html( "<h2>Something went wrong.</h2><br>" );                  
         }) 		
   	}
-  	  	
+ 	var phildata = [];  	  	
   	function batch_display_signoffs(response){
   		  var today = new Date();
+ 
+  		  phildata.push("id", "name", "email", "expire","\r\n"); 
   	      var html_string =  '<div class="div-table"><div class="div-table-row">'  
   	         +  ' <div  class="div-table-col0 hform">select</div>'
              +  ' <div  class="div-table-col160 hform" align="center">Pilot</div>'
@@ -347,7 +358,8 @@
 				html_string = html_string + '<div class="div-table-col160 hform"  >'+ response[key].name + '</div>';
 				html_string = html_string + '<div class="div-table-col200 hform"  >'+ response[key].user_email + '</div>';
  				html_string = html_string + '<div class="div-table-col125b" >' + response[key].date_expire.substring(0,10) +  '</div></div>';
-            });
+			    phildata.push(response[key].id, response[key].name, response[key].user_email, response[key].date_expire.substring(0,10),"\r\n");	
+            });                        
 			return(html_string );  		
   	}
   	
@@ -377,3 +389,4 @@
 
   }) // $(function) close
 })( jQuery );
+

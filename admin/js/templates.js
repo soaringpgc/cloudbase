@@ -77,9 +77,12 @@ var feeitemtemplate = _.template(`
      <label class="Cell"><%=  fixed_date %> </label>
      <label class="Cell0"><%=  no_fly   %> </label>
      <label class="Cell0"><%=  applytoall  %> </label>
-     <div class="Cell"><button class="delete" ">Delete</button></div>
+   
    </div >
 `);
+//   <div class="Cell"><button class="delete" ">Delete</button></div>
+
+
 
 // Aircraft 
   var aircrafttemplate_alt = _.template(`  

@@ -6,7 +6,7 @@
   			var id =0;
   		 $("#pilotid").on("change", function(event){
   			id = $("#pilotid").find(":selected").val();
-  			$("#member_id").val(id) ;
+  			$("#member_id").val(id);
   			$("#ipilotid").val("");
   			 fetch_user(id);
   		});
@@ -18,7 +18,7 @@
   			 fetch_user(id);
   		});
   		
-  		function fetch_user(id){
+  		function fetch_user(id){		
   			var statusData ={ 'context': "edit"};				
   			$.ajax({
        		 	url:  signoff_public_vars.restURL + 'wp/v2/users/' +id,  

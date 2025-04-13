@@ -69,7 +69,7 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 		$this->namespace = $this->plugin_name. '/v' .  $this->rest_version; 			
 	}
 
-	public	$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
+	public	$value_lable_period = array("now"=>"Now", "yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
 				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date", "dues"=>"Dues", "year3" =>"Triennially", "year4" =>"Quadrennial", "year5" =>"Quinquennial)" );		
 
 //	public  $cloud_base_authoritys = array("read"=>"Self", "cb_edit_dues"=>"Treasurer", "cb_edit_operations"=>"Operations", 
@@ -175,6 +175,9 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 	public function cb_expire_date($start_date, $period, $fixed_date ){
 	// function to calculate the expire date. 
 			switch($period ){
+			case "now":
+				$start_date->modify('-1 day');
+			break;
 			case "monthly":
 				$start_date->modify('+1 month');
 			break;

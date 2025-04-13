@@ -70,8 +70,8 @@
                  title = "When signoff becomes effective" 
                  name = "effective_date"/>  <br>  
             <div class = "show_delete" class="checkboxes">
-     			 <label for="sf_delete" class = "show_delete"; >Delete Sign-off</label>
-     			 <input id="sf_delete" class = "show_delete" type="checkbox" id="delete_signoff" value="true" />
+     			 <label for="delete_signoff" class = "show_delete"; >Delete Sign-off</label>
+     			 <input name="delete_signoff" class = "show_delete" type="checkbox" id="delete_signoff" value="true" />
             </div><br>
                       		
         	<?php   

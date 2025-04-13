@@ -234,7 +234,6 @@
         })                  
         // something went wrong  
          .fail( function(response) {
-         console.log(response);
         	  $(" #responsecontainer ").html( "<h2>Something went wrong.</h2><br>" );                  
         }) 		
   	}
@@ -332,7 +331,6 @@
         })                  
         // something went wrong  
          .fail( function(response) {
-         console.log(response);
         	  $(" #batchcontainer ").html( "<h2>Something went wrong.</h2><br>" );                  
         }) 		
   	}

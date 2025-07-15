@@ -78,9 +78,9 @@
     		}
     		if( current_user_can('cb_edit_towpilot' )){    			
     			if(isset($_POST['towpilot'])) {    // if isset then it must be yes, not set no. 
-    				$user->add_role("cfi_g");   
+    				$user->add_role("tow_pilot");   
     			} else {
-    				$user->remove_role("cfi_g");  
+    				$user->remove_role("tow_pilot");  
     			}
     		}
     		if( current_user_can('cb_edit_dues' )){    			

@@ -334,7 +334,7 @@ function create_cb_roles(){
 			$role_object->add_cap('cb_edit_dues', true);
 		}
 		if ( !$role_object->has_cap('cb_edit_flight')){
-			$role_object->add_cap('cb_edit_flights', true);
+			$role_object->add_cap('cb_edit_flight', true);
 		}
 		if ( !$role_object->has_cap('list_users')){
 			$role_object->add_cap('list_users', true);

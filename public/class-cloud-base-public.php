@@ -265,7 +265,7 @@ class Cloud_Base_Public {
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
  		   $request->set_param( 'last_100_date', $_POST['last_100_date'] );
  		   $request->set_param( 'last_100_hour', $_POST['last_100_hour'] );
- 		   $request->set_param( 'totalhours', $_POST['totalhour'] );
+ 		   $request->set_param( 'totalhours', $_POST['totalhours'] );
  		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );
  		   $request->set_param( 'transponder_due', $_POST['transponder_due'] );
  		   $request->set_param( 'comment', $_POST['comment'] );

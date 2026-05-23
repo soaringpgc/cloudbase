@@ -88,7 +88,7 @@
 	$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
-  	$sql = "Select DISTINCT(a.aircraft_id), a.registration, a.compitition_id, a.captian_id FROM {$table_aircraft} a INNER JOIN {$table_type} t on a.aircraft_type=t.type_id WHERE a.valid_until is NULL AND t.title ='Glider'"; 
+  	$sql = "Select DISTINCT(a.aircraft_id), a.registration, a.compitition_id, a.captian_id FROM {$table_aircraft} a INNER JOIN {$table_type} t on a.aircraft_type=t.type_id WHERE a.valid_until is NULL AND t.title ='Glider' OR t.title='Tow' ORDER BY t.title"; 
 	$equipemnt = $wpdb->get_results($sql); 
 
 	$limit  = 12;	

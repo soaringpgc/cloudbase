@@ -67,7 +67,7 @@
 				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="number" step=".01" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="date" id="last_100_date" name="last_100_date" value="'.$item->last_100_date.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="number" step=".01" " id="totalhour" name="totalhour" value="'.$item->totalhour.'"></div>';		
+				echo ' <div class="table-col smallerFont"><input type="number" step=".01" " id="totalhours" name="totalhours" value="'.$item->totalhours.'"></div>';		
 				echo ' <div class="table-col smallerFont"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
 				echo ' <div class="table-col smallerFont"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
@@ -91,7 +91,7 @@
 				echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
 				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
-				echo ' <div class="table-col">'.$item->totalhour.'</div>';
+				echo ' <div class="table-col">'.$item->totalhours.'</div>';
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.$item->comment.'</div>';

@@ -378,7 +378,7 @@ class Cloud_Base_Aircraft extends Cloud_Base_Rest {
 				'compitition_id' => $compitition_id, 
 				'comment'=>$comment, 
 				'valid_until' => null  ), 				
-				array('%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s'));												
+				array('%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%f', '%f', '%s', '%s', '%s', '%s'));												
 			if ( $update_result == 1 ) {
  	  		    // mark existing recored as nolonger valid by setting the valin_until to now.
   	       		$wpdb->update($table_name, array('valid_until' => current_time( 'mysql' )), array( 'id' =>  $item->id) );

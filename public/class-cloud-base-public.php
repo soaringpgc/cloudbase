@@ -123,6 +123,7 @@ class Cloud_Base_Public {
 		add_shortcode( 'batch_signoffs', array( $this, 'batch_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
  		add_shortcode( 'edit_user_roles', array( $this, 'edit_user_roles' ) );
+		add_shortcode( 'display_candidates', array( $this, 'display_canidate_members' ) );
 	} // register_shortcodes()		
 // // needed for display_flights shortcode.
 // 	public function display_flights($atts = array() ){
@@ -289,5 +290,25 @@ class Cloud_Base_Public {
 			wp_redirect( $url . '/login');
 			exit;
 		}
-	} // custom_redirect()   
+	} // custom_redirect()  
+	
+	public function display_canidate_members($atts = array(),  $content= null, $tag = '' ){
+	
+
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
+
+    		$dateToBePassed = array(
+ 				'restURL' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'current_user_id' => get_current_user_id(),
+ 				'user_can' => $this->user_can()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+
+		include_once 'partials/html-gravity-forms.php'; 
+		return display_canidates($atts);
+	}
 }

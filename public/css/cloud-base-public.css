@@ -186,6 +186,27 @@
     padding-right: 5px;
     width: 240px;
 }
+.Cell4
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 332px;
+}
+.textbox
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 140px;
+    width: 332px;
+}
 // table CSS 
 .table-container {
     display: table;
@@ -316,6 +337,11 @@ h3.red{
   width: 200px;         
   background-color: #FFF;  
 }
+input[type="radio"] {
+  -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+  transform: scale(1.5);
+}
+
 .squawk_body {
 	background-color: #0A335C;
     text-align: center;

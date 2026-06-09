@@ -21,30 +21,54 @@ function display_canidates($atts) {
 	$per_page = 15;
 	$page = $_GET["page"] ?? 1;
 	$skip = ($page - 1) * $per_page;
-
+	
 // There is no way to guarantee the field ids on the production site will be the same
 // as in the development site. The is have to be edited on the live site after it is 
 // installed. 
 //
-	$fname = '1.3';
-	$lname = '1.6';
-	$phone = '17';
-	$pgcstatus= '16';
-	$address1 = '5.1';
-	$address2 = '5.2';
-	$address3 = '5.3';
-	$address4 = '5.4';
-	$address5 = '5.5';
-	$sfname = '3.3';
-	$slname = '3.6';
-	$fcitizenship = '6';
-	$byear = '7';
-	$fssan = '11';
-	$foccupation = '12';
-	$fexpenance = '13';
-	$faccident = '15';
-	$femail = '4';	
-
+	if (str_contains($_SERVER["SERVER_NAME"], 'local')){
+		$fname = '1.3';
+		$lname = '1.6';
+		$phone = '17';
+		$pgcstatus= '16';
+		$address1 = '5.1';
+		$address2 = '5.2';
+		$address3 = '5.3';
+		$address4 = '5.4';
+		$address5 = '5.5';
+		$sfname = '3.3';
+		$slname = '3.6';
+		$fcitizenship = '6';
+		$byear = '7';
+		$fweight = '8';
+		$fheight = '9';
+		$fssan = '11';
+		$foccupation = '12';
+		$fexpenance = '13';
+		$faccident = '15';
+		$femail = '4';	
+	} else {
+		$fname = '1.3';
+		$lname = '1.6';
+		$phone = '10';
+		$pgcstatus= '44';
+		$address1 = '21.1';
+		$address2 = '21.2';
+		$address3 = '21.3';
+		$address4 = '21.4';
+		$address5 = '21.5';
+		$sfname = '34.3';
+		$slname = '34.6';
+		$fcitizenship = '24';
+		$byear = '25';
+		$fweight = '27';
+		$fheight = '26';
+		$fssan = '30';
+		$foccupation = '41';
+		$fexpenance = '31';
+		$faccident = '33';
+		$femail = '2';		
+	}
 	$dc_atts = shortcode_atts(array('form' => '0', 'id'=>'0'), $atts, 'display_candidates');
 
 	$form_id = esc_html($dc_atts['form']);
@@ -69,6 +93,8 @@ function display_canidates($atts) {
      		$output .= '<div class="table-row "><div class="Cell3">Spouse:</div><div class="Cell4">' . $entry[$sfname] . ' ' .  $entry[$slname]  .  '</div></div>';
      		$output .= '<div class="table-row "><div class="Cell3">Citizenship:</div><div class="Cell4">' . $entry[$fcitizenship] . '</div></div>';
      		$output .= '<div class="table-row "><div class="Cell3">Age:</div><div class="Cell4">' . date("Y")-$entry[$byear] .  '</div></div>';
+     		$output .= '<div class="table-row "><div class="Cell3">Height:</div><div class="Cell4">' . $entry[$fheight] .  '</div></div>';
+     		$output .= '<div class="table-row "><div class="Cell3">Weight:</div><div class="Cell4">' . $entry[$fweight] .  '</div></div>';
      		$output .= '<div class="table-row "><div class="Cell3">SSA Number:</div><div class="Cell4">' . $entry[$fssan] .  '</div></div>';
      		$output .= '<div class="table-row "><div class="Cell3">Occupation:</div><div class="Cell4">' . $entry[$foccupation] .  '</div></div>';
     		$output .= '<div class="table-row "><div class="Cell3">Experance:</div><div class="textbox">' . $entry[$fexpenance ] .  '</div></div>';

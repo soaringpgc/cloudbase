@@ -19,8 +19,11 @@
 			
 function display_canidates($atts) {
 	$per_page = 15;
-	$page = $_GET["page"] ?? 1;
-	$skip = ($page - 1) * $per_page;
+ 	$this_page = $_POST["this_page"] ?? 1;
+// 	$page = isset($_GET["page"]) ? $_GET["page"] : '1';
+	$skip = ($this_page - 1) * $per_page;
+	
+// 	var_dump($this_page);
 	
 // There is no way to guarantee the field ids on the production site will be the same
 // as in the development site. The is have to be edited on the live site after it is 
@@ -118,32 +121,35 @@ function display_canidates($atts) {
     		)
 		);
 		$paging = array( 'offset' => $skip, 'page_size' => $per_page );
-		$sorting = array( 'key' => 'date_created', 'direction' => 'DEC' );
+// 		$paging          = array( 'offset' => 20, 'page_size' => 25 );
+		$sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
 		$total_count     = 0;
-		
+				
+    	$entries = GFAPI::get_entries($form_id,  $search_criteria,  $sorting, $paging,   $total_count );
+ 
+ 
 		// Determine if there are more pages
-		$has_more_pages = ($page * $per_page) < $total_count;
+		$has_more_pages = ($this_page * $per_page) < $total_count;
 		 
 
 		// Calculate the total number of pages required
 		$total_pages = ceil($total_count / $per_page);
  
 		// Initialize previous and next page variables
-		$previous_page = $next_page = null;
+		$previous_page = $next_page = 0;
 		 
 		// Determine the previous page number
-		if ($page > 1)
+		if ($this_page > 1)
 		{
-		    $previous_page = $page - 1;
+		    $previous_page = $this_page - 1;
 		}
 		 
 		// Determine the next page number
-		if ($page < $total_pages)
+		if ($this_page < $total_pages)
 		{
-		    $next_page = $page + 1;
-		}
-		
-    	$entries = GFAPI::get_entries($form_id,  $search_criteria,  $paging,  $sorting, $total_count );
+		    $next_page = $this_page + 1;
+		} 
+
     	
 		if($entry_id != 0){
 			$output  = "form data";
@@ -156,35 +162,44 @@ function display_canidates($atts) {
     	}
     	
 //   		$output =  '<div class="Table"><div class="Row"><div class="Cell">Filter by:</div><div class="Cell">new</div><div class="Cell">invited</div><div class="Cell">defered</div><div class="Cell">member</div><div class="Cell">deleted</div><div  class="Cell">count=' .  $total_count . '</div></div></div>';
-    	$output .= '<div class="Table"><form method="post" action="'. site_url() .'/display-candidates/">'; 
+    	$output .= '<div class="Table">'; // '<form method="post" action="">'; 
     	$output .= '<div class="Heading"><div class="Cell0">Select</div><div class="Cell2">Last Name</div><div class="Cell2">First Name</div><div class="Cell">   Status </div></div> ';
  
-     		foreach ($entries as $entry) { $output .= '<div class="Row">
-     				<div class="Cell0"> <input type="radio" id="' .$entry['id'].'" name="id" value="' .$entry['id'].'"> </div>
-					<div class="Cell2">' .  $entry[$lname] . '</div>
+     		foreach ($entries as $entry) { $output .= '<div class="Row">';
+//      			$output .= '<div class="Cell0"> <input type="radio" id="' .$entry['id'].'" name="id" value="' .$entry['id'].'"> </div>';
+
+		     $output .=  '<div class="Cell0"><form method="POST" >
+		                      <input type="hidden" name="id" value =' .$entry['id']. '>	                         
+		                        <button type="submit" name="action" value="details">Details</button></form></div>';
+
+				$output .= '	<div class="Cell2">' .  $entry[$lname] . '</div>
 					<div class="Cell2">' .  $entry[$fname] . '</div>
 					<div class="Cell">  '.  $entry[$pgcstatus] .'</div>
 				</div>';
-
-			} $output .= '<input type="submit" value="details"></form></div>';
+			} $output .= '</form></div>';
+// 			} $output .= '<button type="submit" value="Details"/>Details</button></form></div>';
+// 		    } $output .= '<input type="submit" value="Details"/></form></div>';
 		//  Pagination controls 
-		if ($next_page > 0){
-				$output .=  '<div class="Cell0"><a href="?page=' .  $next_page .' ">Previous</a> </div>
-							<div class="Cell2">' . ' ' . '</div>
-							<div class="Cell2">' . ' ' . '</div>';
+		if ($previous_page > 0){
+// 				$output .=  '<div class="Cell0"><a href="?this_page=' .  $previous_page .' ">Previous</a> </div>
+// 							<div class="Cell2">' . ' ' . '</div>
+// 							<div class="Cell2">' . ' ' . '</div>';
+
+		     $output .=  '<div class="Cell1"><form method="POST" >
+		                      <input type="hidden" name="this_page" value ="' . $previous_page . '">	                         
+		                      <button type="submit" name="action" value="previous">Previous</button></form></div>';
+		 }	else {
+		  	$output .=  '<div class="Cell1"> </div>';
 		 }
-		 
-		 if ($previous_page > 0){
-		     $output .=  ' <div class="Cell"> <a href="?page=' . $previous_page . '">Next</a></div>';
+		  	
+		 if ($next_page > 0){
+		     $output .=  '<div class="Cell2"></div><div class="Cell2"></div>
+		     				  <div class="Cell0"><form method="POST" >
+		                      <input type="hidden" name="this_page" value ="' . $next_page . '">	                         
+		                      <button type="submit" name="action" value="next">Next</button></form></div>';
 		 }
-
-
-
- 
- 
- 
-    	
    		return $output;
+   		
    		}
 	} 
 	function select_status($id, $s){

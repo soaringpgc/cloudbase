@@ -293,12 +293,11 @@ class Cloud_Base_Public {
 	} // custom_redirect()  
 	
 	public function display_canidate_members($atts = array(),  $content= null, $tag = '' ){
-	
-
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
-		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
+// 	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
+// 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
 
+		
     		$dateToBePassed = array(
  				'restURL' => esc_url_raw( rest_url() ),
  				'nonce' => wp_create_nonce( 'wp_rest' ),

@@ -58,22 +58,22 @@
      		<div display:inline-block
     			 visibility: hidden
     			 id = "update_signoff">
-    		</div>
+    		</div><br>
 
-    		<div style="visibility: hidden; 
-    			 class = "show_delete ";>
-     			 <label class = "show_delete"; >Delete</label>
-     			 <input class = "show_delete"; type="checkbox" id="delete_signoff" value="true" />
-            </div>
-            <label for="effective_date">Effective Date: </label>
+            <label id = "effective_date_label" class = "signoff_state" for="effective_date">Effective Date: </label>
            	<input type = "text"
-           		 class = "calendar"
+           		 class = "calendar signoff_state"
                  id = "effective_date"
                  size = "10"
                  width = "100px"
                  value = "<?php echo date('Y-m-d') ?>"
                  title = "When signoff becomes effective" 
-                 name = "effective_date"/>  <br>                  		
+                 name = "effective_date"/>  <br>  
+            <div class = "show_delete" class="checkboxes">
+     			 <label for="delete_signoff" class = "show_delete"; >Delete Sign-off</label>
+     			 <input name="delete_signoff" class = "show_delete" type="checkbox" id="delete_signoff" value="true" />
+            </div><br>
+                      		
         	<?php   
         		wp_nonce_field('update_signoffs' );
          		echo '<input type="submit" value="Add Signoff" id="submit">';  	

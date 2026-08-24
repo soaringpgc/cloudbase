@@ -151,47 +151,45 @@ class Cloud_Base_Admin {
      	$glider_club_long_name = sanitize_text_field($_POST['long_name']);
     	$glider_club_short_name = sanitize_text_field($_POST['short_name']);
     	$glider_club_unit = sanitize_text_field($_POST['units']);
+    	$glider_club_nofly = sanitize_text_field($_POST['nofly']);
     	$cloud_base_fy_month = sanitize_text_field($_POST['fyStartMonth']);
     	$cloud_base_fy_day = sanitize_text_field($_POST['fyStartDay']);
     	$cloud_base_se_month = sanitize_text_field($_POST['sessionStartMonth']);
     	$cloud_base_se_day = sanitize_text_field($_POST['sessionStartDay']);
     	update_option('glider_club_long_name', $glider_club_long_name  );
     	update_option('glider_club_short_name', $glider_club_short_name  ); 	
-    	update_option('glider_club_tow_units', $glider_club_unit  ); 
-    	
+    	update_option('glider_club_tow_units', $glider_club_unit  );  	
+    	update_option('glider_club_strict_no_fly', $glider_club_nofly  ); 
     	update_option('cloud_base_fy_month', $cloud_base_fy_month ); 
     	update_option('cloud_base_fy_day', $cloud_base_fy_day ); 
     	update_option('cloud_base_session_month', $cloud_base_se_month ); 
-    	update_option('cloud_base_session_day', $cloud_base_se_day); 
-	
+    	update_option('cloud_base_session_day', $cloud_base_se_day); 	
     	wp_redirect('options-general.php?page=cloud_base&tab=config_page');
     	exit();    		
     }  
     
 	public function cloud_base_new_signoffs($user_id){
 	// this function adds required sign off the new members automatically. 
-//	exit(var_dump($user_id));
 		  global $wpdb;
 		  $table_types = $wpdb->prefix . "cloud_base_signoffs_types";
 		  $signoffs = $wpdb->get_results(" SELECT * From " . $table_types . " WHERE applytoall = 1" );
 		  $table_member = $wpdb->prefix . "cloud_base_member_signoffs";
 		  $today = date('Y-m-d');
-		  echo $today;
-//		  $user = get_user_by('ID', $user_id);
-		  $expire_date = date('Y-m-d',strtotime(date("Y-m-d", mktime()) . " - 1460 day"));
+		  $expire_date = '2000-01-01';
 		  foreach ($signoffs as $signoff) {
 		  // if the uses alredady has signoff do not add again. 
 		  	$results = $wpdb->get_results( 
                     $wpdb->prepare("SELECT * FROM {$table_member} WHERE member_id = %d AND Signoff_id=%d", $user_id, $signoff->id) );
 		  	if ($results == NULL ){		  
-		  		$result = $wpdb->insert($table_name, array('date_entered'=> $today, 'date_effective'=> $today, 'date_expire'=>$expire_date, 
+		  		$result = $wpdb->insert( $table_member , array('date_entered'=> $today, 'date_effective'=> $today, 'date_expire'=>$expire_date, 
 		  			'member_id'=> $user_id, 'authority_id'=>get_current_user_id(), 'Signoff_id'=>$signoff->id ));  
 		  	}
 		  }
 	}    
- 	public function cloud_base_inactive_signoffs($user_id, $role, $old_roles) {
-		if(in_array('inactive', $old_roles ) && $role = 'subscriber'){
-			$result = $this->cloud_base_new_signoffs($user_id);
+ 	public function cloud_base_inactive_signoffs($user_id, $old_user_data, $user_data) { 
+ 		if(in_array('inactive', $old_user_data->roles )) {
+ 		$notify =0;
+ 			$result = $this->cloud_base_add_new_user_signoffs($user_id, $notify);
 		}
  	}
  	// add required signoff for new members. 

@@ -43,14 +43,19 @@
  $(".calendar").click(function() {
         $(this).datepicker().datepicker( "show", {dateFormat : 'yy-mm-dd'} )
     });
-
-
   	 $("#pilot_to_update").change(function(){	
   		var valueSelect = $(this).val();
   		fetch_pilot_signoffs(valueSelect);
   		cancel_update() ;		
-	 })	  
+	 })	; 
+
+	 $("#signoff_type").change( function(){	
+  		$("#effective_date").removeClass("signoff_state");  
+  		$("#effective_date_label").removeClass("signoff_state");    						
+	 })	; 
+	   
 	 $("#signOffToUpdate").change(function(){	
+		$('#download').removeClass('edit');
   		var valueSelect = $(this).val();
   		$('#signoff').val(valueSelect);
   		fetch_signoff_pilots(valueSelect);
@@ -83,6 +88,8 @@
     		$("#update_signoff").css({'display': 'inline-block' ,  'text-decoration': 'underline', "font-weight": "bold"});
 
     		$(".show_delete").css({'display': 'inline-block',  "visibility": "visible" });
+  		$("#effective_date").removeClass("signoff_state");  
+  		$("#effective_date_label").removeClass("signoff_state");    						
     			
  		//  In the handler for the form submit if the record_id is null we create a new record
  		//  if it is set we update the existing.  
@@ -99,6 +106,16 @@
   	$('#cancel').on('click', function(){ 
 //     alert("button is clicked");
     restore_page_settings();
+    });
+    $('#download').on('click', function(){ 
+    	 var downloadLink = document.createElement("a");
+         var blob = new Blob(["\ufeff", phildata]);
+         var url = URL.createObjectURL(blob);
+         downloadLink.href = url;
+         downloadLink.download = "DataDump.csv";  //Name the file here
+         document.body.appendChild(downloadLink);
+         downloadLink.click();
+         document.body.removeChild(downloadLink);                        
     });
 // this function submits the update signoffs form to the REST endpoint It determines
 // if it is an update, a delete or create new.   	
@@ -217,7 +234,6 @@
         })                  
         // something went wrong  
          .fail( function(response) {
-         console.log(response);
         	  $(" #responsecontainer ").html( "<h2>Something went wrong.</h2><br>" );                  
         }) 		
   	}
@@ -315,17 +331,18 @@
         })                  
         // something went wrong  
          .fail( function(response) {
-         console.log(response);
         	  $(" #batchcontainer ").html( "<h2>Something went wrong.</h2><br>" );                  
         }) 		
   	}
-  	  	
+ 	var phildata = [];  	  	
   	function batch_display_signoffs(response){
   		  var today = new Date();
+ 
+  		  phildata.push("id", "name", "email", "expire","\r\n"); 
   	      var html_string =  '<div class="div-table"><div class="div-table-row">'  
   	         +  ' <div  class="div-table-col0 hform">select</div>'
              +  ' <div  class="div-table-col160 hform" align="center">Pilot</div>'
-//              +  ' <div  class="div-table-col125 hform" align="center">Authority</div>'
+             +  ' <div  class="div-table-col200 hform" align="center">Email</div>'
              +  ' <div  class="div-table-col125">Expire Date</div>'
   	      	 + '</div>';
   	      	  
@@ -337,8 +354,10 @@
             } // sending the id fo the signoff record not the member id 
             	html_string = html_string + '<div class="div-table-col0 hform" ><input type="checkbox" name="tobeupdated[]" value="' + response[key].id+ '"/></div>';				
 				html_string = html_string + '<div class="div-table-col160 hform"  >'+ response[key].name + '</div>';
+				html_string = html_string + '<div class="div-table-col200 hform"  >'+ response[key].user_email + '</div>';
  				html_string = html_string + '<div class="div-table-col125b" >' + response[key].date_expire.substring(0,10) +  '</div></div>';
-            });
+			    phildata.push(response[key].id, response[key].name, response[key].user_email, response[key].date_expire.substring(0,10),"\r\n");	
+            });                        
 			return(html_string );  		
   	}
   	
@@ -350,6 +369,9 @@
     	$("#update_signoff").text("");
       	$("#update_signoff").css({'display': 'hide' });
       	$(".show_delete").css({'display': 'hide',  "visibility": "hidden" });     
+      	$("#effective_date").addClass("signoff_state");  
+  		$("#effective_date_label").addClass("signoff_state");    						
+
   	}
   	function cancel_update(){
   	// if a signoff update is canceled this resets the fields. 
@@ -365,3 +387,4 @@
 
   }) // $(function) close
 })( jQuery );
+

@@ -122,6 +122,8 @@ class Cloud_Base_Public {
 		add_shortcode( 'update_signoffs', array( $this, 'display_update_signoffs' ) );
 		add_shortcode( 'batch_signoffs', array( $this, 'batch_signoffs' ) );
 		add_shortcode( 'squawk_sheet', array( $this, 'squawk_sheet' ) );
+ 		add_shortcode( 'edit_user_roles', array( $this, 'edit_user_roles' ) );
+		add_shortcode( 'display_candidates', array( $this, 'display_canidate_members' ) );
 	} // register_shortcodes()		
 // // needed for display_flights shortcode.
 // 	public function display_flights($atts = array() ){
@@ -132,6 +134,27 @@ class Cloud_Base_Public {
 // 		include_once 'partials/cloud-base-public-display.php';
 // //		return display_flights();
 // 	}
+	public function edit_user_roles($atts = array() ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/edit_roles_scripts.js', array( 'wp-api',  'backbone', 'underscore',
+		), $this->version, false );
+    		$dateToBePassed = array(
+ 				'restURL' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'current_user_id' => get_current_user_id(),
+ 				'user_can' => $this->user_can()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+		ob_start();
+		include_once 'partials/html-cb-edit-roles.php';
+// 		include_once 'partials/cloud-edit_user_roles.php';
+//  			process_squawk_sheet();
+//   			display_squawk_sheet();
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+	}
 	public function squawk_sheet($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/squawk_scripts.js', array( 'wp-api',  'backbone', 'underscore',
@@ -231,7 +254,7 @@ class Cloud_Base_Public {
 	 * take off/landing time and tow alitude. 
 	 */
      public function update_aircraft(){ 
-//     exit(var_dump($_POST));
+//       exit(var_dump($_POST));
 //     	global $wpdb;
 //	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	   
 	// NTFS - Note to Future Self  we are accessing the REST interface here.  
@@ -241,13 +264,17 @@ class Cloud_Base_Public {
  		   $request = new WP_REST_Request( 'PUT', '/cloud_base/v1/aircraft');
  		   $request->set_param( 'aircraft_id', $_POST['key'] );
  		   $request->set_param( 'annual_due_date', $_POST['annual_due_date'] );
+ 		   $request->set_param( 'last_100_date', $_POST['last_100_date'] );
+ 		   $request->set_param( 'last_100_hour', $_POST['last_100_hour'] );
+ 		   $request->set_param( 'totalhours', $_POST['totalhours'] );
  		   $request->set_param( 'registration_due_date', $_POST['registration_due_date'] );
  		   $request->set_param( 'transponder_due', $_POST['transponder_due'] );
  		   $request->set_param( 'comment', $_POST['comment'] );
  		   $request->set_param( 'status', $_POST['status'] );
+ 		    		   
  		   $response = rest_do_request( $request);
-//  		   var_dump($response);
- 		
+//   		   var_dump($response);
+// 		   die();		
      	wp_redirect($_POST['source_page']);
      } //updateAircraft()    
      // add_action('template_redirect');
@@ -263,5 +290,24 @@ class Cloud_Base_Public {
 			wp_redirect( $url . '/login');
 			exit;
 		}
-	} // custom_redirect()   
+	} // custom_redirect()  
+	
+	public function display_canidate_members($atts = array(),  $content= null, $tag = '' ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+// 	    wp_register_script( 'update_signoffs',  plugins_url('/cloudbase/public/js/update_signoffs.js'));
+// 		wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/update_signoffs.js', array( 'wp-api', 'jquery-ui-datepicker' ), $this->version, false );
+
+		
+    		$dateToBePassed = array(
+ 				'restURL' => esc_url_raw( rest_url() ),
+ 				'nonce' => wp_create_nonce( 'wp_rest' ),
+ 				'current_user_id' => get_current_user_id(),
+ 				'user_can' => $this->user_can()    	    	
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' . json_encode ( $dateToBePassed  ), 'before'
+     		);
+
+		include_once 'partials/html-gravity-forms.php'; 
+		return display_canidates($atts);
+	}
 }

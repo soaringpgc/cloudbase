@@ -50,9 +50,9 @@ function batch_signoff($atts){
 
      		wp_nonce_field('update_signoffs' );
      		echo '<input type="hidden" name="signatory" id="signatory" value=" ' . get_current_user_id() .'">';	
-
       		echo( '<input type="submit" value="Update" id="submit">');  	
       		echo ('<input type="button" name="cancel" id="cancel" value="Cancel" /> ');
+      		echo ('<input class="edit" type="button" name="download" id="download" value="Download CSV" /> ');
   		     		
   	 echo(  '	</form>');
     	 echo   '<div id="select_header" class="signoff_state"> Select to update</div>

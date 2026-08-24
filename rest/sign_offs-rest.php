@@ -79,7 +79,8 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
      		$sql = "SELECT s.member_id, t.signoff_type, s.date_expire FROM " . $table_signoffs . " s inner join " . $table_types . " t 
    	 			on s.Signoff_id = t.id inner join " . $wp_users . " a on a.id = s.member_id WHERE t.no_fly = 1 AND s.date_expire <= NOW()" ;      
       	} 
-//     return new \WP_REST_Response ($sql);	     	
+//      return new \WP_REST_Response ($sql);	    
+//      die(); 	
    	
       	
         $items = $wpdb->get_results( $sql, OBJECT);  
@@ -136,14 +137,13 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
 		} elseif ( isset($request['batch']) ) {
        		
 // in theory we are filtering out members who are not subscribres. 
-		$sql = $wpdb->prepare( "SELECT DISTINCT s.id, u.ID as member_id, u.user_nicename, s.date_expire FROM {$wp_users} u INNER JOIN {$wp_usermeta} m ON u.ID = m.user_id INNER JOIN {$table_name} s ON s.member_id = u.ID 
-			WHERE  m.meta_key = 'wp_capabilities'AND m.meta_value LIKE %s AND signoff_id= %d AND member_id != %d;", '%' . 'subscriber' .'%', $request['batch'], wp_get_current_user()->ID );     
+		$sql = $wpdb->prepare( "SELECT DISTINCT s.id, u.ID as member_id, u.user_nicename, u.user_email, s.date_expire FROM {$wp_users} u INNER JOIN {$wp_usermeta} m ON u.ID = m.user_id INNER JOIN {$table_name} s ON s.member_id = u.ID 
+			WHERE  m.meta_key = 'wp_capabilities' AND m.meta_value LIKE %s AND signoff_id= %d AND member_id != %d;", '%' . 'subscriber' .'%', $request['batch'], wp_get_current_user()->ID );     
 		} else {
 			$sql = $wpdb->prepare( "SELECT *  FROM {$table_name } WHERE member_id= %d ",   get_current_user_id() );     
  	    }   
 
-        $items = $wpdb->get_results( $sql, OBJECT);  
-                   
+        $items = $wpdb->get_results( $sql, OBJECT);                  
  		if(isset($request['update'])){
  			foreach( $items as $i=>$v){			
 				if(!current_user_can($v->authority))	{
@@ -152,15 +152,15 @@ class Cloud_Base_Sign_offs extends Cloud_Base_Rest {
  			}
  		}   
  
-        $no_role = wp_get_users_with_no_role(); 
-        $args = array('role'    => 'inactive', 'fields' => 'ID');
-		$inactive = get_users( $args );
-		$no_list = array_merge($inactive, $no_role );	   	
+//         $no_role = wp_get_users_with_no_role(); 
+//         $args = array('role'    => 'inactive', 'fields' => 'ID');
+// 		$inactive = get_users( $args );
+// 		$no_list = array_merge($inactive, $no_role );	   	
 		   
         foreach( $items as $i=>$v){ // filter out users who are inactive         
-        	if (in_array( $v->member_id, $no_list)) {
-        		unset($items[$i]);          	
-        	}; 
+//         	if (in_array( $v->member_id, $no_list)) {
+//         		unset($items[$i]);          	
+//         	}; 
         	$mdata = $this->cb_member_info($v->member_id);
         	$items[$i]->name  =  $mdata->name;
         	$items[$i]->last_name  =  $mdata->last_name;

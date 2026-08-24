@@ -5,7 +5,6 @@
  
 /* Sidebar/left column */
 
-
 .flex-container {
   display: flex;
   flex-direction: row;
@@ -187,6 +186,27 @@
     padding-right: 5px;
     width: 240px;
 }
+.Cell4
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 332px;
+}
+.textbox
+{
+    display: table-cell;
+     text-align: center;
+    border: solid;
+    border-width: thin;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 140px;
+    width: 332px;
+}
 // table CSS 
 .table-container {
     display: table;
@@ -311,6 +331,17 @@ h3.red{
   width: 160px;         
   background-color: #FFF;  
 }
+.div-table-col200 {
+  float: left; /* fix for  buggy browsers */
+  display: table-column;         
+  width: 200px;         
+  background-color: #FFF;  
+}
+input[type="radio"] {
+  -webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+  transform: scale(1.5);
+}
+
 .squawk_body {
 	background-color: #0A335C;
     text-align: center;
@@ -379,3 +410,53 @@ a.buttons {
 .nextPreviousButtons {
   text-align: center;
 }
+.smallerFont {
+	font-size: 14px;
+}
+input[type='number']{
+    width: 100px;
+}
+.checkboxes label {
+  display: inline-block;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+.checkboxes input {
+  vertical-align: middle;
+}
+.checkboxes label span {
+  vertical-align: middle;
+}
+
+///////
+fieldset {
+      overflow: hidden
+    }
+    
+    .some-class {
+      float: left;
+      clear: none;
+    }
+    
+    label {
+      float: left;
+      width: 120px;
+      clear: none;
+      display: block;
+      padding: 4px 4em 0px 8px;
+    }
+    
+    input[type=radio],
+    input.radio {
+      width: 10px;
+      float: left;
+      clear: none;
+      margin: 0px 4px 0 8px;
+    }
+    input[type=checkbox],
+    input.checkbox {
+      width: 10px;
+      float: left;
+      clear: none;
+      margin: 0px 4px 0 8px;
+    }

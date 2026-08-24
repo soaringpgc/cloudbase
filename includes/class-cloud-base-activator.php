@@ -47,7 +47,7 @@ class Cloud_Base_Activator {
 function create_cb_database(){
    	global $wpdb;
    	$charset_collate = $wpdb->get_charset_collate();
-   	$db_version = 0.90;
+   	$db_version = 0.93;
    	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
    
    	if (get_option("cloud_base_db_version") != $db_version){ 
@@ -64,6 +64,9 @@ function create_cb_database(){
       	status tinyint(4),
       	captian_id int(10),
       	annual_due_date date DEFAULT NULL,
+      	last_100_date date DEFAULT NULL,
+      	last_100_hour  decimal(7,2),
+      	totalhours  decimal(7,2),
       	registration_due_date date DEFAULT NULL,
       	transponder_due date DEFAULT NULL,
       	comment varchar(255),
@@ -331,7 +334,7 @@ function create_cb_roles(){
 			$role_object->add_cap('cb_edit_dues', true);
 		}
 		if ( !$role_object->has_cap('cb_edit_flight')){
-			$role_object->add_cap('cb_edit_flights', true);
+			$role_object->add_cap('cb_edit_flight', true);
 		}
 		if ( !$role_object->has_cap('list_users')){
 			$role_object->add_cap('list_users', true);
@@ -470,9 +473,17 @@ function create_cb_roles(){
 	}
 }
 function set_default_cb_configuration(){
-	if ( get_option('glider_club_long_name') == false ){
-		update_option('glider_club_long_name', 'Generic Flying Club Name'  );
-		update_option('glider_club_short_name', 'GFCN'  );								    
+	if ( get_option('glider_club_long_name') === false ){
+		add_option('glider_club_long_name', 'Generic Flying Club Name', 'no' );								    
+	}
+	if ( get_option('glider_club_short_name') === false ){
+		add_option('glider_club_short_name', 'GFCN', 'no' );							    
+	}
+	if ( get_option('glider_club_tow_units') === false ){
+		add_option('glider_club_tow_units', 'Ft', 'no' );							    
+	}
+	if ( get_option('glider_club_strict_no_fly') === false ){
+		add_option('glider_club_strict_no_fly', 'N', 'no' );							    
 	}
 }
 function update_authoritys(){	

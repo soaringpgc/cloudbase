@@ -151,9 +151,6 @@ class Cloud_Base_Sign_off_types extends Cloud_Base_Rest {
 	public function cloud_base_signoffs_edit_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_signoffs_types";
-//		$value_label_authority = get_option('cloud_base_authoritys');
-//		$value_lable_period = array("yearly"=>"Yearly", "biennial"=>"Biennial", "yearly-eom"=>"Yearly-EOM", "biennial-eom"=>"Biennial-EOM", "no_expire"=>"No expire", 
-//				"monthly" => "Monthly", "quarterly" => "Quarterly", "fixed"=>"Fixed Date" );		
 		$id =  $request['id'];
  		if ($id != null ) {	
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $id) ;	

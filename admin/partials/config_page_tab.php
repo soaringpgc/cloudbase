@@ -27,13 +27,13 @@
                  size = "10"  
                  value = "' . get_option ('glider_club_short_name'). '">' ;    
                  echo '<br><label>Altitude Units: </label>';
-                if (get_option("glider_club_tow_units") == "m"){
+                if (get_option("glider_club_tow_units") === "m"){
           			echo '<input type="radio" name="units" value="m" checked="checked">Meters
           			<input type="radio" name="units" value="ft" >Feet'  ;
           		} else {
           			echo '<input type="radio" name="units" value="m" >Meters
           			<input type="radio" name="units" value="ft" checked="checked">Feet'  ;
-          		}
+          		};
 // Fiscial Year date
           		echo '<br><label for fyStartMonth>Fiscal Year Start:</label>
           			<select name="fyStartMonth" id="fyStartMonth"  >' ;
@@ -74,6 +74,15 @@
                 	}
                 };				
           	    echo'</select>';	
+                echo '<br><label>Strict No Fly: </label>';
+                if (get_option("glider_club_strict_no_fly") == "y"){
+          			echo '<input type="radio" name="nofly" value="y" checked="checked">Yes
+          			<input type="radio" name="nofly" value="n" >No'  ;
+          		} else {
+          			echo '<input type="radio" name="nofly" value="y" >Yes
+          			<input type="radio" name="nofly" value="n" checked="checked">No'  ;
+          		};
+
      		}
      		wp_nonce_field('config_page' );  
   	   		submit_button();	

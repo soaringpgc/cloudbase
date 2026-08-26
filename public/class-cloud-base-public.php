@@ -102,6 +102,7 @@ class Cloud_Base_Public {
 	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));	    
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
      	wp_register_script( 'squawk_scripts',  plugins_url('/cloudbase/public/js/squawk_scripts.js'));
+     	wp_register_script( 'htmx_script',  plugins_url('/includes/htmx.min.js', dirname(__FILE__)));
 // // needed for display_flights shortcode. 
 //  		$dateToBePassed = array(
 //  			'root' => esc_url_raw( rest_url() ),
@@ -114,7 +115,7 @@ class Cloud_Base_Public {
 	}
 	public function register_shortcodes() 
 	{
-// 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
+ 		add_shortcode( 'equipment_status', array( $this, 'equipment_status' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
@@ -182,6 +183,17 @@ class Cloud_Base_Public {
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
 			include ('partials/cloud-base-aircraft_status.php');
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+    }
+    public function equipment_status($atts = array() ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script(  'htmx_script');		
+		ob_start();
+	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
+			include ('partials/cloudbase-equipment-status.php');
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;

@@ -98,6 +98,7 @@ class Cloud_Base_Admin {
 		 * class.
 		 */
         wp_register_script( 'cloudbase_admin_templates',  plugins_url('/cloudbase/admin/js/templates.js'));
+        
 //
 // Moved below, so scripts now only load when the setting page is loaded. 
 
@@ -121,7 +122,7 @@ class Cloud_Base_Admin {
 				return;
 			}
 			wp_enqueue_script( $this->cloud_base, plugin_dir_url( __FILE__ ) . 'js/cloud-base-admin.js', 
-				array( 'wp-api', 'jquery' ,  'backbone', 'underscore', 'cloudbase_admin_templates'), $this->version, false );
+				array( 'wp-api', 'jquery' , 'htmx_script', 'backbone', 'underscore', 'cloudbase_admin_templates'), $this->version, false );
 // 			wp_enqueue_style( 'datepicker');
 //  			wp_enqueue_style( 'cloudbase_css');
 				//localize data for script			

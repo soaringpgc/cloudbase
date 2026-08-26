@@ -67,6 +67,13 @@ register_activation_hook( __FILE__, 'activate_cloud_base' );
 register_deactivation_hook( __FILE__, 'deactivate_cloud_base' );
 
 /**
+ * include and activate admin ajax functions 
+ *
+*/
+
+include_once(plugin_dir_path(__FILE__) . 'admin/cloudbase-admin-ajax.php');
+
+/**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */

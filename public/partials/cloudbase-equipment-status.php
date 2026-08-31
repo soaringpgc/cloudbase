@@ -27,12 +27,15 @@
 
 </div>
 
+
 <!-- 
 <?php  echo( $status_atts['details']=='true' ? 1 : 0 ); ?> 
  -->
 
 
 <div id="equipment-detail"></div> 
+
+<!-- 
 <?php 	        
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -110,25 +113,10 @@
 		 	}
 		 }
 	} else {		
-// 	 if( current_user_can( 'read' ) ) {	      
-// 	     $sql = "SELECT s.compitition_id as cid, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL " ;				
-// 	//     $sql = "SELECT s.compitition_id as cid, u.title as status, u.color as color  FROM wp_cloud_base_aircraft s inner join wp_cloud_base_aircraft_type t on s.aircraft_type=t.id inner join wp_cloud_base_aircraft_status u on s.status=u.id  WHERE s.valid_until is NULL " ;				
-// 		  $items = $wpdb->get_results( $sql, OBJECT);
-// 		  echo '<div><div class="hform"> Fleet Status:</div>';
-// 		   	$ldate = '0000-00-00';
-// 		 	foreach($items as $item){
-// 		 		if ($item->udate > $ldate){
-// 		 			$ldate = $item->udate ;
-// 		 		}
-// 		 		echo ' <div class="hform" style="color:'.$item->color.'">'.$item->cid.'</div>';
-// 		 	}	
-// 		  $date_time = strtotime($ldate) ;
-// 		  echo '</div><div> Updated: ' . date('d M Y', $date_time). '</div>';	 
-// //		  echo '</div><div> Last Updated: ' .$ldate. '  Details </div>';	 
-// 	}     
+
 }
 ?>
 
-</div>
 
-
+ -->
+ </div>

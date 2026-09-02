@@ -96,8 +96,8 @@ function cb_status_detail(){
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 	echo '<div class="table-row">';
-	 			modal_button( $item->aircraft_id, "registration", $item->registration_due_date, $item->registration_due_date, "date");
- 				modal_button(  $item->aircraft_id, "transponder", $item->transponder_due, $item->transponder_due, "date");
+	 			modal_button( $item->aircraft_id, "registration", $item->registration_due_date, $item->registration_due_date);
+ 				modal_button(  $item->aircraft_id, "transponder", $item->transponder_due, $item->transponder_due);
 				call_100_hour(  $item->aircraft_id, "tosthookdate", $item->tostdate, $item->tostcount);
 
 
@@ -196,9 +196,9 @@ function cb_status_hr_report(){
  	wp_die();
 }
 
-function modal_button( $eid, $datatype, $val , $val_name, $kind ){
+function modal_button( $eid, $datatype, $val , $val_name ){
     echo '<div id="' .$datatype .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" ,"value": "' .$val . '", "val_name":"'. $val_name .'", "kind":"'. $kind .'"}\'  ';                       	    
+ 	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" ,"value": "' .$val . '", "val_name":"'. $val_name .'"}\'  ';                       	    
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
@@ -334,11 +334,11 @@ function cb_modal(){
        			_="on click trigger closeModal">
   			</div>');
   	echo ('	<div class="modal-content">');
-  	if($_GET['kind'] == 'select') {
+  	if($_GET['datatype'] == 'status') {
   		echo('<h2>Select updated status</h2>');
         echo '<form          
        			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-       			hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"value": "' .$_GET['value']. '", "val_name":"'. $_GET['val_name'] . '", "kind":"'. $_GET['kind'] .'"}\' 
+       			hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"value": "' .$_GET['value']. '", "val_name":"'. $_GET['val_name'] . '"}\' 
         		hx-trigger="change"
         		hx-swap="outerHTML"
         		hx-target="#status">     
@@ -354,27 +354,17 @@ function cb_modal(){
     		}
        	};
     	echo ( '</select> </form>');  		  		
-  	} elseif ($_GET['kind'] == 'date') {	
+  	} elseif ($_GET['datatype'] == 'registration' || $_GET['datatype'] == 'transponder') {	
   		echo ('<h1>Update Date</h1>');
   		echo '<form          
        			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-       			hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"value": "' .$_GET['value']. '", "val_name":"'. $_GET['val_name']. '" , "kind":"'. $_GET['kind'] .'"}\' 
+       			hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"value": "' .$_GET['value']. '", "val_name":"'. $_GET['val_name']. '" }\' 
         		hx-trigger="change"
         		hx-swap="outerHTML"
         		hx-target="#'. $_GET['datatype'] .'">' ;   
   		echo '<input type="date" id="newdata" name="newdata" value='. $_GET['value'] .'
   				_="on change trigger closeModal"> ' ; 
       			echo ( ' </form>');  		
-  	}elseif ($_GET['kind'] == 'number') {	
-   		echo ('<h1>Update Total</h1>');
-  		echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-       			hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"value": "' .$_GET['value']. '", "val_name":"'. $_GET['val_name']. '" , "kind":"'. $_GET['kind'] .'"}\' 
-        		hx-swap="outerHTML"
-        		hx-target="#'. $_GET['datatype'] .'">' ;   
-  		echo '<input type="number" id="newdata" name="newdata" value='. $_GET['value'] .'> ' ; 
-  				echo ('<input type="submit" value="Submit" _="on click trigger closeModal">');
-      			echo ( ' </form>');  	 	
       }     
      	echo('<button _="on click trigger closeModal">
       				Cancel
@@ -390,7 +380,7 @@ function cb_update() {
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
 // var_dump($_POST)	;	
-	if($_POST['kind'] == 'select'){
+	if($_POST['datatype'] == 'status'){
 		$sql = "SELECT title FROM ". $table_status . " WHERE active = 1 and id = " .$_POST['nstatus'] ." ";
 // 		var_dump($_POST['equip']);
 		$val_name = $wpdb->get_var( $sql);  
@@ -403,14 +393,14 @@ function cb_update() {
 
  			modal_button( $_POST['equip'], $_POST['datatype'], $_POST['nstatus'], $val_name, "select"  );
 //  		}
-	} elseif($_POST['kind'] == 'date') {
+	} elseif($_POST['datatype'] == 'registration' || $_POST['datatype'] == 'transponder') {
 	
 // 		var_dump($_POST);
  		modal_button( $_POST['equip'], $_POST['datatype'], $_POST['newdata'], $_POST['newdata'], "date"  );
 	
-	} elseif($_POST['kind'] == 'number') {
+	} elseif($_POST['datatype'] == 'annual ') {
 
-	 	modal_button( $_POST['equip'], $_POST['datatype'], $_POST['newdata'], $_POST['newdata'], "number"  );
+// 	 	modal_button( $_POST['equip'], $_POST['datatype'], $_POST['newdata'], $_POST['newdata'], "number"  );
 
 	}
     wp_die();

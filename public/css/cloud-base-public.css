@@ -213,6 +213,7 @@
     width: 100%;
     table-layout: auto;
     border-collapse: collapse;
+    align-items: center;
 }
 
 .table-heading {

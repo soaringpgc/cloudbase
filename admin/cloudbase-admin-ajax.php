@@ -4,7 +4,13 @@
 
 /* 
  */
-
+/* 
+	Function to display the simple or detailed status. Simple is just a color coded
+		list of aircraft. Detailed mode enables clicking on each glider to bring up
+		details of it's status. It also addeds a menu that allows a summery list 
+		of reports by total hours, 100 hour etc. Futhormore it list non-flying
+		assets (airport licesnse etc). 
+*/
 function cb_status_summary(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -69,6 +75,10 @@ function cb_status_summary(){
 	}     
 	wp_die();
 }
+/*
+		displays status detail for each asset. Depending on viewer it may allow the 
+		viewer to edit and update dates and hours. 
+*/
 function cb_status_detail(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -99,25 +109,20 @@ function cb_status_detail(){
 				echo ' <div class="table-col">'.$item->model.'</div>';	
 				modal_button( $item->aircraft_id, "status", $item->status, $item->astatus, "select");
 				echo '</div>';	
-			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours</div><div class="table-col ">100Hr Date</div><div class="table-col ">Last 100hr</div></div>');
+			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">100Hr Date</div><div class="table-col ">Last 100hr</div></div>');
 				echo '<div class="table-row">';
 				
 				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, $item->totalhours, $item->last_100_date, $item->last_100_hour );
 				call_100_hour(  $item->aircraft_id, "last_100_date", $item->last_100_date, $item->last_100_hour);
-//  				modal_button(  $item->aircraft_id, "last_100_date", $item->last_100_date, $item->last_100_date, "date");
-//  				modal_button(  $item->aircraft_id, "last_100_hour", $item->last_100_hour, $item->last_100_hour, "number"); 				
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 	echo '<div class="table-row">';
 	 			modal_button( $item->aircraft_id, "registration", $item->registration_due_date, $item->registration_due_date);
  				modal_button(  $item->aircraft_id, "transponder", $item->transponder_due, $item->transponder_due);
 				call_100_hour(  $item->aircraft_id, "tosthookdate", $item->tostdate, $item->tostcount);
-
-
- // 				modal_button(  $item->aircraft_id, "tosthookdate", $item->tostdate, $item->tostcount, "date");
-//  				modal_button(  $item->aircraft_id, "tosthookcount", "0", "0", "number");
-			echo '</div>';
-			echo ('</div><br>');
+			echo '</div></div>';
+			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date </p>';
+			echo ('<br>');
 		} else if( current_user_can( 'read' ) ) {	
 			echo('<dis class="table-container">');
 			echo ('<div class="table-row-shade"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
@@ -135,16 +140,20 @@ function cb_status_detail(){
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.'1921-11-02'.'</div>';
 				echo ' <div class="table-col">'.'1313'.'</div></div>';
-			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
-			echo ' <div >'.$item->comment.'</div></div>';
-			echo ('</div><br>');		
+// 			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
+// 			echo ' <div >'.$item->comment.'</div></div>';
+			echo '</div></div></div>';
+			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date. </p>';
+			echo ('<br>');		
 		}
 	}
 	wp_die();
  }
-function cb_status_hr_report(){
-// 	$navhours = array("100h" => "100 Hour", "thour" => "Total Hr", "hreg" => "Registration", "tcheck"=>"Transponder", 'thookcount' => "Tost Hook CT" );
+/*
+	produces the vertical report of due dates by menu item. 
 
+*/
+function cb_status_hr_report(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
@@ -208,13 +217,18 @@ function cb_status_hr_report(){
  	}
  	wp_die();
 }
-
+/*
+	Creates the button to bring up the modal form to update dates. 
+*/
 function modal_button( $eid, $datatype, $val , $val_name ){
     echo '<div id="' .$datatype .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
  	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" ,"value": "' .$val . '", "val_name":"'. $val_name .'"}\'  ';                       	    
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
+/*
+	Creates the button to bring up the modal form to update annual due dates and hours. 
+*/
 function call_annual( $eid, $datatype, $date , $hours, $date100, $hours100 ){
     echo '<div id="' .$datatype .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
  	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" , "date": "' .$date . '", "hours":"'. $hours .'", "date100": "' .$date100 . '", "hours100":"'. $hours100 .'" }\' ';                       	    
@@ -222,6 +236,9 @@ function call_annual( $eid, $datatype, $date , $hours, $date100, $hours100 ){
   	echo 'hx-swap="beforeend">
 				' .$date. '</button></div><div 	class="table-col">' .$hours. '</div>';
 }
+/*
+	Creates the button to bring up the modal form to update 100 hour due dates and hours. 
+*/
 function call_100_hour( $eid, $datatype, $date100, $hours100 ){
     echo '<div id="' .$datatype .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
  	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'", "date100": "' .$date100 . '", "hours100":"'. $hours100 .'" }\' ';                       	    
@@ -229,7 +246,10 @@ function call_100_hour( $eid, $datatype, $date100, $hours100 ){
   	echo 'hx-swap="beforeend">
 				' .$date100. '</button></div><div 	class="table-col">' .$hours100. '</div>';
 }
-
+/*
+	Creats the modal pop up form that allows Annual and 100 hour dates and hours to 
+	be updated.
+*/
 function cb_modal_date_hour(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -331,8 +351,9 @@ function cb_modal_date_hour(){
  wp_die();
 // hx-trigger="keyup[keyCode=13]"      hx-trigger="clilck from:#enter delay:50ms"
 }
-
-
+/*
+	Creates the modal form to allow updating a date or aircraft status. 
+*/
 function cb_modal(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -385,8 +406,12 @@ function cb_modal(){
   			</div>
 		</div>');
  wp_die();
-// hx-trigger="keyup[keyCode=13]"      hx-trigger="clilck from:#enter delay:50ms"
+
 }
+/*
+	Updates the detail pages after modal form is submitted. Also does the grunt work of
+	actuall updating the database. 
+*/
 function cb_update() {	
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
@@ -428,7 +453,7 @@ function cb_not_authorized() {
     echo 'Please login to view this page.';  
     wp_die();
 }
-
+// ad action to enable wp_ajax endpoints. 
 add_action('wp_ajax_cb_update_number', 'cb_update_number');
 add_action('wp_ajax_cb_update', 'cb_update');
 add_action('wp_ajax_cb_status_detail', 'cb_status_detail');

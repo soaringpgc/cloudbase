@@ -21,22 +21,24 @@ function cb_status_summary(){
 	if( current_user_can( 'read' ) ) {	      
 	     $sql = "SELECT s.compitition_id as cid, s.aircraft_id as id, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL AND s.aircraft_type < 3" ;				
 		  $items = $wpdb->get_results( $sql, OBJECT);
-		  echo '<div><div class="hform"> Fleet Status:</div><br>';
+		  echo '<div ><div class="hform"> Fleet Status:</div><br>';
 		  $ldate = '0000-00-00';
+		  echo('<table class="centered><tr class="table-heading">');
  		  if ($_GET['details'] == 1){ 
 		 	foreach($items as $item){
 		 		if ($item->cid == "PVT"){
 		 			continue;
 		 		}
 
-		 		echo ' <div 
+		 		echo ' <td><div 
 		 		hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_status_detail"
 		 		hx-vals={"equip":"' . $item->id. '"}
 		 		hx-trigger="click" 				
 		 		hx-target="#equipment-detail" 
-		 		class="hform" style="color:'.$item->color.'">'.$item->cid.'</div>';
+		 		class="hform" style="color:'.$item->color.'">'.$item->cid.'</div></td>';
 		 	}	
-		 	echo ('<br><nav class="navbar"><ul class="nav-list">') ;
+		 	echo '</tr></table>';
+		 	echo ('<nav class="navbar"><ul class="nav-list">') ;
 				foreach($navhours as $key => $value ){					
  					echo('<li class="nav-item" 
  						hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_status_hr_report"
@@ -47,20 +49,20 @@ function cb_status_summary(){
 			echo ('</ul></nav>');	
 		    $sql = "SELECT * FROM {$table_name} WHERE valid_until is NULL AND aircraft_type > 2" ;				
 		  	$items = $wpdb->get_results( $sql, OBJECT);
-		 	echo '<div class"table-container"><div class="table-row-shade">';
+
+
+		 	echo '<table class"centered"><tr>';
 		 	if( current_user_can( 'edit_users' ) ) {	 
 		 	foreach($items as $item){
-		 		echo '<div class="table-col ">'.  $item->registration .'</div>';
-		 	 	modal_button( $item->id , "other", $item->registration_due_date  , $item->registration_due_date  );
-// 		 		echo '<div class="table-col ">'.$item->registration .'</div><div class="table-col ">'.$item->registration_due_date .'</div>';
+		 		echo '<td>'.  $item->registration .'</td>';
+		 	 	modal_button_t( $item->id , "other", $item->registration_due_date  , $item->registration_due_date  );
 		 	}	
 		 	} else {
 		 		foreach($items as $item){
-		 			echo '<div class="table-col ">'.$item->registration .'</div><div class="table-col ">'.$item->registration_due_date .'</div>';
+		 			echo '<td">'.$item->registration .'</div><div class="table-col ">'.$item->registration_due_date .'</td>';
 		 		}	
 		 	}		
-			echo '</div></div>';	
-		
+			echo '</tr></table>';	
 		 	}  else {
 		 		foreach($items as $item){
 		 			if ($item->cid == "PVT"){
@@ -83,26 +85,35 @@ function cb_status_detail(){
 	global $wpdb;
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
-	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
+	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";
+	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
  	if (!empty($_GET['equip'])){
  		$sql = "SELECT *, u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL AND  s.aircraft_id=" .$_GET['equip'] ;				
  		$item = $wpdb->get_row( $sql, OBJECT);	
- 	
-//  		if(!property_exists($item, 'last_100_hour'))  {
 
-// the following is necessary because the varables are not in the database and/or are not set. 
- 		if(!isset($item->last_100_hour))  {
-			$item->last_100_hour = "0";	
-   		}
-   		 if(!isset($item->tostcount))  {
-			$item->tostcount = "0";	
-   		}
-   		 if(!isset($item->totalhours))  {
-			$item->totalhours = "0";	
-   		}
-	
- 		if( current_user_can( 'cb_edit_maintenance') ) {	
-			echo('<dis class="table-container">');
+ 		$sql2 = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date >". $item->last_annual_date ;
+		$accumlated_hours  = $wpdb->get_row($sql2); 
+// var_dump($accumlated_hours);
+
+		if($accumlated_hours === NULL){
+			$accumlated_hours = 0; 
+		}		
+		$sql3 = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date >". $item->last_100_date ;
+		$hours_since_100  = $wpdb->get_row($sql3); 
+
+
+		if($hours_since_100 === NULL){
+			$hours_since_100 = 0; 
+		}
+		$sql4 = "SELECT count(*) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date >". $item->tost_replacement_date ;
+		$tost_releases  = $wpdb->get_row($sql4); 
+		if($tost_releases === NULL){
+			$tost_releases = 0; 
+		}
+ 	
+//  var_dump($item->last_100_hour );	
+ 		if( current_user_can( 'cb_edit_maintenance') ) {	 		
+			echo('<div class="table-container">');
 			echo ('<div class="table-row-shade"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
 				echo ' <div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
 				echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
@@ -112,14 +123,14 @@ function cb_status_detail(){
 			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">100Hr Date</div><div class="table-col ">Last 100hr</div></div>');
 				echo '<div class="table-row">';
 				
-				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, $item->totalhours, $item->last_100_date, $item->last_100_hour );
-				call_100_hour(  $item->aircraft_id, "last_100_date", $item->last_100_date, $item->last_100_hour);
+				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + (int)$accumlated_hours, $item->last_100_date, (int)$hours_since_100  );
+				call_100_hour(  $item->aircraft_id, "last_100_date", $item->last_100_date, (int)$hours_since_100 );
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
-	echo '<div class="table-row">';
+			echo '<div class="table-row">';
 	 			modal_button( $item->aircraft_id, "registration", $item->registration_due_date, $item->registration_due_date);
  				modal_button(  $item->aircraft_id, "transponder", $item->transponder_due, $item->transponder_due);
-				call_100_hour(  $item->aircraft_id, "tosthookdate", $item->tostdate, $item->tostcount);
+				call_100_hour(  $item->aircraft_id, "tosthookdate", $item->tostdate, $item->tost_releases);
 			echo '</div></div>';
 			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date </p>';
 			echo ('<br>');
@@ -132,9 +143,9 @@ function cb_status_detail(){
 				echo ' <div class="table-col">'.$item->astatus.'</div></div>';				
 				echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Last 100hr</div><div class="table-col ">100Hr Date</div><div class="table-col ">Total Hours</div></div>');
 			echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
-				echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
+				echo ' <div class="table-col">'.(int)$hours_since_100 .'</div>';
 				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
-				echo ' <div class="table-col">'.$item->totalhours.'</div></div>';
+				echo ' <div class="table-col">'.(int)$item->totalhours + (int)$accumlated_hours.'</div></div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
@@ -172,7 +183,7 @@ function cb_status_hr_report(){
 		 					continue;
 		 				}
 						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
-						echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
+						echo ' <div class="table-col">'.(int)$hours_since_100 .'</div>';
 						echo ' <div class="table-col">'.$item->last_100_date.'</div>';		
 						echo ' <div class="table-col">'.'time remaining'.'</div></div>';				 	
 				 	}
@@ -185,7 +196,7 @@ function cb_status_hr_report(){
 		 					continue;
 		 				}
 						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
-						echo ' <div class="table-col">'.$item->totalhours.'</div></div>';
+						echo ' <div class="table-col">'.(int)$item->totalhours + (int)$accumlated_hours.'</div></div>';
 				 	}				
 				break;
 			case("hreg" ):
@@ -226,6 +237,14 @@ function modal_button( $eid, $datatype, $val , $val_name ){
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
+function modal_button_t( $eid, $datatype, $val , $val_name ){
+    echo '<td id="' .$datatype .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" ,"value": "' .$val . '", "val_name":"'. $val_name .'"}\'  ';                       	    
+  	echo 'hx-swap="beforeend">
+				' .$val_name. '</button></td>	';
+}
+
+
 /*
 	Creates the button to bring up the modal form to update annual due dates and hours. 
 */
@@ -236,6 +255,13 @@ function call_annual( $eid, $datatype, $date , $hours, $date100, $hours100 ){
   	echo 'hx-swap="beforeend">
 				' .$date. '</button></div><div 	class="table-col">' .$hours. '</div>';
 }
+// function call_annual_t( $eid, $datatype, $date , $hours, $date100, $hours100 ){
+//     echo '<td id="' .$datatype .  '" ><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+//  	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" , "date": "' .$date . '", "hours":"'. $hours .'", "date100": "' .$date100 . '", "hours100":"'. $hours100 .'" }\' ';                       	    
+//                      	    
+//   	echo 'hx-swap="beforeend">
+// 				' .$date. '</button></td><td 	>' .$hours. '</td>';
+// }
 /*
 	Creates the button to bring up the modal form to update 100 hour due dates and hours. 
 */
@@ -246,6 +272,13 @@ function call_100_hour( $eid, $datatype, $date100, $hours100 ){
   	echo 'hx-swap="beforeend">
 				' .$date100. '</button></div><div 	class="table-col">' .$hours100. '</div>';
 }
+// function call_100_hour_t( $eid, $datatype, $date100, $hours100 ){
+//     echo '<td id="' .$datatype .  '" ><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+//  	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'", "date100": "' .$date100 . '", "hours100":"'. $hours100 .'" }\' ';                       	    
+//                      	    
+//   	echo 'hx-swap="beforeend">
+// 				' .$date100. '</button></td><td ">' .$hours100. '</td>';
+// }
 /*
 	Creats the modal pop up form that allows Annual and 100 hour dates and hours to 
 	be updated.
@@ -438,7 +471,7 @@ function cb_update() {
 	
 	} elseif($_POST['datatype'] == 'annual ') {
 	
-		call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, $item->totalhours, $item->last_100_date, $item->last_100_hour );
+		call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + (int)$accumlated_hours, $item->last_100_date, (int)$hours_since_100  );
 
 
 	}

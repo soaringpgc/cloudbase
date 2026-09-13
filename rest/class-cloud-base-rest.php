@@ -212,7 +212,14 @@ class Cloud_Base_Rest extends WP_REST_Controller {
 			break;								
 			case "year5":
 				$start_date->modify('+5 year');
+			break;	
+			case "year6":
+				$start_date->modify('+6 year');
 			break;			
+			case "year7":
+				$start_date->modify('+7 year');
+			break;			
+		
 			case "dues":
 				$end_date = new \DateTime($fixed_date );
 				$year = date("Y") + 1 ;		

@@ -111,20 +111,20 @@ function cb_status_detail(){ //
  		
  		if( current_user_can( 'cb_edit_maintenance') ) {	 		
 			echo('<div class="table-container">');
-			echo ('<div class="table-row-shade"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
+			echo ('<div class="table-row-shade"><div class="table-col ">Registation Due</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
 				echo ' <div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
 				echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
 				echo ' <div class="table-col">'.$item->model.'</div>';	
 				modal_button( $item->id, "status", $item->status, $item->astatus );
 				echo '</div>';	
-			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">100Hr Date</div><div class="table-col ">Time since 100</div></div>');
+			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">Last 100 Hr </div><div class="table-col ">Time since 100</div></div>');
 				echo '<div class="table-row">';
 				
 				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + (int)$accumlated_hours, $item->last_100_date, (int)$hours_since_100  );
   				call_100_hour_n(  $item->id, "last_100_date", $item->last_100_date, (int)$hours_since_100 );
 
 				echo '</div>';
-			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
+			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 			echo '<div class="table-row">';
  				cb_modal_btn( $item->id, "registration", $item->registration_due_date );
  				cb_modal_btn( $item->id, "transponder_due", $item->transponder_due );
@@ -239,11 +239,9 @@ function modal_button( $id, $name, $old_val , $val_name ){
 }
 
 function cb_modal_btn( $id, $name, $old_value ){
-
     echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
  	echo 'hx-vals=\'{ "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\' ';  
-  	echo 'hx-swap="beforeend">
-				' .$old_value. '</button></div>	';
+  	echo 'hx-swap="beforeend">' .$old_value. '</button></div>	';
 }
 function modal_button_t( $eid, $datatype, $val , $val_name,  $id=0  ){
     echo '<td id="' .$datatype .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
@@ -438,10 +436,13 @@ function cb_modal(){
   			echo ('<h3> Enter last 100 hour inspection date:</h3>');
   		}
   		if($_GET['name'] === "transponder_due"){
-  			echo ('<h3> Enter last transponder inspection date:</h3>');
+  			echo ('<h3> Enter next transponder inspection due date:</h3>');
   		}
   		if($_GET['name'] === "registration"){
-  			echo ('<h3> Enter last registration date:</h3>');
+  			echo ('<h3> Enter next registration due date:</h3>');
+  		}
+  		if($_GET['name'] === "tost_replacement_date"){
+  			echo ('<h3> Enter last Tost hook replacement date:</h3>');
   		}
   		echo '<form          
        			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update" 
@@ -479,7 +480,7 @@ function cb_modal_t(){
        			hx-vals=\'{"id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
         		hx-trigger="change"
         		hx-swap="outerHTML"
-        		hx-target="#A'. $_GET["name"] .'">' ;        		
+        		hx-target="this">' ;        		
   		echo '<input type="date" id="new_value"  name="new_value" value='. $_GET['old_value'] .'
   				_="on change trigger closeModal"> ' ; 
       			echo ( ' </form>');  		
@@ -492,6 +493,7 @@ function cb_modal_t(){
  wp_die();
  }
 /*
+      		hx-target="#A'. $_GET["name"] .'">' ;    
 	Updates the detail pages after modal form is submitted. Also does the grunt work of
 	actuall updating the database. 
 */
@@ -501,23 +503,24 @@ function cb_update() {
 
 	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"],  "old_value"=>$_POST["old_value"] );
 // 	var_dump($update_array);	
-	$result = update_record( $update_array );	
-	var_dump($result);
+// 	$result = update_record( $update_array );	
+	$result = true ;	
+// 	var_dump($result);
 	if ($result === false ){
 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
-		} elseif ( $_POST["name"] == "status"  ){ 	
-			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
+// 		} elseif ( $_POST["name"] == "status"  ){ 	
+// 			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
 		} else {
 			cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], "0");		
-		} elseif ( $_POST["name"] == "status"  ){ 	
-    		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
-    		$astats = $wpdb->get_row( $sql, OBJECT);   	
-			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
+// 		} elseif ( $_POST["name"] == "status"  ){ 	
+//     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
+//     		$astats = $wpdb->get_row( $sql, OBJECT);   	
+// 			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
 		} else { 	
  			cb_modal_btn( $_POST["id"],  $_POST["name"], $_POST["new_value"] );		
  		}
@@ -525,8 +528,7 @@ function cb_update() {
     wp_die();
 }
 
-function cb_update_t() {	
-		
+function cb_update_t() {			
 	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$_POST["new_value"],  "old_value"=>$_POST["old_value"] );
 	$result = update_record( $update_array );	
 	if ($results === false ){
@@ -563,17 +565,17 @@ function update_record( $values ){
 				} else{ 
 					switch ($values['name'] ){				
 					case ('annual'):					
-						$item['annual_due_date'] = cb_expire_date($new_date, "yearly", NULL )->format('Y-m-d');
+						$item['annual_due_date'] =  $values['new_value'];
 						$item['annual'] = $values['new_value'];
 						$item['last_100_date'] = $values['new_value'];
 						$item['totalhours'] = $values['totalhours'];
 						break;					
 					case ('registration'):			
-						$item['registration_due_date'] = cb_expire_date($new_date, "year7", NULL )->format('Y-m-d');
+						$item['registration_due_date'] =  $values['new_value'];
 						$item['registration'] = $values['new_value'];		
 						break;					
 					case( 'transponder_due'):					
-						$item['transponder_due'] = cb_expire_date($new_date, "biennial-eom", NULL )->format('Y-m-d');
+						$item['transponder_due'] =  $values['new_value'];
 						break;
 					case('last_100_date' ):
 						$item['last_100_date'] = $values['new_value'];
@@ -591,7 +593,8 @@ function update_record( $values ){
  					default:
  						$item['registration_due_date'] = $values['new_value']; 				
 					}										
-				}		
+				}						
+				
 // 				var_dump($item);		
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 
@@ -656,67 +659,6 @@ add_action('wp_ajax_cb_modal_t', 'cb_modal_t');
 add_action('wp_ajax_cb_modal_date_hour', 'cb_modal_date_hour');
 
 add_action('wp_ajax_nopriv_cb_status_summary', 'cb_not_authorized');
-
-function cb_expire_date($start_date, $period, $fixed_date ){
-
-	// function to calculate the expire date. 
-			switch($period ){
-			case "now":
-				$start_date->modify('-1 day');
-			break;
-			case "monthly":
-				$start_date->modify('+1 month');
-			break;
-			case "quarterly":
-				$start_date->modify('+3 month');
-			break;
-			case "yearly":
-				$start_date->modify('+1 year');
-			break;
-			case "biennial":
-				$start_date->modify('+2 year');
-			break;
-			case "fixed":
-				$start_date = new \DateTime($fixed_date );
-			break;
-			case "no_expire":
-				 $start_date = new \DateTime('2099-12-31');
-			break;
-			case "yearly-eom":
-				 $start_date->modify('+1 year');
-				 $start_date->modify('last day of this month');
-			break;
-			case "biennial-eom":
-				$start_date->modify('+2 year');
-				$start_date->modify('last day of this month');
-			break;
-			case "year3":
-				$start_date->modify('+3 year');
-			break;
-			case "year4":
-				$start_date->modify('+4 year');
-			break;								
-			case "year5":
-				$start_date->modify('+5 year');
-			break;	
-			case "year6":
-				$start_date->modify('+6 year');
-			break;			
-			case "year7":
-				$start_date->modify('+7 year');
-			break;			
-		
-			case "dues":
-				$end_date = new \DateTime($fixed_date );
-				$year = date("Y") + 1 ;		
-				// create a new date using the month and day passed in Start Date and either 
-				// a year one or two years from now depending on what month it is now. 
-				$start_date = new \DateTime($end_date->format('m')."/". $end_date->format('d')."/".$year);
-				break;
-			default:
-		}	
-		return($start_date);
-		}
 
 
 ?>

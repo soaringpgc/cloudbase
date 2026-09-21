@@ -249,6 +249,19 @@ function call_annual( $id, $name, $date , $hours ){
  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
   	echo 'hx-swap="beforeend">' .$date. '</button></div><div 	class="table-col">' .$hours. '</div>';
 }
+function call_annual_s( $id, $name, $date , $hours ){
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+  	echo 'hx-swap="beforeend">' .$date. '</button></div><div 	class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
+}
+
+function call_annual_z( $id, $name, $date , $hours ){
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+  	echo 'hx-swap="beforeend">' .$date. '</button></div><div 	class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
+    echo '<div class="table-col"  hx-swap-oob="true">' .$date. '</div>';
+//     echo '<div class="table-col"  hx-swap-oob="true" >"0"</div>';
+}
 
 /*
 	Creates the button to bring up the modal form to update 100 hour due dates and hours. 
@@ -294,10 +307,10 @@ function cb_modal_date_hour(){
     			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
     			hx-vals=\'{"id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'     
     	 		hx-swap="outerHTML"
-    	 		hx-target="#'. $_GET['name'] .'">' ;   
+    	 		hx-target="#A'. $_GET['name'] .'">' ;   
     	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
     	echo 'Annual Date</div>'; 	
-  		echo '<div class="table-col"><input type="date" id="data" name="data" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
+  		echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
  		echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
   		echo '<div class="table-col"><input type="number" id="newhour" name="newhour" value='. $_GET['hours'] .' > </div></div>' ; 
   		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
@@ -422,30 +435,41 @@ function cb_update() {
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	   	
 
 	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"] );	
+	if(isset($_POST["newhour"])){
+		$update_array["newhour"]= $_POST["newhour"];
+	}
+
 	$result = update_record( $update_array );		
-// 	var_dump($result);
+
 	if ($result === false ){
 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
 		} elseif ( $_POST["name"] == "status"  ){ 	
 			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
+		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
+			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result->compitition_id,  $_POST["new_value"] ));		
+		} elseif( $_POST["name"] == "annual") {
+			 call_annual_s( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
+			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  "UPDATE FAILED" , "-------"  );		
 		} else {
 			cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date"  ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result->compitition_id,  $_POST["new_value"] ));	
+			call_100_hour_s(  $result,  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result->compitition_id,  $_POST["new_value"] ));	
 			
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result->compitition_id,  $_POST["new_value"] ));		
+			call_100_hour_s(  $result,  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result->compitition_id,  $_POST["new_value"] ));		
 			
 // 		} elseif ( $_POST["name"] == "status"  ){ 	
 //     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
 //     		$astats = $wpdb->get_row( $sql, OBJECT);   	
 // 			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
-
+		} elseif( $_POST["name"] == "annual") {
+			call_annual_z( $result,  $_POST["name"],  $_POST["new_value"] , $_POST["newhour"] );	
+//  			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], "0" );		
 		} else { 	
- 			cb_modal_btn( $_POST["id"],  $_POST["name"], $_POST["new_value"] );		
+ 			cb_modal_btn( $result,  $_POST["name"], $_POST["new_value"] );		
  		}
  	}
     wp_die();
@@ -455,9 +479,9 @@ function cb_update_t() {
 	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$_POST["new_value"] );
 	$result = update_record( $update_array );	
 	if ($results === false ){
-		cb_modal_btn_t( $_POST["id"], $_POST["name"], " UPDATE AILED" );	
+		cb_modal_btn_t( $result, $_POST["name"], " UPDATE AILED" );	
  	} else {
- 		cb_modal_btn_t( $_POST["id"], $_POST["name"], $_POST["new_value"] );	 	
+ 		cb_modal_btn_t( $result, $_POST["name"], $_POST["new_value"] );	 	
  	}
     wp_die();
 }
@@ -471,8 +495,7 @@ function update_record( $values ){
 	  $record_id = $values['record_id']; 
 
 	  if( current_user_can( 'cb_edit_maintenance') ) {// 
-		  if ($record_id != null){	
-	
+		  if ($record_id != null){		
 			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE id = %s " ,  $record_id );	
 			$item = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$table_name} WHERE id = %s " ,  $record_id ), ARRAY_A );									
 			if( $wpdb->num_rows > 0 ) {// 		
@@ -487,7 +510,7 @@ function update_record( $values ){
 					case ('annual'):					
 						$item['annual_due_date'] =  $values['new_value'];
 						$item['last_100_date'] = $values['new_value'];
-						$item['totalhours'] = $values['totalhours'];
+						$item['totalhours'] = $values['newhour'];
 						break;					
 					case ('registration'):			
 						$item['registration_due_date'] =  $values['new_value'];
@@ -510,8 +533,10 @@ function update_record( $values ){
  					default:
  						$item['registration_due_date'] = $values['new_value']; 				
 					}										
-				}										
-// 				var_dump($item);		
+				}	
+// 				var_dump($item);
+// 				die();
+		
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 
 		    	'registration' =>  $item['registration'], 
@@ -534,15 +559,14 @@ function update_record( $values ){
 				'valid_until' => null  ), 				
 				array('%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%f', '%f', '%s', '%s', '%s', '%s', '%s', '%s' ));													
 			    // create new record with valid_until = null. 
+				
 				if ( $update_result != false ) {
+					$new_id = $wpdb->insert_id;  // get id of new record. 
 //  		  		    // mark existing recored as nolonger valid by setting the valin_until to now.
   		       		if($wpdb->update($table_name, array('valid_until' => current_time( 'mysql' )), array( 'id' =>  $old_record) ) != false ){
 //    		  var_dump($wpdb->last_query ) ;
 //    		  var_dump($wpdb->last_error ) ;
-// 	 				// read it back to get id and send
-  		  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s AND valid_until IS NULL" , $registration  );	
- 		  			$item = $wpdb->get_row( $sql, OBJECT); 	  			
- 		  			return $item; 		  			
+ 		  				return $new_id; 		  			
  		  			} else {
  		  				return false;
  		  			} 											

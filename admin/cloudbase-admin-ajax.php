@@ -89,25 +89,9 @@ function cb_status_detail(){ //
 	if (!empty($_GET['record_id'])){
  	$sql = "SELECT *, s.id as id, u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE  s.id = " .$_GET['record_id'] ;				
  	$item = $wpdb->get_row( $sql, OBJECT);	
-
- 	$sql2 = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date >CAST('". $item->last_annual_date ."' AS Date)";
-	$accumlated_hours  = $wpdb->get_var($sql2); 
-	if(is_null($accumlated_hours)){
-		$accumlated_hours = 0; 
-	}	
 	if(is_null($item->totalhours)){
 		$item->totalhours = 0; 
 	}		
-	$sql3 = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date > CAST('". $item->last_100_date ."' AS Date)";
-	$hours_since_100  = $wpdb->get_var($sql3); 
-	if(is_null($hours_since_100) ){
-		$hours_since_100 = 0; 
-	}			 
-	$sql4 = "SELECT count(*) FROM " . $flightSheet . " WHERE Glider='". $item->compitition_id ."' AND Date > CAST('". $item->tost_replacement_date ."' AS Date)";
-	$tost_releases  = $wpdb->get_var($sql4); 
-	if(is_null( $tost_releases)){
-		$tost_releases = 0; 
-	}
  		
  		if( current_user_can( 'cb_edit_maintenance') ) {	 		
 			echo('<div class="table-container">');
@@ -120,15 +104,15 @@ function cb_status_detail(){ //
 			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">Last 100 Hr </div><div class="table-col ">Time since 100</div></div>');
 				echo '<div class="table-row">';
 				
-				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + (int)$accumlated_hours, $item->last_100_date, (int)$hours_since_100  );
-  				call_100_hour_n(  $item->id, "last_100_date", $item->last_100_date, (int)$hours_since_100 );
+				call_annual( $item->id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
+  				call_100_hour_n(  $item->id, "last_100_date", $item->last_100_date, hours_since_100 ( $item->compitition_id, $item->last_100_date ) );
 
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 			echo '<div class="table-row">';
  				cb_modal_btn( $item->id, "registration", $item->registration_due_date );
  				cb_modal_btn( $item->id, "transponder_due", $item->transponder_due );
-				call_100_hour_n(  $item->id, "tost_replacement_date", $item->tost_replacement_date, $item->tost_releases);
+				call_100_hour_n(  $item->id, "tost_replacement_date", $item->tost_replacement_date, tost_hook_count ($item->compitition_id, $item->tost_replacement_date));
 			echo '</div></div>';
 			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date </p>';
 			echo ('<br>');
@@ -160,7 +144,6 @@ function cb_status_detail(){ //
  }
 /*
 	produces the vertical report of due dates by menu item. 
-
 */
 function cb_status_hr_report(){
 	global $wpdb;
@@ -261,12 +244,10 @@ function cb_modal_btn_t( $id, $name, $old_value ){
 /*
 	Creates the button to bring up the modal form to update annual due dates and hours. 
 */
-function call_annual( $eid, $datatype, $date , $hours, $date100, $hours100 ){
-    echo '<div id="' .$datatype .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
- 	echo 'hx-vals=\'{"equip":"' . $eid . '", "datatype":"'. $datatype .'" , "date": "' .$date . '", "hours":"'. $hours .'", "date100": "' .$date100 . '", "hours100":"'. $hours100 .'" }\' ';                       	    
-                     	    
-  	echo 'hx-swap="beforeend">
-				' .$date. '</button></div><div 	class="table-col">' .$hours. '</div>';
+function call_annual( $id, $name, $date , $hours ){
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+  	echo 'hx-swap="beforeend">' .$date. '</button></div><div 	class="table-col">' .$hours. '</div>';
 }
 
 /*
@@ -298,7 +279,7 @@ function cb_modal_date_hour(){
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
 // 	var_dump($get);
-  	if($_GET['datatype'] == 'annual') {
+  	if($_GET['name'] == 'annual') {
 		echo ('<div id="modal"
     	 			_="on closeModal add .closing
     	    		wait for animationend
@@ -316,83 +297,20 @@ function cb_modal_date_hour(){
     	 		hx-target="#'. $_GET['name'] .'">' ;   
     	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
     	echo 'Annual Date</div>'; 	
-  		echo '<div class="table-col"><input type="date" id="data" name="data" value='. $_GET['old_value'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
+  		echo '<div class="table-col"><input type="date" id="data" name="data" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
  		echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
   		echo '<div class="table-col"><input type="number" id="newhour" name="newhour" value='. $_GET['hours'] .' > </div></div>' ; 
   		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
   		echo '<p><b>Instructions: </b>Enter most recient annual date above. The "Total Hours" is showing hours at last annual +  recorded flight hours since last annual date. This will be saved as the new "Total Hours". Overwrite if necessary. 
   		The 100 hour date will be set to the annual date. The 100 hour counter wil be reset to "0". <u>Click Submit to accept.</u> </p></div>';
     	echo ( ' </form>');  	
-    	echo ('<div class="table-row-shade"><div class="table-col">100 hour</div><div class="table-col">'. $_GET['date100'] .'</div>') 	;
-    	echo ('<div class="table-col">100 hour counter</div><div class="table-col">'. $_GET['hours100'] .'</div></div>') 	;
     	echo('<div class="table-row"><div class="table-col"><button _="on click trigger closeModal">
     	  				Cancel
     				</button>
   				</div></div></div></div></div>
 			</div>');
-		} elseif($_GET['datatype'] == 'last_100_date') {
-			echo ('<div id="modal"
-    		 			_="on closeModal add .closing
-    		    		wait for animationend
-    		    		then remove me">
-  					<div class="modal-underlay"
-    		   			_="on click trigger closeModal">
-  					</div>');
-  			echo ('	<div class="modal-content">');
-//		var_dump($_GET);  
-  			echo ('<h1>Update 100 Hour</h1>');
-   		echo '<form          
-    				hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-    				hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" ,"date": "' .$_GET['date']. '", "hours":"'. $_GET['hours']. '", "date100":"'. $_GET['date100']. ', "hours100":"'. $_GET['hours100']. ' }\' 
-    	 		hx-swap="outerHTML"
-    	 		hx-target="#'. $_GET['datatype'] .'">' ;   
-    	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
-    	echo '100 Hour Date</div>'; 	
-  		echo '<div class="table-col"><input type="date" id="newdate" name="newdate" value='. $_GET['date100'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
- 		echo '<div class="table-row"><div class="table-col">100 Hours</div>';  
-  		echo '<div class="table-col">'. $_GET['hours100'] .' </div></div>' ; 
-  		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
-  		echo '<p><b>Instructions: </b>Enter new 100 hour inspection date above.  
-  					The 100 hour counter wil be reset to "0". <u>Click Submit to accept.</u> </p></div>';
-    	echo ( ' </form>');  	
-    	echo('<div class="table-row"><div class="table-col"><button _="on click trigger closeModal">
-    	  				Cancel
-    				</button>
-  				</div></div></div></div></div>
-			</div>'); 			
-		} elseif($_GET['datatype'] == 'tosthookdate') {
-			echo ('<div id="modal"
-    		 			_="on closeModal add .closing
-    		    		wait for animationend
-    		    		then remove me">
-  					<div class="modal-underlay"
-    		   			_="on click trigger closeModal">
-  					</div>');
-  			echo ('	<div class="modal-content">');
-//		var_dump($_GET);  
-  			echo ('<h1>Update Tost Hook</h1>');
-   		echo '<form          
-    				hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-    				hx-vals=\'{"equip":"' . $_GET['equip'] . '", "datatype":"'. $_GET['datatype'] .'" , "date100":"'. $_GET['date100']. ', "hours100":"'. $_GET['hours100']. ' }\' 
-    	 		hx-swap="outerHTML"
-    	 		hx-target="#'. $_GET['datatype'] .'">' ;   
-    	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
-    	echo 'TOST Date</div>'; 	
-  		echo '<div class="table-col"><input type="date" id="newdata" name="newdata" value='. $_GET['date100'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
- 		echo '<div class="table-row"><div class="table-col">Tost Count</div>';  
-  		echo '<div class="table-col">'. $_GET['hours100'] .' </div></div>' ; 
-  		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
-  		echo '<p><b>Instructions: </b>Enter Tost Hook replacement date above.  
-  					Teh Tost hook counter wil be reset to "0". <u>Click Submit to accept.</u> </p></div>';
-    	echo ( ' </form>');  	
-    	echo('<div class="table-row"><div class="table-col"><button _="on click trigger closeModal">
-    	  				Cancel
-    				</button>
-  				</div></div></div></div></div>
-			</div>'); 			
-		}
+		}  
  wp_die();
-// hx-trigger="keyup[keyCode=13]"      hx-trigger="clilck from:#enter delay:50ms"
 }
 /*
 	Creates the modal form to allow updating a date or aircraft status. 
@@ -462,7 +380,9 @@ function cb_modal(){
  wp_die();
 
 }
-
+/* 
+	modal box for the non aircraft items. 
+*/
 function cb_modal_t(){
 	echo ('<div id="modal"
      			_="on closeModal add .closing
@@ -493,7 +413,7 @@ function cb_modal_t(){
  wp_die();
  }
 /*
-      		hx-target="#A'. $_GET["name"] .'">' ;    
+    hx-target="#A'. $_GET["name"] .'">' ;    
 	Updates the detail pages after modal form is submitted. Also does the grunt work of
 	actuall updating the database. 
 */
@@ -501,26 +421,29 @@ function cb_update() {
 	global $wpdb;
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	   	
 
-	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"],  "old_value"=>$_POST["old_value"] );
-// 	var_dump($update_array);	
-// 	$result = update_record( $update_array );	
-	$result = true ;	
+	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"] );	
+	$result = update_record( $update_array );		
 // 	var_dump($result);
 	if ($result === false ){
 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
-// 		} elseif ( $_POST["name"] == "status"  ){ 	
-// 			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
+		} elseif ( $_POST["name"] == "status"  ){ 	
+			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
 		} else {
 			cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
 		}
  	} else {
- 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], "0");		
+ 		if ( $_POST["name"] == "last_100_date"  ){
+			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result->compitition_id,  $_POST["new_value"] ));	
+			
+		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
+			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result->compitition_id,  $_POST["new_value"] ));		
+			
 // 		} elseif ( $_POST["name"] == "status"  ){ 	
 //     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
 //     		$astats = $wpdb->get_row( $sql, OBJECT);   	
 // 			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
+
 		} else { 	
  			cb_modal_btn( $_POST["id"],  $_POST["name"], $_POST["new_value"] );		
  		}
@@ -529,7 +452,7 @@ function cb_update() {
 }
 
 function cb_update_t() {			
-	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$_POST["new_value"],  "old_value"=>$_POST["old_value"] );
+	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$_POST["new_value"] );
 	$result = update_record( $update_array );	
 	if ($results === false ){
 		cb_modal_btn_t( $_POST["id"], $_POST["name"], " UPDATE AILED" );	
@@ -547,9 +470,6 @@ function update_record( $values ){
 	  $table_status = $wpdb->prefix . "cloud_base_aircraft_status";	   
 	  $record_id = $values['record_id']; 
 
-	  if ($values['name'] != "status" && $values['name'] != "comment" ){
- 	  	$new_date = new DateTime($values['new_value']);
-	  }
 	  if( current_user_can( 'cb_edit_maintenance') ) {// 
 		  if ($record_id != null){	
 	
@@ -566,20 +486,17 @@ function update_record( $values ){
 					switch ($values['name'] ){				
 					case ('annual'):					
 						$item['annual_due_date'] =  $values['new_value'];
-						$item['annual'] = $values['new_value'];
 						$item['last_100_date'] = $values['new_value'];
 						$item['totalhours'] = $values['totalhours'];
 						break;					
 					case ('registration'):			
 						$item['registration_due_date'] =  $values['new_value'];
-						$item['registration'] = $values['new_value'];		
 						break;					
 					case( 'transponder_due'):					
 						$item['transponder_due'] =  $values['new_value'];
 						break;
 					case('last_100_date' ):
 						$item['last_100_date'] = $values['new_value'];
-						$item['last_100_hour'] = null ;
 						break;
 					case( 'status' ):
 						$item['status'] = $values['new_value'];
@@ -593,8 +510,7 @@ function update_record( $values ){
  					default:
  						$item['registration_due_date'] = $values['new_value']; 				
 					}										
-				}						
-				
+				}										
 // 				var_dump($item);		
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 
@@ -626,7 +542,7 @@ function update_record( $values ){
 // 	 				// read it back to get id and send
   		  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `registration` = %s AND valid_until IS NULL" , $registration  );	
  		  			$item = $wpdb->get_row( $sql, OBJECT); 	  			
- 		  			return($item); 		  			
+ 		  			return $item; 		  			
  		  			} else {
  		  				return false;
  		  			} 											
@@ -637,7 +553,40 @@ function update_record( $values ){
  		}
  	}										
 }
+function accumulated_hours( $id, $last_annual ){
+	global $wpdb;
 
+ 	$sql2 = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $iid ."' AND Date >CAST('". $last_annual_date ."' AS Date)";
+	$accumlated_hours  = $wpdb->get_var($sql2); 
+	if(is_null($accumlated_hours)){
+		$accumlated_hours = 0; 
+	}	
+	return $accumlated_hours;
+}
+
+function hours_since_100 ( $id, $date100 ){
+	global $wpdb;
+
+	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
+	$sql  = "SELECT SUM(time) FROM " . $flightSheet . " WHERE Glider='". $id ."' AND Date > CAST('". $date100 ."' AS Date)";
+	$hours_since_100  = $wpdb->get_var($sql); 
+	if(is_null($hours_since_100) ){
+		$hours_since_100 = 0; 
+	}	
+	return (int)$hours_since_100 ;
+}
+
+function tost_hook_count ( $id, $tost_replacement_date ){
+	global $wpdb;
+
+	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";		
+	$sql= "SELECT count(*) FROM " . $flightSheet . " WHERE Glider='". $id ."' AND Date > CAST('". $tost_replacement_date ."' AS Date)";
+	$tost_releases  = $wpdb->get_var($sql); 
+	if(is_null( $tost_releases)){
+		$tost_releases = 0 ; 
+	}
+	return $tost_releases ;
+}
 
 /* 
 	function to ask to logon to view data. 

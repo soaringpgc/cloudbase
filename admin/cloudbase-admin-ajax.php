@@ -87,32 +87,29 @@ function cb_status_detail(){ //
 	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
 	
 	if (!empty($_GET['record_id'])){
- 	$sql = "SELECT *, s.id as id, u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE  s.id = " .$_GET['record_id'] ;				
+ 	$sql = "SELECT *, s.id as id,  s.compitition_id as cid,u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE  s.id = " .$_GET['record_id'] ;				
  	$item = $wpdb->get_row( $sql, OBJECT);	
 	if(is_null($item->totalhours)){
 		$item->totalhours = 0; 
-	}		
- 		
+	}		 		
  		if( current_user_can( 'cb_edit_maintenance') ) {	 		
 			echo('<div class="table-container">');
 			echo ('<div class="table-row-shade"><div class="table-col ">Registation Due</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
 				echo ' <div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
 				echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
 				echo ' <div class="table-col">'.$item->model.'</div>';	
-				modal_button( $item->id, "status", $item->status, $item->astatus );
+				modal_button( $item->aircraft_id, "status", $item->status, $item->astatus );
 				echo '</div>';	
 			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">Last 100 Hr </div><div class="table-col ">Time since 100</div></div>');
-				echo '<div class="table-row">';
-				
-				call_annual( $item->id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
-  				call_100_hour_n(  $item->id, "last_100_date", $item->last_100_date, hours_since_100 ( $item->compitition_id, $item->last_100_date ) );
-
+				echo '<div class="table-row">';				
+				call_annual( $item->cid ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
+  				call_100_hour_n(  $item->aircraft_id, "last_100_date", $item->last_100_date, hours_since_100 ( $item->compitition_id, $item->last_100_date ) );
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 			echo '<div class="table-row">';
- 				cb_modal_btn( $item->id, "registration", $item->registration_due_date );
- 				cb_modal_btn( $item->id, "transponder_due", $item->transponder_due );
-				call_100_hour_n(  $item->id, "tost_replacement_date", $item->tost_replacement_date, tost_hook_count ($item->compitition_id, $item->tost_replacement_date));
+ 				cb_modal_btn( $item->aircraft_id, "registration", $item->registration_due_date );
+ 				cb_modal_btn( $item->aircraft_id, "transponder_due", $item->transponder_due );
+				call_100_hour_n(  $item->aircraft_id, "tost_replacement_date", $item->tost_replacement_date, tost_hook_count ($item->compitition_id, $item->tost_replacement_date));
 			echo '</div></div>';
 			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date </p>';
 			echo ('<br>');
@@ -131,8 +128,8 @@ function cb_status_detail(){ //
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
-				echo ' <div class="table-col">'.'1921-11-02'.'</div>';
-				echo ' <div class="table-col">'.'1313'.'</div></div>';
+				echo ' <div class="table-col">'.$item->tost_replacement_date.'</div>';
+				echo ' <div class="table-col">'.tost_hook_count ($item->compitition_id, $item->tost_replacement_date).'</div></div>';
 // 			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
 // 			echo ' <div >'.$item->comment.'</div></div>';
 			echo '</div></div></div>';
@@ -496,8 +493,9 @@ function update_record( $values ){
 
 	  if( current_user_can( 'cb_edit_maintenance') ) {// 
 		  if ($record_id != null){		
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE id = %s " ,  $record_id );	
-			$item = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$table_name} WHERE id = %s " ,  $record_id ), ARRAY_A );									
+// var_dump($values);
+// die();
+			$item = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,   $record_id  ), ARRAY_A );									
 			if( $wpdb->num_rows > 0 ) {// 		
 							
 				$old_record = $item['id'];  // save old record id

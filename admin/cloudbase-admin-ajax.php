@@ -19,7 +19,7 @@ function cb_status_summary(){
 	
 	$navhours = array("100h" => "100 Hour", "thour" => "Total Hr", "hreg" => "Registration", "tcheck"=>"Transponder", 'thookcount' => "Tost Hook CT" );
 	if( current_user_can( 'read' ) ) {	      
-	     $sql = "SELECT s.id as record_id, s.compitition_id as cid, s.aircraft_id as id, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL AND s.aircraft_type < 3 ORDER BY s.aircraft_type,  s.compitition_id";				
+	     $sql = "SELECT s.compitition_id as cid, s.aircraft_id as id, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL AND s.aircraft_type < 3 ORDER BY s.aircraft_type,  s.compitition_id";				
 		  $items = $wpdb->get_results( $sql, OBJECT);
 		  echo '<div ><div class="hform"> Fleet Status:</div><br>';
 		  $ldate = '0000-00-00';
@@ -30,7 +30,7 @@ function cb_status_summary(){
 		 			continue;
 		 		}
 		 		echo ' <td><div hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_status_detail"
-		 		hx-vals=\'{"equip":"' . $item->id . '", "record_id":"'. $item->record_id .' "}\' 
+		 		hx-vals=\'{ "record_id":"'. $item->id .' "}\' 
 		 		hx-trigger="click" 				
 		 		hx-target="#equipment-detail" 
 		 		class="hform" style="color:'.$item->color.'">'.$item->cid.'</div></td>';
@@ -85,9 +85,11 @@ function cb_status_detail(){ //
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";
 	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
-	
+// var_dump($_GET);
+// die();
 	if (!empty($_GET['record_id'])){
- 	$sql = "SELECT *, s.id as id,  s.compitition_id as cid,u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE  s.id = " .$_GET['record_id'] ;				
+ 	$sql = "SELECT *, s.id as id,  s.compitition_id as cid,u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until IS NULL AND  s.aircraft_id = " .$_GET['record_id'] ;				
+
  	$item = $wpdb->get_row( $sql, OBJECT);	
 	if(is_null($item->totalhours)){
 		$item->totalhours = 0; 

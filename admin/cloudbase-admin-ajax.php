@@ -104,9 +104,6 @@ function cb_status_detail(){ //
 			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">Last 100 Hr </div><div class="table-col ">Time since 100</div></div>');
 				echo '<div class="table-row" id="annualrow" name="annualrow" >';	
 				call_annual_z( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date ) , $item->last_100_date, hours_since_100( $item->compitition_id, $item->last_100_date ) );
-			
-// 				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
-//   				call_100_hour_n(  $item->aircraft_id, "last_100_date", $item->last_100_date, hours_since_100( $item->compitition_id, $item->last_100_date ) );
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 			echo '<div class="table-row">';
@@ -214,9 +211,7 @@ function cb_status_hr_report(){
 */
 function modal_button( $id, $name, $old_val , $val_name ){
     echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
-//  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
-
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
@@ -243,16 +238,16 @@ function cb_modal_btn_t( $id, $name, $old_value ){
 /*
 	Creates the button to bring up the modal form to update annual due dates and hours. 
 */
-function call_annual( $id, $name, $date , $hours ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
-  	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
-}
-function call_annual_s( $id, $name, $date , $hours ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
-  	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
-}
+// function call_annual( $id, $name, $date , $hours ){
+//     echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+//  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+//   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
+// }
+// function call_annual_s( $id, $name, $date , $hours ){
+//     echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+//  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+//   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
+// }
 
 function call_annual_z( $id, $name, $date , $hours, $old_value,  $hours100  ){
     echo '<div class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
@@ -341,7 +336,7 @@ function cb_modal(){
        			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"      
        			hx-vals=\'{"id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
           		hx-trigger="change"
-        		hx-swap="innerHTML"
+        		hx-swap="outerHTML"
         		hx-target="#A'. $_GET["name"] .'">  
         	    <select name="new_value" id="new_value"          		 
          		_="on change trigger closeModal"> ' ;   
@@ -454,10 +449,10 @@ function cb_update() {
 			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ));				
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result["cid"],  $_POST["new_value"] ));					
-// 		} elseif ( $_POST["name"] == "status"  ){ 	
-//     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
-//     		$astats = $wpdb->get_row( $sql, OBJECT);   	
-// 			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
+		} elseif ( $_POST["name"] == "status"  ){ 	
+    		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
+    		$astats = $wpdb->get_row( $sql, OBJECT);   	
+			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
 		} elseif( $_POST["name"] == "annual") {
 			call_annual_z(  $_POST["id"],  $_POST["name"],  $_POST["new_value"] , $_POST["newhour"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );	
 //  			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		

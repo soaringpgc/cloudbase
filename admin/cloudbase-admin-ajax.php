@@ -102,9 +102,11 @@ function cb_status_detail(){ //
 				modal_button( $item->aircraft_id, "status", $item->status, $item->astatus );
 				echo '</div>';	
 			echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</sup></div><div class="table-col ">Last 100 Hr </div><div class="table-col ">Time since 100</div></div>');
-				echo '<div class="table-row">';				
-				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
-  				call_100_hour_n(  $item->aircraft_id, "last_100_date", $item->last_100_date, hours_since_100( $item->compitition_id, $item->last_100_date ) );
+				echo '<div class="table-row" id="annualrow" name="annualrow" >';	
+				call_annual_z( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date ) , $item->last_100_date, hours_since_100( $item->compitition_id, $item->last_100_date ) );
+			
+// 				call_annual( $item->aircraft_id ,"annual", $item->annual_due_date, (int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date )  );
+//   				call_100_hour_n(  $item->aircraft_id, "last_100_date", $item->last_100_date, hours_since_100( $item->compitition_id, $item->last_100_date ) );
 				echo '</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 			echo '<div class="table-row">';
@@ -252,12 +254,14 @@ function call_annual_s( $id, $name, $date , $hours ){
   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
 }
 
-function call_annual_z( $id, $name, $date , $hours ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
+function call_annual_z( $id, $name, $date , $hours, $old_value,  $hours100  ){
+    echo '<div class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
-  	echo 'hx-swap="beforeend">' .$date. '</button></div><div 	class="table-col"  hx-swap-oob="true" >' .$hours. '</div>';
-    echo '<div class="table-col"  hx-swap-oob="true">' .$date. '</div>';
-//     echo '<div class="table-col"  hx-swap-oob="true" >"0"</div>';
+  	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
+    echo '<div id="Alast_100_date" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"last_100_date", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+  	echo 'hx-swap="beforeend">
+				' .$old_value. '</button></div><div id="Blast_100_date"class="table-col"  >' .$hours100. '</div>';
 }
 
 /*
@@ -296,9 +300,10 @@ function cb_modal_date_hour(){
   		echo ('<h1>Update Date & Time</h1>');
   		echo '<form          
     			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
-    			hx-vals=\'{"id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'     
-    	 		hx-swap="outerHTML"
-    	 		hx-target="#A'. $_GET['name'] .'">' ;   
+    			hx-vals=\'{"id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
+// 		echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
+		echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
+		
     	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
     	echo 'Annual Date</div>'; 	
   		echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
@@ -439,25 +444,23 @@ function cb_update() {
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
 			call_100_hour_s(  $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result->compitition_id,  $_POST["new_value"] ));		
 		} elseif( $_POST["name"] == "annual") {
-			 call_annual_s( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
-			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  "UPDATE FAILED" , "-------"  );		
+			 call_annual_z( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
+// 			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  "UPDATE FAILED" , "-------"  );		
 		} else {
 			cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date"  ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ));	
-			
+			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ));				
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result["cid"],  $_POST["new_value"] ));		
-			
+			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result["cid"],  $_POST["new_value"] ));					
 // 		} elseif ( $_POST["name"] == "status"  ){ 	
 //     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
 //     		$astats = $wpdb->get_row( $sql, OBJECT);   	
 // 			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
 		} elseif( $_POST["name"] == "annual") {
-			call_annual_s(  $_POST["id"],  $_POST["name"],  $_POST["new_value"] , $_POST["newhour"] );	
- 			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], "0" );		
+			call_annual_z(  $_POST["id"],  $_POST["name"],  $_POST["new_value"] , $_POST["newhour"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );	
+//  			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		
 		} else { 	
  			cb_modal_btn( $_POST["id"],  $_POST["name"], $_POST["new_value"] );		
  		}
@@ -477,7 +480,6 @@ function cb_update_t() {
 }
 
 function update_record( $values ){	
-
 	  global $wpdb;
 	  $table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	  $table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
@@ -486,14 +488,10 @@ function update_record( $values ){
 
 	  if( current_user_can( 'cb_edit_maintenance') ) {// 
 		  if ($record_id != null){		
-// var_dump($values);
-// die();
 			$item = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$table_name} WHERE `aircraft_id` = %d AND valid_until IS NULL " ,   $record_id  ), ARRAY_A );									
 			if( $wpdb->num_rows > 0 ) {// 		
 			$result["cid"] =  $item['compitition_id'];				
 				$old_record = $item['id'];  // save old record id
-//  				unset($item->id);         // remove old record id, $item will be used to create a new record. 
-//  			var_dump($item['registration_due_date'])	;			
 				if(  $item['aircraft_type'] > 2){
 					$item['registration_due_date'] = $values['new_value']; 
 				} else{ 

@@ -19,104 +19,13 @@
 <div >
 <h2> Equipment Summary </h2>
 
-<div hx-get="<?php echo admin_url('admin-ajax.php'); ?>?action=cb_status_summary" 
+<div hx-get="<?php echo admin_url('admin-ajax.php'); ?>?action=htmx_status_get" 
 	hx-trigger="load delay:500ms"
 	hx-target="this"
 	hx-swap="outerHTML"
-	hx-vals='{"details": " <?php  echo( $status_atts["details"]==='true' ? true  : false ); ?> " }'>                      
-
+	hx-vals='{"function":"cb_status_summary", "details": " <?php  echo( $status_atts["details"]==='true' ? true  : false ); ?> " }'>                      
 </div>
-
-
-<!-- 
-<?php  echo( $status_atts['details']=='true' ? 1 : 0 ); ?> 
- -->
 
 
 <div id="equipment-detail"></div> 
 
-<!-- 
-<?php 	        
-	global $wpdb;
-	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
-	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
-	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
- 	$detail_edit=false;
-	if (isset( $status_atts['details'] )) {
-		$details = $status_atts['details']==='true' ? true : false ;
-		if ($details && current_user_can('cb_edit_maintenance')){
-			$detail_edit='true';
-		}
-	} else {
-		$details = false;
-	}
-
-//	$detail_edit='true';
-	//$details = true ;
-	if (false )	{
-	    	$sql = "SELECT * FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL  ORDER BY  s.aircraft_id" ;				
-			$items = $wpdb->get_results( $sql, OBJECT);	
- 		if ($detail_edit) {
-			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
-			Echo ('<div class="table-row smallerFont"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
-			<div class="table-col ">Annual Due</div><div class="table-col ">Last 100hr</div><div class="table-col ">100Hr Date</div><div class="table-col ">Total Hours</div><div class="table-col ">Registration Due</div><div class="table-col ">Transponder</div>
-			<div class="table-col ">Comments</div><div class="table-col ">last_100_hour</div></div>');
-			foreach($items as $item){	
-	
-			 	echo ' <form class="table-row"  action="'.admin_url("admin-post.php").'" method="post" id="update_aircraft"> <input type="hidden" name=action value="update_aircraft">
-			 		<div class="table-col smallerFont">'.$item->registration.'</div>';
-			 	echo ' <div class="table-col smallerFont">'.$item->compitition_id.'</div>';
-				echo ' <div class="table-col smallerFont">'.$item->model.'</div>';			
-                echo '<div class="table-col smallerFont"> <select name="status" id="status" >' ;
-        			$sql = "SELECT * FROM ". $table_status . " WHERE active = 1 ORDER BY title ASC ";
-        			$astats = $wpdb->get_results( $sql, OBJECT);       	
-        			foreach($astats as $key){ 	
-        				if ($key->id == $item->status) {
-        					echo '<option value=' . $key->id . ' selected>'. $key->title . ' </option>';
-        				} else {
-        					echo '<option value=' . $key->id . '>'. $key->title . '</option>';
-        				}
-            		};
-         		echo ( '</select> </div>');
-				echo ' <div class="table-col smallerFont"><input type="date" id="annual_due_date" name="annual_due_date" value="'.$item->annual_due_date.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="number" step=".1" id="last_100_hour" name="last_100_hour" value="'.$item->last_100_hour.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="date" id="last_100_date" name="last_100_date" value="'.$item->last_100_date.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="number" step=".1" " id="totalhours" name="totalhours" value="'.$item->totalhours.'"></div>';		
-				echo ' <div class="table-col smallerFont"><input type="date" id="registration_due_date" name="registration_due_date" value="'.$item->registration_due_date.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="date" id="transponder_due" name="transponder_due" value="'.$item->transponder_due.'"></div>';
-				echo ' <div class="table-col smallerFont"><input type="text" id="comment" name="comment" value="'.$item->comment.'"> </div>';
-				echo ' <input type="hidden" id="key" name="key" value="'.$item->aircraft_id.'">';
-				echo ' <div class="table-col smallerFont"><button type="submit" value="submit">Update</button></div>';
-				echo '<input type="hidden" name="source_page" value="';
-				echo  the_permalink() . '">';
-			    wp_nonce_field('update_aircraft'); 
-		 		echo(' </form>');
-		 	}
- 		} else {
-			echo('<div class="table-container"><div class="table-heading ">Fleet Status</div>');
-			Echo ('<div class="table-row"><div class="table-col ">Registation</div><div class="table-col ">Compition</div><div class="table-col ">Model</div><div class="table-col ">Status</div>
-			<div class="table-col ">Annual Due</div><div class="table-col ">Registration Due</div><div class="table-col ">Comments</div></div>');
-			foreach($items as $item){
-//			var_dump($item);			 			 	
-			 	echo '<div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
-			 	echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
-				echo ' <div class="table-col">'.$item->model.'</div>';
-				echo ' <div class="table-col">'.$item->status.'</div>';				
-				echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
-				echo ' <div class="table-col">'.$item->last_100_hour.'</div>';
-				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
-				echo ' <div class="table-col">'.$item->totalhours.'</div>';
-				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
-				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
-				echo ' <div class="table-col">'.$item->comment.'</div>';
-		 		echo('</div>');
-		 	}
-		 }
-	} else {		
-
-}
-?>
-
-
- -->
- </div>

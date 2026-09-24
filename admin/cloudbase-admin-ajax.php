@@ -29,8 +29,8 @@ function cb_status_summary(){
 		 		if ($item->cid == "PVT"){
 		 			continue;
 		 		}
-		 		echo ' <td><div hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_status_detail"
-		 		hx-vals=\'{ "record_id":"'. $item->id .' "}\' 
+		 		echo ' <td><div hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"
+		 		hx-vals=\'{"function":"cb_status_detail", "record_id":"'. $item->id .' "}\' 
 		 		hx-trigger="click" 				
 		 		hx-target="#equipment-detail" 
 		 		class="hform" style="color:'.$item->color.'">'.$item->cid.'</div></td>';
@@ -39,15 +39,16 @@ function cb_status_summary(){
 		 	echo ('<nav class="navbar"><ul class="nav-list">') ;
 				foreach($navhours as $key => $value ){					
  					echo('<li class="nav-item" 
- 						hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_status_hr_report"
- 						hx-vals={"hr_report":"' . $key. '"}
- 						hx-trigger="click" 
+ 						hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"');
+ 					echo 'hx-vals=\'{ "function":"cb_status_hr_report", "hr_report":"' . $key. '"}\'  ';  
+ 					echo ('hx-trigger="click" 
  						hx-target="#equipment-detail">' .$value .  '</li>');
 				}
 			echo ('</ul></nav>');	
 		    $sql = "SELECT * FROM {$table_name} WHERE valid_until is NULL AND aircraft_type > 2 ORDER BY registration" ;				
 		  	$items = $wpdb->get_results( $sql, OBJECT);
 		 	echo '<table class"centered"><tr>';
+// 		 	if( false ) {	 
 		 	if( current_user_can( 'edit_users' ) ) {	 
 		 		foreach($items as $item){
 		 			echo '<td>'.  $item->registration .'</td>';
@@ -55,7 +56,8 @@ function cb_status_summary(){
 		 		}	
 		 	} else {
 		 		foreach($items as $item){
-		 			echo '<td">'.$item->registration .'</div><div class="table-col ">'.$item->registration_due_date .'</td>';
+		 			echo '<td >'.$item->registration .'</td>';
+		 			echo '<td >'.$item->registration_due_date .'</td>';
 		 		}	
 		 	}		
 			echo '</tr></table>';	
@@ -112,8 +114,6 @@ function cb_status_detail(){ //
 // 			echo ' </div><div class="table-row-shade"><div class="table-col">Comments:</div>';
 // 			echo ' <div class="table-col-a" >'.$item->comment.'</div></div>';
 			echo '</div>';
-			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date </p>';
-			echo ('<br>');
 		} else if( current_user_can( 'read' ) ) {	
 			echo('<dis class="table-container">');
 			echo ('<div class="table-row-shade"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
@@ -123,9 +123,9 @@ function cb_status_detail(){ //
 				echo ' <div class="table-col">'.$item->astatus.'</div></div>';				
 				echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</div><div class="table-col ">Last 100 Hr</div><div class="table-col ">Time since 100</div></div>');
 			echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
-				echo ' <div class="table-col">'.hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
-				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
 				echo ' <div class="table-col">'.(int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date ) .'</div></div>';
+				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
+				echo ' <div class="table-col">'.hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
@@ -134,9 +134,9 @@ function cb_status_detail(){ //
 // 			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
 // 			echo ' <div >'.$item->comment.'</div></div>';
 			echo '</div></div></div>';
-			echo '<p><sup>*</sup>Toltal hours is hours at last annual + flight hours since annual date. </p>';
-			echo ('<br>');		
 		}
+			echo '<p><sup>*</sup>Total hours is hours at last annual + flight hours since annual date </p>';
+			echo ('<br>');
 	}
 	wp_die();
  }
@@ -156,15 +156,14 @@ function cb_status_hr_report(){
 		switch ($_GET['hr_report'] ){
 			case("100h" ):
 				echo('<div class="table-row"><div class="table-col ">100 Hour</div></div>');
-				echo ('<div class="table-row-shade"><div class="table-col ">Aircraft</div><div class="table-col ">Last 100 Hr</div><div class="table-col ">Last 100 Hr date</div><div class="table-col ">Time remaining</div></div>');
+				echo ('<div class="table-row-shade"><div class="table-col ">Aircraft</div><div class="table-col ">Hours since 100 Hr</div><div class="table-col ">Last 100 Hr date</div></div>');
 				 	foreach($items as $item){
 				 		if ($item->cid == "PVT"){
 		 					continue;
 		 				}
 						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
-						echo ' <div class="table-col">'.(int)$hours_since_100 .'</div>';
-						echo ' <div class="table-col">'.$item->last_100_date.'</div>';		
-						echo ' <div class="table-col">'.'time remaining'.'</div></div>';				 	
+						echo ' <div class="table-col">'.hours_since_100($item->compitition_id, $item->last_100_date ) .'</div>';
+						echo ' <div class="table-col">'.$item->last_100_date.'</div></div>';					 	
 				 	}
 				break;
 			case("thour" ):
@@ -202,7 +201,17 @@ function cb_status_hr_report(){
 				break;
 			case("thookcount" ):
 				echo('<div class="table-row"><div class="table-col ">Tost Hook CT</div></div>');				
-				break;		
+
+				echo ('<div class="table-row-shade"><div class="table-col ">Aircraft</div><div class="table-col ">Flights since Tost replacement</div><div class="table-col ">Last Tost date</div></div>');
+				 	foreach($items as $item){
+				 		if ($item->cid == "PVT"){
+		 					continue;
+		 				}
+						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
+						echo ' <div class="table-col">'.tost_hook_count($item->compitition_id, $item->tost_replacement_date ) .'</div>';
+						echo ' <div class="table-col">'.$item->tost_replacement_date.'</div></div>';					 	
+				 	}
+				break;	
 		}	
  	}
  	wp_die();
@@ -211,25 +220,24 @@ function cb_status_hr_report(){
 	Creates the button to bring up the modal form to update dates. 
 */
 function modal_button( $id, $name, $old_val , $val_name ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
 
 function cb_modal_btn( $id, $name, $old_value ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{ "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\' ';  
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\' ';  
   	echo 'hx-swap="beforeend">' .$old_value. '</button></div>	';
 }
 
 function cb_modal_btn_t( $id, $name, $old_value ){
-    echo '<td id="A' .$name .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_t"  hx-target="body" ';
- 	echo 'hx-vals=\'{ "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\'  ';               // "id": ' .$id. '            	    
+    echo '<td id="A' .$name .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal_t", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\'  ';               // "id": ' .$id. '            	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></td>	';
 }
-
 /*
 	Creates the button to bring up the modal form to update annual due dates and hours. 
 */
@@ -238,8 +246,8 @@ function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  ){
     echo '<div class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal_date_hour"  hx-target="body" ';
  	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
-    echo '<div id="Alast_100_date" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"last_100_date", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+    echo '<div id="Alast_100_date" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"last_100_date", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="Blast_100_date"class="table-col"  >' .$hours100. '</div>';
 }
@@ -249,14 +257,14 @@ function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  ){
 	_s is for update. 
 */
 function call_100_hour_n( $id, $name, $old_value, $hours100 ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  >' .$hours100. '</div>';
 }
 function call_100_hour_s( $id, $name, $old_value, $hours100 ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=cb_modal"  hx-target="body" ';
- 	echo 'hx-vals=\'{"id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+ 	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours100. '</div>';
 }
@@ -583,16 +591,40 @@ function cb_not_authorized() {
     echo 'Please login to view this page.';  
     wp_die();
 }
+
+function cb_htmx_status_get(){
+	switch($_GET['function']){
+		case 'cb_modal':
+			cb_modal();
+			break;
+		case 'cb_modal_t':
+			cb_modal_t();
+			break;		
+		case 'cb_status_hr_report':
+			cb_status_hr_report();
+			break;	
+		case 'cb_status_summary':
+			cb_status_summary();
+			break;	
+		case 'cb_status_detail':
+			cb_status_detail();
+			break;									
+	    default:
+			break;	
+	}
+}
 // ad action to enable wp_ajax endpoints. 
-add_action('wp_ajax_cb_update_number', 'cb_update_number');
+// add_action('wp_ajax_cb_update_number', 'cb_update_number');
 add_action('wp_ajax_cb_update', 'cb_update');
 add_action('wp_ajax_cb_update_t', 'cb_update_t');
-add_action('wp_ajax_cb_status_detail', 'cb_status_detail');
-add_action('wp_ajax_cb_status_summary', 'cb_status_summary');
-add_action('wp_ajax_cb_status_hr_report', 'cb_status_hr_report');
-add_action('wp_ajax_cb_modal', 'cb_modal');
-add_action('wp_ajax_cb_modal_t', 'cb_modal_t');
+// add_action('wp_ajax_cb_status_detail', 'cb_status_detail');
+// add_action('wp_ajax_cb_status_summary', 'cb_status_summary');
+// add_action('wp_ajax_cb_status_hr_report', 'cb_status_hr_report');
+// add_action('wp_ajax_cb_modal', 'cb_modal');
+// add_action('wp_ajax_cb_modal_t', 'cb_modal_t');
 add_action('wp_ajax_cb_modal_date_hour', 'cb_modal_date_hour');
+
+add_action('wp_ajax_htmx_status_get', 'cb_htmx_status_get');
 
 add_action('wp_ajax_nopriv_cb_status_summary', 'cb_not_authorized');
 

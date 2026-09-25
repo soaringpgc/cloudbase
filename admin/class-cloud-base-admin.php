@@ -113,6 +113,7 @@ class Cloud_Base_Admin {
 //		);
 	}
     public function add_settings_page() {
+     if ( current_user_can( 'edit_user') ) {
 		$this->plugin_screen_hook_suffix = add_options_page(	
 			'Cloud Base Settings', 'Cloud Base','read', 'cloud_base',
 			array( $this, 'display_settings_page') );	
@@ -136,6 +137,7 @@ class Cloud_Base_Admin {
      		wp_add_inline_script(  $this->cloud_base, 'const cloud_base_admin_vars = ' . json_encode ( $dateToBePassed  ), 'before'
      		);
       	});			
+		}
 	}
 	/**
 	 * Render the options page for plugin

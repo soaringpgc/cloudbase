@@ -189,11 +189,8 @@ class Cloud_Base_Public {
     }
     public function equipment_status($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-// 		wp_register_script( 'hyperscript', 'https://cdn.jsdelivr.net/npm/hyperscript.org@0.9.93/dist/_hyperscript.min.js');
-
 		wp_enqueue_script(  'htmx_script');	
-		wp_enqueue_script(  'hyperscript');		
-		
+		wp_enqueue_script(  'hyperscript');				
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');

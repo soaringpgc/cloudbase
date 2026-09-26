@@ -52,7 +52,7 @@ function cb_status_summary(){
 		 	if( current_user_can( 'edit_users' ) ) {	 
 		 		foreach($items as $item){
 		 			echo '<td>'.  $item->registration .'</td>';
-		 		 	cb_modal_btn_t( $item->id, $item->registration,  $item->registration_due_date  );
+		 		 	cb_modal_btn_t( $item->aircraft_id, $item->registration,  $item->registration_due_date  );
 		 		}	
 		 	} else {
 		 		foreach($items as $item){
@@ -227,13 +227,15 @@ function modal_button( $id, $name, $old_val , $val_name ){
 }
 
 function cb_modal_btn( $id, $name, $old_value ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\' ';  
   	echo 'hx-swap="beforeend">' .$old_value. '</button></div>	';
 }
 
 function cb_modal_btn_t( $id, $name, $old_value ){
-    echo '<td id="A' .$name .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+    echo '<td id="A' .$cname .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal_t", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\'  ';               // "id": ' .$id. '            	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></td>	';
@@ -257,13 +259,15 @@ function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  ){
 	_s is for update. 
 */
 function call_100_hour_n( $id, $name, $old_value, $hours100 ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  >' .$hours100. '</div>';
 }
 function call_100_hour_s( $id, $name, $old_value, $hours100 ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours100. '</div>';
@@ -284,7 +288,7 @@ function cb_modal_date_hour(){
   		echo ('	<div class="modal-content">'); 
   		echo ('<h1>Update Date & Time</h1>');
   		echo '<form          
-    			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"        		
+    			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put"        		
     			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
 // 		echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
 		echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
@@ -311,7 +315,8 @@ function cb_modal_date_hour(){
 */
 function cb_modal(){
 	global $wpdb;
-	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	   
+	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	  
+	$cname = str_replace(' ', '', $_GET["name"] ); 
 	
 	echo ('<div id="modal"
      			_="on closeModal add .closing
@@ -324,11 +329,11 @@ function cb_modal(){
   	if($_GET['name'] == 'status') {
   		echo('<h2>Select updated status</h2>');
         echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update"      
+       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put"      
        			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
           		hx-trigger="change"
         		hx-swap="outerHTML"
-        		hx-target="#A'. $_GET["name"] .'">  
+        		hx-target="#A'. $cname .'">  
         	    <select name="new_value" id="new_value"          		 
          		_="on change trigger closeModal"> ' ;   
     	$sql = "SELECT * FROM ". $table_status . " WHERE active = 1 ORDER BY title ASC ";
@@ -357,11 +362,11 @@ function cb_modal(){
   			echo ('<h3> Enter last Tost hook replacement date:</h3>');
   		}
   		echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update" 
+       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put" 
        			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
         		hx-trigger="change"
         		hx-swap="outerHTML"
-        		hx-target="#A'. $_GET["name"] .'">' ;        		
+        		hx-target="#A'. $cname .'">' ;        		
   		echo '<input type="date"id="new_value"  name="new_value" value='. $_GET['old_value'] .'
   				_="on change trigger closeModal"> ' ; 
       			echo ( ' </form>');  		
@@ -378,6 +383,7 @@ function cb_modal(){
 	modal box for the non aircraft items. 
 */
 function cb_modal_t(){
+	$cname = str_replace(' ', '', $_GET["name"] ); 
 	echo ('<div id="modal"
      			_="on closeModal add .closing
         		wait for animationend
@@ -390,11 +396,11 @@ function cb_modal_t(){
   		echo ('<h2>'. $_GET['name'] .'</h2>');
   		echo ('<h2>Enter the new Expiration Date:</h2>');
   		echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=cb_update_t" 
+       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put" 
        			hx-vals=\'{ "function":"cb_update_t", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
         		hx-trigger="change"
         		hx-swap="outerHTML"
-        		hx-target="#A'. $_GET["name"] .'">' ;        		
+        		hx-target="#A'. $cname.'">' ;        		
   		echo '<input type="date" id="new_value"  name="new_value" value='. $_GET['old_value'] .'
   				_="on change trigger closeModal"> ' ; 
       			echo ( ' </form>');  		
@@ -630,25 +636,24 @@ function cb_htmx_status_put(){
 			break;
 		case 'cb_update_t':
 			cb_update_t();
-			break;		
-								
+			break;										
 	    default:
 			break;	
 	}
 }
 // ad action to enable wp_ajax endpoints. 
 // add_action('wp_ajax_cb_update_number', 'cb_update_number');
-add_action('wp_ajax_cb_update', 'cb_update');
-add_action('wp_ajax_cb_update_t', 'cb_update_t');
+// add_action('wp_ajax_cb_update', 'cb_update');
+// add_action('wp_ajax_cb_update_t', 'cb_update_t');
 // add_action('wp_ajax_cb_status_detail', 'cb_status_detail');
 // add_action('wp_ajax_cb_status_summary', 'cb_status_summary');
 // add_action('wp_ajax_cb_status_hr_report', 'cb_status_hr_report');
 // add_action('wp_ajax_cb_modal', 'cb_modal');
 // add_action('wp_ajax_cb_modal_t', 'cb_modal_t');
-add_action('wp_ajax_cb_modal_date_hour', 'cb_modal_date_hour');
+// add_action('wp_ajax_cb_modal_date_hour', 'cb_modal_date_hour');
 
 add_action('wp_ajax_htmx_status_get', 'cb_htmx_status_get');
-// add_action('wp_ajax_htmx_status_put', 'cb_htmx_status_put');
+add_action('wp_ajax_htmx_status_put', 'cb_htmx_status_put');
 
 add_action('wp_ajax_nopriv_cb_status_summary', 'cb_not_authorized');
 

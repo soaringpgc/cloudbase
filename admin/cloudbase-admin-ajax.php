@@ -85,9 +85,8 @@ function cb_status_detail(){ //
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";
-	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
-// var_dump($_GET);
-// die();
+// 	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
+
 	if (!empty($_GET['record_id'])){
  	$sql = "SELECT *, s.id as id,  s.compitition_id as cid,u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until IS NULL AND  s.aircraft_id = " .$_GET['record_id'] ;				
  	$item = $wpdb->get_row( $sql, OBJECT);	
@@ -220,7 +219,8 @@ function cb_status_hr_report(){
 	Creates the button to bring up the modal form to update dates. 
 */
 function modal_button( $id, $name, $old_val , $val_name ){
-    echo '<div id="A' .$name .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
@@ -293,13 +293,12 @@ function cb_modal_date_hour(){
 // 		echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
 		echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
 		
-    	echo '<div class="table-container"</div><div class="table-row"><div class="table-col">';
-    	echo 'Annual Date</div>'; 	
+    	echo '<div class="table-container"</div><div class="table-row"><div class="table-col"> Last Annual Date</div>'; 	
   		echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
  		echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
   		echo '<div class="table-col"><input type="number" id="newhour" name="newhour" value='. $_GET['hours'] .' > </div></div>' ; 
   		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
-  		echo '<p><b>Instructions: </b>Enter most recient annual date above. The "Total Hours" is showing hours at last annual +  recorded flight hours since last annual date. This will be saved as the new "Total Hours". Overwrite if necessary. 
+  		echo '<p><b>Instructions: </b>Enter most recient annual date above. The "Total Hours" is showing hours at last annual +  recorded flight hours since last annual date. This will be saved as the new "Total Hours". Change if necessary. 
   		The 100 hour date will be set to the annual date. The 100 hour counter wil be reset to "0". The next annual due date will be calculated. 
   		<u>Click Submit to accept.</u> </p></div>';
     	echo ( ' </form>');  	
@@ -519,9 +518,8 @@ function update_record( $values ){
 					}										
 				}	
 				
-// 				var_dump($item);
-// 	$result["success"] = true ;	
-// 	return $result; 		
+	$result["success"] = true ;	
+	return $result; 		
 		
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 
@@ -546,7 +544,6 @@ function update_record( $values ){
 				array('%d', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%f', '%f', '%s', '%s', '%s', '%s', '%s', '%s' ));													
 			    // create new record with valid_until = null. 				
 				if ( $update_result != false ) {
-// 					$new_id = $wpdb->insert_id;  // get id of new record. 
 //  		  		    // mark existing recored as nolonger valid by setting the valin_until to now.
   		       		if($wpdb->update($table_name, array('valid_until' => current_time( 'mysql' )), array( 'id' =>  $old_record) ) != false ){
   		       			$result["success"] = true ;
@@ -641,7 +638,7 @@ function cb_htmx_status_put(){
 			break;	
 	}
 }
-// ad action to enable wp_ajax endpoints. 
+// add action to enable wp_ajax endpoints. 
 // add_action('wp_ajax_cb_update_number', 'cb_update_number');
 // add_action('wp_ajax_cb_update', 'cb_update');
 // add_action('wp_ajax_cb_update_t', 'cb_update_t');

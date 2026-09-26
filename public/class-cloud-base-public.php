@@ -76,7 +76,6 @@ class Cloud_Base_Public {
 //  		wp_register_style( 'datepicker',  plugins_url('/cloudbase/includes/datepicker.css'));
  		wp_register_style( 'cloudbase_public_css',  plugins_url('/cloudbase/public/css/cloud-base-public.css'));
  		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css' );
-//  		wp_enqueue_style( 'datepicker');
 		wp_enqueue_style( 'cloudbase_public_css');
     	wp_enqueue_style( 'jquery-ui' );  
 	}
@@ -102,6 +101,8 @@ class Cloud_Base_Public {
 	    wp_register_script( 'validation',  plugins_url('/cloudbase/includes/backbone-validation-min.js'));	    
      	wp_register_script( 'templates',  plugins_url('/cloudbase/public/js/templates.js'));
      	wp_register_script( 'squawk_scripts',  plugins_url('/cloudbase/public/js/squawk_scripts.js'));
+     	wp_register_script( 'htmx_script',  plugins_url('/includes/htmx.min.js', dirname(__FILE__)));
+     	wp_register_script( 'hyperscript', 'https://cdn.jsdelivr.net/npm/hyperscript.org@0.9.93/dist/_hyperscript.min.js');
 // // needed for display_flights shortcode. 
 //  		$dateToBePassed = array(
 //  			'root' => esc_url_raw( rest_url() ),
@@ -114,7 +115,7 @@ class Cloud_Base_Public {
 	}
 	public function register_shortcodes() 
 	{
-// 		add_shortcode( 'display_flights', array( $this, 'display_flights' ) );
+		add_shortcode( 'equipment_status', array( $this, 'equipment_status' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
@@ -182,6 +183,18 @@ class Cloud_Base_Public {
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
 			include ('partials/cloud-base-aircraft_status.php');
+		$output = ob_get_contents();
+		ob_end_clean();
+		return $output;
+    }
+   public function equipment_status($atts = array() ){
+		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+		wp_enqueue_script(  'htmx_script');	
+		wp_enqueue_script(  'hyperscript');				
+		ob_start();
+	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
+			include ('partials/cloudbase-equipment-status.php');
 		$output = ob_get_contents();
 		ob_end_clean();
 		return $output;

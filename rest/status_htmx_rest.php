@@ -33,31 +33,32 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
             'callback' => array( $this, 'cloud_base_status_htmx_get_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
          	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
-//           array(
-//       	    'methods'  => \WP_REST_Server::CREATABLE,
-//              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-//             'callback' => array( $this, 'cloud_base_status_htmx_post_callback' ),
-//             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-//          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
+          array(
+      	    'methods'  => \WP_REST_Server::CREATABLE,
+             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
+            'callback' => array( $this, 'cloud_base_status_htmx_post_callback' ),
+            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
       	  array(	
       	    'methods'  => \WP_REST_Server::EDITABLE,  
             // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_status_htmx_put_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_htmx_admin_access_check' ),),
-//           array (
-//          	 'methods'  => \WP_REST_Server::DELETABLE,
-//               // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-//              'callback' => array( $this, 'cloud_base_status_delete_callback' ),
-//              // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-//          	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-//       	  )
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
+          array (
+         	 'methods'  => \WP_REST_Server::DELETABLE,
+              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
+             'callback' => array( $this, 'cloud_base_status_htmx_delete_callback' ),
+             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
+      	  )
       	)
       );	              
     }
 
 // call back for status:	
 	public function cloud_base_status_htmx_get_callback( \WP_REST_Request $request) {
+	return new \WP_REST_Response ('<h1>hi</h1>');
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 		$item_id =  $request['id'];
@@ -79,36 +80,36 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 		}	
 		return new \WP_Error( 'rest_api_sad', esc_html__( 'Something went horribly wrong.', 'my-text-domain' ), array( 'status' => 500 ) );
 	}	
-// 	public function cloud_base_status_htmx_post_callback( \WP_REST_Request $request) {
-// 	    global $wpdb;
-// 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-// 
-// 		if (!empty($request['title'])){
-// 			$title = $request['title'];
-// 		} else {
-// //			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
-// 			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
-// 		}
-// 		if (!empty($request['color'])){
-// 			$color = $request['color'];
-// 		} else {
-// 			$color = '000000';
-// 		}
-// 		
-//  	// check it does not exist. 
-//  		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-// 		$items = $wpdb->get_row( $sql, OBJECT);		 			
-// 		if( $wpdb->num_rows > 0 ) {
-// 
-// 			return rest_ensure_response( 'Already exists id= '. $items->id );
-//  		 } else {
-// 			$wpdb->insert($table_name, array('title'=>$title, 'color'=>$color ), array ('%s', '%s' ));
-//  			// read it back to get id and send
-//  			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-// 			$items = $wpdb->get_row( $sql, OBJECT);				
-// 			return new \WP_REST_Response ($items);						
-// 	    }
-// 	}
+	public function cloud_base_status_htmx_post_callback( \WP_REST_Request $request) {
+	    global $wpdb;
+		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
+
+		if (!empty($request['title'])){
+			$title = $request['title'];
+		} else {
+//			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
+			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
+		}
+		if (!empty($request['color'])){
+			$color = $request['color'];
+		} else {
+			$color = '000000';
+		}
+		
+ 	// check it does not exist. 
+ 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+		$items = $wpdb->get_row( $sql, OBJECT);		 			
+		if( $wpdb->num_rows > 0 ) {
+
+			return rest_ensure_response( 'Already exists id= '. $items->id );
+ 		 } else {
+			$wpdb->insert($table_name, array('title'=>$title, 'color'=>$color ), array ('%s', '%s' ));
+ 			// read it back to get id and send
+ 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
+			$items = $wpdb->get_row( $sql, OBJECT);				
+			return new \WP_REST_Response ($items);						
+	    }
+	}
 	public function cloud_base_status_htmx_put_callback( \WP_REST_Request $request) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
@@ -143,7 +144,7 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
  			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or status missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
  		}
 	}
-// 	public function cloud_base_status_htmx_delete_callback( \WP_REST_Request $request) {
+	public function cloud_base_status_htmx_delete_callback( \WP_REST_Request $request) {
 // 		global $wpdb;
 // 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 // 		$item_id =  $request['id'];
@@ -172,7 +173,7 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 // //			 wp_send_json_error(array('message'=>'Invalid request no id..'), 404 );	
 // 			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
 // 		}
-// 	}	
+	}	
 }
 	
 

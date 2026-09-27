@@ -417,11 +417,12 @@ function cb_modal_t(){
 */
 function cb_update() {	
 	global $wpdb;
-	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	   	
+	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	  
+	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
 
 	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"] );	
 	if(isset($_POST["newhour"])){
-		$update_array["newhour"]= $_POST["newhour"];
+		$update_array["newhour"]= filter_var($_POST["newhour"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 	}
 
 	$result = update_record( $update_array );		
@@ -432,7 +433,7 @@ function cb_update() {
 		} elseif ( $_POST["name"] == "status"  ){ 	
 			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"],"UPDATE FAILED" , tost_hook_count ( $result["cid"],  $_POST["new_value"] ));		
+			call_100_hour_s(  $_POST["id"],  $_POST["name"],"UPDATE FAILED" , tost_hook_count ( $result["cid"],  $new_date));		
 		} elseif( $_POST["name"] == "annual") {
 			 cb_annual( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
 // 			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  "UPDATE FAILED" , "-------"  );		
@@ -441,30 +442,32 @@ function cb_update() {
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date"  ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ));				
+			call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , hours_since_100 ( $result["cid"],  $new_date));				
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $_POST["new_value"], tost_hook_count ( $result["cid"],  $_POST["new_value"] ));					
+			call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , tost_hook_count ( $result["cid"],  $new_date ));					
 		} elseif ( $_POST["name"] == "status"  ){ 	
-    		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $_POST["new_value"]."' ";
+    		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $new_date ."' ";
     		$astats = $wpdb->get_row( $sql, OBJECT);   	
-			modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], $astats->title);	
+			modal_button( $_POST["id"],  $_POST["name"],$new_date , $astats->title);	
 		} elseif( $_POST["name"] == "annual") {
-			cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );	
+			cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $new_date , hours_since_100 ( $result["cid"],  $new_date ) );	
 //  			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		
 		} else { 	
- 			cb_modal_btn( $_POST["id"],  $_POST["name"], $_POST["new_value"] );		
+ 			cb_modal_btn( $_POST["id"],  $_POST["name"], $new_date  );		
  		}
  	}
     wp_die();
 }
 
 function cb_update_t() {	 
-	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$_POST["new_value"] );
+	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
+
+	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$new_date );
 	$result = update_record( $update_array );	
 	if ($results === false ){
 		cb_modal_btn_t( $result, $_POST["name"], " UPDATE FAILED" );	
  	} else {
- 		cb_modal_btn_t( $result, $_POST["name"], $_POST["new_value"] );	 	
+ 		cb_modal_btn_t( $result, $_POST["name"], $new_date  );	 	
  	}
      wp_die();
 }
@@ -518,8 +521,8 @@ function update_record( $values ){
 					}										
 				}	
 				
-	$result["success"] = true ;	
-	return $result; 		
+// 	$result["success"] = true ;	
+// 	return $result; 		
 		
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 

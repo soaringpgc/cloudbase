@@ -116,7 +116,7 @@
  	echo('</select><br>');
  	echo ('<div ><label for="squawk_comment" style="vertical-align:top" class="squawk_text" >Squawk: </label>');
  	echo('<textarea id="squawk_problem" name="squawk_problem" rows="6", cols="65"></textarea><div>');
-	echo('<input type="submit" value="Submit Squawk" id="submit" name="submit" >'); 
+	echo('<input type="submit" value="Submit Squawk" id="submit" name="submit" onclick-"this.disabled=`disabled`"/>'); 
 	
     wp_nonce_field( 'submit_field_duty' ); 
 	echo('</form></div> ');	

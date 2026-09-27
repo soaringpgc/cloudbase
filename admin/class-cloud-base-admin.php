@@ -98,6 +98,7 @@ class Cloud_Base_Admin {
 		 * class.
 		 */
         wp_register_script( 'cloudbase_admin_templates',  plugins_url('/cloudbase/admin/js/templates.js'));
+        
 //
 // Moved below, so scripts now only load when the setting page is loaded. 
 
@@ -112,6 +113,7 @@ class Cloud_Base_Admin {
 // 			)
 //		);
 	}
+
     public function add_settings_page() {
      if ( current_user_can( 'edit_user') ) {
 		$this->plugin_screen_hook_suffix = add_options_page(	

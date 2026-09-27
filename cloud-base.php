@@ -16,7 +16,7 @@
  * Plugin Name:       Cloud Base
  * Plugin URI:        http://ifrstudent.com/cloud-base/
  * Description:       This Base module for Cloud Base - A module for managing Glider Club aircraft and flights.
- * Version:           1.2.1
+ * Version:           1.2.2
  * Author:            Philadelphia Glider Council 
  * Author URI:        http://example.com/
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'CLOUD_BASE_VERSION', '1.2.1' );
+define( 'CLOUD_BASE_VERSION', '1.2.2' );
 
 /**
  * REST interface version.
@@ -65,6 +65,13 @@ function deactivate_cloud_base() {
 
 register_activation_hook( __FILE__, 'activate_cloud_base' );
 register_deactivation_hook( __FILE__, 'deactivate_cloud_base' );
+
+/**
+ * include and activate admin ajax functions 
+ *
+*/
+
+include_once(plugin_dir_path(__FILE__) . 'admin/cloudbase-admin-ajax.php');
 
 /**
  * The core plugin class that is used to define internationalization,

@@ -11,7 +11,7 @@
  * @package    Cloud_Base
  * @subpackage Cloud_Base/public/partials
  */
- 	    
+ 	
 ?>
 
 
@@ -26,9 +26,13 @@
 	hx-vals='{"function":"cb_status_summary", "details": " <?php  echo( $status_atts["details"]==='true' ? true  : false ); ?> " }'>                      
 </div>
 
-<div hx-get="<?php echo admin_url('admin-ajax.php'); ?>?action=htmx_status_get" 
-	hx-vals='{ "function":"cb_status_hr_report", "hr_report":"100h"}' 
-	hx-trigger="load delay:1000ms" hx-target="#equipment-detail">
-</div>
+<?php 
+if ($status_atts["hpage"] != "")   { 
+	echo '<div hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"
+		  hx-vals=\'{  "function":"cb_status_hr_report",  "hr_report":"'. $status_atts["hpage"] .'"}\' 
+		  hx-trigger="load delay:1000ms" hx-target="#equipment-detail"			
+		  hx-target="#equipment-detail"</div>';
+}
+?>
 
 <div id="equipment-detail"></div> 

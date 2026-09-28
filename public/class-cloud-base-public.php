@@ -193,7 +193,7 @@ class Cloud_Base_Public {
 		wp_enqueue_script(  'hyperscript');				
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
+	    	$status_atts = shortcode_atts(array( 'details'=>"false", 'hpage'=>""), $atts, 'display_status');
 			include ('partials/cloudbase-equipment-status.php');
 		$output = ob_get_contents();
 		ob_end_clean();

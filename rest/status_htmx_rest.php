@@ -18,6 +18,8 @@
  * @package    Cloud_Base
  * @subpackage Cloud_Base/public
  * @author     Your Name <email@example.com>
+ 
+          	'permission_callback' => array($this, 'cloud_base_members_access_check' ),), 
  */
 class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 
@@ -58,6 +60,12 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 
 // call back for status:	
 	public function cloud_base_status_htmx_get_callback( \WP_REST_Request $request) {
+// 		header('Content-Type: text/html')
+		echo ('<h1>hi</h1>');
+		
+		exit();
+	
+	
 	return new \WP_REST_Response ('<h1>hi</h1>');
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	

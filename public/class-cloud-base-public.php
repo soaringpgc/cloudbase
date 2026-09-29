@@ -190,7 +190,14 @@ class Cloud_Base_Public {
    public function equipment_status($atts = array() ){
 		$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 		wp_enqueue_script(  'htmx_script');	
-		wp_enqueue_script(  'hyperscript');				
+		wp_enqueue_script(  'hyperscript');		
+		
+		$dateToBePassed = array(
+ 				'nonce' => wp_create_nonce( 'wp_rest' )
+     		);   	
+     		wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' .  $dateToBePassed  , 'before'
+
+     		);				
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');

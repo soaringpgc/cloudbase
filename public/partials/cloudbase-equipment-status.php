@@ -24,12 +24,15 @@
  -->
  
  <div hx-get="<?php echo esc_url_raw( rest_url() ); ?>cloud_base/v1/equiupment_status?action=htmx_status_get" 
+ 	hx-headers='{"X-WP-Nonce":" <?php echo( $dateToBePassed["nonce"]) ?>  "}'
 	hx-trigger="load delay:500ms"
 	hx-target="this"
 	hx-swap="outerHTML"
 	hx-vals='{"function":"cb_status_summary", "details": " <?php  echo( $status_atts["details"]==='true' ? true  : false ); ?> " }'>                      
 </div>
-
+<?
+// 	var_dump($dateToBePassed["nonce"]);
+?>
 
 <div id="equipment-detail"></div> 
 <!-- 
@@ -38,7 +41,7 @@
 	hx-trigger="load delay:1000ms" hx-target="#equipment-detail"></div>
 
 
-
+	xhr.setRequestHeader ('X-WP-Nonce', signoff_public_vars.nonce );   
 
 'restURL' => esc_url_raw( rest_url() ),
  -->

@@ -23,7 +23,7 @@
 <div hx-get="<?php echo admin_url('admin-ajax.php'); ?>?action=htmx_status_get" 
  -->
  
- <div hx-get="<?php echo esc_url_raw( rest_url() ); ?>cloud_base/v1/equiupment_status?action=htmx_status_get" 
+ <div hx-get="<?php echo esc_url_raw( rest_url() ); ?>cloud_base/v1/equiupment_status" 
  	hx-headers='{"X-WP-Nonce":" <?php echo( $dateToBePassed["nonce"]) ?>  "}'
 	hx-trigger="load delay:500ms"
 	hx-target="this"

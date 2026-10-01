@@ -215,9 +215,6 @@ class Cloud_Base {
 		$plugin_rest = new Cloud_Base_Types($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
 
-		$plugin_rest = new Cloud_Base_htmx_Status($this->get_cloud_base(), $this->get_version());
-		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
-
 		$plugin_rest = new Cloud_Base_Squawks($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
 
@@ -230,7 +227,7 @@ class Cloud_Base {
 		$plugin_rest = new Cloud_Base_Status($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
 
-		$plugin_rest = new Cloud_Base_Status($this->get_cloud_base(), $this->get_version());
+		$plugin_rest = new Cloud_Base_sign_off_types($this->get_cloud_base(), $this->get_version());
 		$this->loader->add_action( 'rest_api_init', $plugin_rest, 'register_routes');
 		
 		$plugin_rest = new Cloud_Base_Sign_offs($this->get_cloud_base(), $this->get_version());

@@ -25,7 +25,7 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 
 	public function register_routes() {
 	   
-     $this->resource_path = '/equiupment_status' . '(?:/(?P<id>[\d]+))?';
+     $this->resource_path = '/equipment_status' . '(?:/(?P<id>[\d]+))?';
     
      register_rest_route( $this->namespace, $this->resource_path, 
         array(	
@@ -60,11 +60,14 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 
 // call back for status:	
 	public function cloud_base_status_htmx_get_callback( \WP_REST_Request $request) {
-
-// echo '<pre> ' , var_dump($request) , '</pre>'; 
+// 
+echo '<pre> ' , var_dump($_GET) , '</pre>'; 
 	
 	
 		switch($request['function']){
+		case 'status':
+			$this->cb_modal();
+			break;
 		case 'cb_modal':
 			$this->cb_modal();
 			break;
@@ -92,10 +95,11 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 
 // echo '<pre> ' , var_dump($request['function']) , '</pre>'; 
 		exit();
-	
-
+// 	
+// 
 	}	
 	public function cloud_base_status_htmx_post_callback( \WP_REST_Request $request) {
+		
 	    global $wpdb;
 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
 
@@ -221,7 +225,7 @@ public function cb_status_summary($request){
 		 		if ($item->cid == "PVT"){
 		 			continue;
 		 		}  
-		 		echo ' <td><div hx-get="' .  esc_url_raw( rest_url() ). 'cloud_base/v1/equiupment_status"
+		 		echo ' <td><div hx-get="' .  esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"
 		 		hx-vals=\'{"function":"cb_status_detail", "record_id":"'. $item->id .' "}\'
 				hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'
 		 		hx-trigger="click" 				
@@ -232,7 +236,7 @@ public function cb_status_summary($request){
 		 	echo ('<nav class="navbar"><ul class="nav-list">') ;
 				foreach($navhours as $key => $value ){					
  					echo('<li class="nav-item" 
- 						hx-get="' .   esc_url_raw( rest_url() ). 'cloud_base/v1/equiupment_status"');
+ 						hx-get="' .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"');
  					echo 'hx-vals=\'{ "function":"cb_status_hr_report", "hr_report":"' . $key. '"}\'   
  						  hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'';
  
@@ -411,30 +415,35 @@ public function cb_status_hr_report(){
 				break;	
 		}	
  	}
- 	wp_die();
 }
 /*
 	Creates the button to bring up the modal form to update dates. 
 */
 public function modal_button( $id, $name, $old_val , $val_name ){
 	$cname = str_replace(' ', '', $name);
-    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'" ,"value": "' .$old_val . '", "val_name":"'. $val_name .'", "' .$gname.'":"'. $val .'"  }\' ';  
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
   	echo 'hx-swap="beforeend">
 				' .$val_name. '</button></div>	';
 }
 
 public function cb_modal_btn( $id, $name, $old_value ){
 	$cname = str_replace(' ', '', $name);
-    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\' ';  
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
   	echo 'hx-swap="beforeend">' .$old_value. '</button></div>	';
 }
 
 public function cb_modal_btn_t( $id, $name, $old_value ){
 	$cname = str_replace(' ', '', $name);
-    echo '<td id="A' .$cname .  '"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<td id="A' .$cname .  '"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal_t", "id":"'. $id .'", "name":"'. $name .'", "old_value":"'. $old_value .'" }\'  ';               // "id": ' .$id. '            	    
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></td>	';
 }
@@ -443,10 +452,13 @@ public function cb_modal_btn_t( $id, $name, $old_value ){
 */
 
 public function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  ){
-    echo '<div class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$cname = str_replace(' ', '', $name);
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<div class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{ "function":"cb_modal_date_hour", "id":"' . $id . '", "name":"'. $name .'" , "date": "' .$date . '", "hours":"'. $hours .'" }\' ';                       	                       	    
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\''); 
   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
-    echo '<div id="Alast_100_date" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+    echo '<div id="Alast_100_date" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"last_100_date", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="Blast_100_date"class="table-col"  >' .$hours100. '</div>';
@@ -458,15 +470,19 @@ public function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  )
 */
 public function call_100_hour_n( $id, $name, $old_value, $hours100 ){
 	$cname = str_replace(' ', '', $name);
-    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  >' .$hours100. '</div>';
 }
 public function call_100_hour_s( $id, $name, $old_value, $hours100 ){
 	$cname = str_replace(' ', '', $name);
-    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_get"  hx-target="body" ';
+	$nonce = wp_create_nonce( 'wp_rest' );
+    echo '<div id="A' .$cname .  '" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"'. $name .'", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="B' .$name .  '"class="table-col"  hx-swap-oob="true" >' .$hours100. '</div>';
 }
@@ -476,36 +492,37 @@ public function call_100_hour_s( $id, $name, $old_value, $hours100 ){
 */
 public function cb_modal_date_hour(){
 // 	var_dump($get);
-		echo ('<div id="modal"
-    	 			_="on closeModal add .closing
-    	    		wait for animationend
-    	    		then remove me">
-  				<div class="modal-underlay"
-    	   			_="on click trigger closeModal">
-  				</div>');
-  		echo ('	<div class="modal-content">'); 
-  		echo ('<h1>Update Date & Time</h1>');
-  		echo '<form          
-    			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put"        		
-    			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
-// 		echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
-		echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
-		
-    	echo '<div class="table-container"</div><div class="table-row"><div class="table-col"> Last Annual Date</div>'; 	
-  		echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
- 		echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
-  		echo '<div class="table-col"><input type="number" id="newhour" name="newhour" value='. $_GET['hours'] .' > </div></div>' ; 
-  		echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
-  		echo '<p><b>Instructions: </b>Enter most recient annual date above. The "Total Hours" is showing hours at last annual +  recorded flight hours since last annual date. This will be saved as the new "Total Hours". Change if necessary. 
-  		The 100 hour date will be set to the annual date. The 100 hour counter wil be reset to "0". The next annual due date will be calculated. 
-  		<u>Click Submit to accept.</u> </p></div>';
-    	echo ( ' </form>');  	
-    	echo('<div class="table-row"><div class="table-col"><button _="on click trigger closeModal">
-    	  				Cancel
-    				</button>
-  				</div></div></div></div></div>
+	$nonce = wp_create_nonce( 'wp_rest' );
+	echo ('<div id="modal"
+     			_="on closeModal add .closing
+        		wait for animationend
+        		then remove me">
+  			<div class="modal-underlay"
+       			_="on click trigger closeModal">
+  			</div>');
+  	echo ('	<div class="modal-content">'); 
+  	echo ('<h1>Update Date & Time</h1>');
+  	echo '<form          
+    		hx-post="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"       		
+    		hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
+// 	echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
+	echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
+	
+    echo '<div class="table-container"</div><div class="table-row"><div class="table-col"> Last Annual Date</div>'; 	
+  	echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
+ 	echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
+  	echo '<div class="table-col"><input type="number" id="newhour" name="newhour" value='. $_GET['hours'] .' > </div></div>' ; 
+  	echo '<div class="table-row"><div class="table-col"><input type="submit" value="Submit" _="on click trigger closeModal"/></div><div class="table-col">';
+  	echo '<p><b>Instructions: </b>Enter most recient annual date above. The "Total Hours" is showing hours at last annual +  recorded flight hours since last annual date. This will be saved as the new "Total Hours". Change if necessary. 
+  	The 100 hour date will be set to the annual date. The 100 hour counter wil be reset to "0". The next annual due date will be calculated. 
+  	<u>Click Submit to accept.</u> </p></div>';
+    echo ( ' </form>');  	
+    echo('<div class="table-row"><div class="table-col"><button _="on click trigger closeModal">
+      				Cancel
+    			</button>
+  			</div></div></div></div></div>
 			</div>'); 
- wp_die();
 }
 /*
 	Creates the modal form to allow updating a date or aircraft status. 
@@ -514,6 +531,7 @@ public function cb_modal(){
 	global $wpdb;
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	  
 	$cname = str_replace(' ', '', $_GET["name"] ); 
+	$nonce = wp_create_nonce( 'wp_rest' );
 	
 	echo ('<div id="modal"
      			_="on closeModal add .closing
@@ -526,8 +544,9 @@ public function cb_modal(){
   	if($_GET['name'] == 'status') {
   		echo('<h2>Select updated status</h2>');
         echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put"      
+       			hx-post="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"     
        			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
+ 				hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'
           		hx-trigger="change"
         		hx-swap="outerHTML"
         		hx-target="#A'. $cname .'">  
@@ -559,8 +578,9 @@ public function cb_modal(){
   			echo ('<h3> Enter last Tost hook replacement date:</h3>');
   		}
   		echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put" 
+       			hx-post="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"
        			hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
+				hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'
         		hx-trigger="change"
         		hx-swap="outerHTML"
         		hx-target="#A'. $cname .'">' ;        		
@@ -573,7 +593,6 @@ public function cb_modal(){
     			</button>
   			</div>
 		</div>');
- wp_die();
 
 }
 /* 
@@ -581,6 +600,7 @@ public function cb_modal(){
 */
 public function cb_modal_t(){
 	$cname = str_replace(' ', '', $_GET["name"] ); 
+	$nonce = wp_create_nonce( 'wp_rest' );
 	echo ('<div id="modal"
      			_="on closeModal add .closing
         		wait for animationend
@@ -593,8 +613,9 @@ public function cb_modal_t(){
   		echo ('<h2>'. $_GET['name'] .'</h2>');
   		echo ('<h2>Enter the new Expiration Date:</h2>');
   		echo '<form          
-       			hx-post="' .  admin_url('admin-ajax.php')  . '?action=htmx_status_put" 
+       			hx-post="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"
        			hx-vals=\'{ "function":"cb_update_t", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'        		
+				hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'
         		hx-trigger="change"
         		hx-swap="outerHTML"
         		hx-target="#A'. $cname.'">' ;        		
@@ -607,7 +628,6 @@ public function cb_modal_t(){
     			</button>
   			</div>
 		</div>');
- wp_die();
  }
 /*
 	Updates the detail pages after modal form is submitted. Also does the grunt work of
@@ -654,7 +674,6 @@ public function cb_update() {
  			cb_modal_btn( $_POST["id"],  $_POST["name"], $new_date  );		
  		}
  	}
-    wp_die();
 }
 
 public function cb_update_t() {	 
@@ -667,7 +686,6 @@ public function cb_update_t() {
  	} else {
  		cb_modal_btn_t( $result, $_POST["name"], $new_date  );	 	
  	}
-     wp_die();
 }
 
 public function update_record( $values ){	
@@ -800,7 +818,6 @@ public function tost_hook_count ( $id, $tost_replacement_date ){
 public function cb_not_authorized() {
 
     echo 'Please login to view this page.';  
-    wp_die();
 }
 
 public function cb_htmx_status_get(){

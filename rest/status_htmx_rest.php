@@ -40,20 +40,7 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_status_htmx_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	
-      	  array(	
-      	    'methods'  => \WP_REST_Server::EDITABLE,  
-            // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-            'callback' => array( $this, 'cloud_base_status_htmx_put_callback' ),
-            // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),
-          array (
-         	 'methods'  => \WP_REST_Server::DELETABLE,
-              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
-             'callback' => array( $this, 'cloud_base_status_htmx_delete_callback' ),
-             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),        	 		      		
-      	  )
+         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	      	
       	)
       );	              
     }
@@ -61,9 +48,8 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 // call back for status:	
 	public function cloud_base_status_htmx_get_callback( \WP_REST_Request $request) {
 // 
-echo '<pre> ' , var_dump($_GET) , '</pre>'; 
-	
-	
+// echo '<pre> ' , var_dump($_GET) , '</pre>'; 
+		
 		switch($request['function']){
 		case 'status':
 			$this->cb_modal();
@@ -99,100 +85,22 @@ echo '<pre> ' , var_dump($_GET) , '</pre>';
 // 
 	}	
 	public function cloud_base_status_htmx_post_callback( \WP_REST_Request $request) {
-		
-	    global $wpdb;
-		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-
-		if (!empty($request['title'])){
-			$title = $request['title'];
-		} else {
-//			wp_send_json_error(array('message'=>'Missing Status..'), 400 );	
-			return new \WP_Error( 'rest_api_sad', esc_html__( 'missing Status.', 'my-text-domain' ), array( 'status' => 400 ) );
+ 
+ 
+ 		switch($_POST['function']){
+			case 'cb_update':
+				$this->cb_update();
+				break;
+// 			case 'cb_update_t':
+// 				$this->cb_update_t();
+// 				break;										
+		    default:
+				break;	
 		}
-		if (!empty($request['color'])){
-			$color = $request['color'];
-		} else {
-			$color = '000000';
-		}
-		
- 	// check it does not exist. 
- 		$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-		$items = $wpdb->get_row( $sql, OBJECT);		 			
-		if( $wpdb->num_rows > 0 ) {
-
-			return rest_ensure_response( 'Already exists id= '. $items->id );
- 		 } else {
-			$wpdb->insert($table_name, array('title'=>$title, 'color'=>$color ), array ('%s', '%s' ));
- 			// read it back to get id and send
- 			$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-			$items = $wpdb->get_row( $sql, OBJECT);				
-			return new \WP_REST_Response ($items);						
-	    }
+ 
+ 
+ 
 	}
-	public function cloud_base_status_htmx_put_callback( \WP_REST_Request $request) {
-		global $wpdb;
-		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-		$item_id =  $request['id'];
- 	
- 		if ($item_id  != null ) {	
-			$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d  " ,  $item_id) ;	
-			$items = $wpdb->get_row( $sql, OBJECT);
-				$item_id =  $request['id'];
-				if (!empty($request['title'])){
-					$title = $request['title'];
-				} else {
-					$title =$items->title;
-				}
-				if (!empty($request['color'])){
-					$color = $request['color'];
-				} else {
-					$color =$items->color;
-				}				
-			if( $wpdb->num_rows > 0 ) {
-				$sql =  $wpdb->prepare("UPDATE {$table_name} SET `title`= %s, `color`= %s WHERE `id` = %d " , $title, $color, $item_id  );
-//				return new \WP_REST_Response($sql);
-				$wpdb->query($sql);
-				// read it back to get id and send
- 				$sql =  $wpdb->prepare("SELECT * FROM {$table_name} WHERE `title` = %s " , $title  );	
-				$items = $wpdb->get_row( $sql, OBJECT);				
-				return new \WP_REST_Response ($items);		
-			} else{
-			 	return new \WP_Error( 'not_found', esc_html__( 'Not found. ', 'my-text-domain' ), array( 'status' => 400 ) );			
- 			}
- 		} else {
- 			return new \WP_Error( 'nothing changed', esc_html__( 'id and/or status missing. ', 'my-text-domain' ), array( 'status' => 400 ) );
- 		}
-	}
-	public function cloud_base_status_htmx_delete_callback( \WP_REST_Request $request) {
-// 		global $wpdb;
-// 		$table_name = $wpdb->prefix . "cloud_base_aircraft_status";	
-// 		$item_id =  $request['id'];
-// 		
-// 		if ($item_id  != null){	
-// 			$table_aircraft = $wpdb->prefix . "cloud_base_aircraft";	
-// 			$sql =  $wpdb->prepare("SELECT * FROM  $table_aircraft  WHERE `aircraft_status` = %d " ,  $item_id );	
-// 			$aircraft = $wpdb->get_row( $sql, OBJECT);
-// 			if( $wpdb->num_rows == 0 ) {	
-// 				$sql = $wpdb->prepare("SELECT * FROM {$table_name} WHERE `id` = %d " ,  $item_id );	
-// 				$items = $wpdb->get_row( $sql, OBJECT);
-// 				if( $wpdb->num_rows > 0 ) {
-// 			        $sql =  $wpdb->prepare("DELETE from {$table_name}  WHERE `id` = %d " , $items->id );
-// 					$wpdb->query($sql);
-// 					return new \WP_REST_Response ($items);
-// //					wp_send_json(array('message'=>'Deleted', 'id'=>$item_id), 202 );
-// 				} else{
-// // 					wp_send_json_error(array('message'=>'Record Not found.'), 404 );	
-//   				    return new \WP_Error( 'not found', esc_html__( 'Record Not found.', 'my-text-domain' ), array( 'status' => 404 ) );
-// 				}	
-// 			} else {
-// //			 	wp_send_json_error(array('message'=>'Record found but is inuse, cannot delete.'), 404 );	
-// 				 return new \WP_Error( 'in Use', esc_html__( 'Record found but is inuse, cannot delete.', 'my-text-domain' ), array( 'status' => 404 ) );
-// 			}	
-// 		} else{
-// //			 wp_send_json_error(array('message'=>'Invalid request no id..'), 404 );	
-// 			return new \WP_Error( 'invalid', esc_html__( 'invalid request no id.', 'my-text-domain' ), array( 'status' => 404 ) );
-// 		}
-	}	
 	
 /* This file takes the AJAX request and processes it to build the results elements. 
 	 */
@@ -634,6 +542,7 @@ public function cb_modal_t(){
 	actuall updating the database. 
 */
 public function cb_update() {	
+	
 	global $wpdb;
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	  
 	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
@@ -643,35 +552,36 @@ public function cb_update() {
 		$update_array["newhour"]= filter_var($_POST["newhour"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 	}
 
-	$result = update_record( $update_array );		
+
+	$result = $this->update_record( $update_array );		
 
 	if ($result["success"] === false ){
 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
+			$this->call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
 		} elseif ( $_POST["name"] == "status"  ){ 	
-			 modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
+			 $this->modal_button( $_POST["id"],  $_POST["name"], $_POST["new_value"], "UPDATE FAILED");	
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s(  $_POST["id"],  $_POST["name"],"UPDATE FAILED" , tost_hook_count ( $result["cid"],  $new_date));		
+			$this->call_100_hour_s(  $_POST["id"],  $_POST["name"],"UPDATE FAILED" , tost_hook_count ( $result["cid"],  $new_date));		
 		} elseif( $_POST["name"] == "annual") {
-			 cb_annual( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
+			 $this->cb_annual( $_POST["id"],  $_POST["name"], "UPDATE FAILED" , "-------" );	
 // 			 call_100_hour_s(  $_POST["id"], "last_100_date" ,  "UPDATE FAILED" , "-------"  );		
 		} else {
-			cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
+			$this->cb_modal_btn( $_POST["id"],  $_POST["name"], "UPDATE FAILED" );	
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date"  ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , hours_since_100 ( $result["cid"],  $new_date));				
+			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , hours_since_100 ( $result["cid"],  $new_date));				
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , tost_hook_count ( $result["cid"],  $new_date ));					
+			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , tost_hook_count ( $result["cid"],  $new_date ));					
 		} elseif ( $_POST["name"] == "status"  ){ 	
     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $new_date ."' ";
     		$astats = $wpdb->get_row( $sql, OBJECT);   	
-			modal_button( $_POST["id"],  $_POST["name"],$new_date , $astats->title);	
+			$this->modal_button( $_POST["id"],  $_POST["name"],$new_date , $astats->title);	
 		} elseif( $_POST["name"] == "annual") {
-			cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $new_date , hours_since_100 ( $result["cid"],  $new_date ) );	
+			$this->cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $new_date , hours_since_100 ( $result["cid"],  $new_date ) );	
 //  			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		
 		} else { 	
- 			cb_modal_btn( $_POST["id"],  $_POST["name"], $new_date  );		
+ 			$this->cb_modal_btn( $_POST["id"],  $_POST["name"], $new_date  );		
  		}
  	}
 }
@@ -680,11 +590,11 @@ public function cb_update_t() {
 	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
 
 	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$new_date );
-	$result = update_record( $update_array );	
+	$result = $this->update_record( $update_array );	
 	if ($results === false ){
-		cb_modal_btn_t( $result, $_POST["name"], " UPDATE FAILED" );	
+		$this->cb_modal_btn_t( $result, $_POST["name"], " UPDATE FAILED" );	
  	} else {
- 		cb_modal_btn_t( $result, $_POST["name"], $new_date  );	 	
+ 		$this->cb_modal_btn_t( $result, $_POST["name"], $new_date  );	 	
  	}
 }
 

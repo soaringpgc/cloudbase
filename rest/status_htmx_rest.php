@@ -91,14 +91,12 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
 			case 'cb_update':
 				$this->cb_update();
 				break;
-// 			case 'cb_update_t':
-// 				$this->cb_update_t();
-// 				break;										
+			case 'cb_update_t':
+				$this->cb_update_t();
+				break;										
 		    default:
 				break;	
 		}
- 
- 
  
 	}
 	
@@ -146,8 +144,7 @@ public function cb_status_summary($request){
  					echo('<li class="nav-item" 
  						hx-get="' .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"');
  					echo 'hx-vals=\'{ "function":"cb_status_hr_report", "hr_report":"' . $key. '"}\'   
- 						  hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'';
- 
+ 						  hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\''; 
  					echo ('hx-trigger="click" 
  						hx-target="#equipment-detail">' .$value .  '</li>');
 				}
@@ -232,14 +229,14 @@ public function cb_status_detail($request){ //
 				echo ' <div class="table-col">'.$item->astatus.'</div></div>';				
 				echo ('<div class="table-row-shade"><div class="table-col ">Annual Due</div><div class="table-col ">Total Hours<sup>*</div><div class="table-col ">Last 100 Hr</div><div class="table-col ">Time since 100</div></div>');
 			echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
-				echo ' <div class="table-col">'.(int)$item->totalhours + accumulated_hours( $item->compitition_id,  $item->last_annual_date ) .'</div></div>';
+				echo ' <div class="table-col">'.(int)$item->totalhours + $this->accumulated_hours( $item->compitition_id,  $item->last_annual_date ) .'</div></div>';
 				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
-				echo ' <div class="table-col">'.hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
+				echo ' <div class="table-col">'.$item->hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.$item->tost_replacement_date.'</div>';
-				echo ' <div class="table-col">'.tost_hook_count ($item->compitition_id, $item->tost_replacement_date).'</div></div>';
+				echo ' <div class="table-col">'. $this->tost_hook_count ($item->compitition_id, $item->tost_replacement_date).'</div></div>';
 // 			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
 // 			echo ' <div >'.$item->comment.'</div></div>';
 			echo '</div></div></div>';
@@ -271,7 +268,7 @@ public function cb_status_hr_report(){
 		 					continue;
 		 				}
 						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
-						echo ' <div class="table-col">'.hours_since_100($item->compitition_id, $item->last_100_date ) .'</div>';
+						echo ' <div class="table-col">'. $this->hours_since_100($item->compitition_id, $item->last_100_date ) .'</div>';
 						echo ' <div class="table-col">'.$item->last_100_date.'</div></div>';					 	
 				 	}
 				break;
@@ -317,7 +314,7 @@ public function cb_status_hr_report(){
 		 					continue;
 		 				}
 						echo ' <div class="table-row"><div class="table-col">'.$item->compitition_id.'</div>';  
-						echo ' <div class="table-col">'.tost_hook_count($item->compitition_id, $item->tost_replacement_date ) .'</div>';
+						echo ' <div class="table-col">'.$this->tost_hook_count($item->compitition_id, $item->tost_replacement_date ) .'</div>';
 						echo ' <div class="table-col">'.$item->tost_replacement_date.'</div></div>';					 	
 				 	}
 				break;	
@@ -368,6 +365,7 @@ public function cb_annual( $id, $name, $date , $hours, $old_value,  $hours100  )
   	echo 'hx-swap="beforeend">' .$date. '</button></div><div id="B' .$name .  '"class="table-col">' .$hours. '</div>';
     echo '<div id="Alast_100_date" class="table-col"><button hx-get="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status" hx-target="body" ';
  	echo 'hx-vals=\'{"function":"cb_modal", "id":"' . $id . '", "name":"last_100_date", "old_value": "' .$old_value . '", "hours100":"'. $hours100 .'" }\' ';                       	                         	    
+	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\''); 
   	echo 'hx-swap="beforeend">
 				' .$old_value. '</button></div><div id="Blast_100_date"class="table-col"  >' .$hours100. '</div>';
 }
@@ -415,8 +413,7 @@ public function cb_modal_date_hour(){
     		hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
 	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
 // 	echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
-	echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   
-	
+	echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   	
     echo '<div class="table-container"</div><div class="table-row"><div class="table-col"> Last Annual Date</div>'; 	
   	echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
  	echo '<div class="table-row"><div class="table-col">Total Hours</div>';  
@@ -501,7 +498,6 @@ public function cb_modal(){
     			</button>
   			</div>
 		</div>');
-
 }
 /* 
 	modal box for the non aircraft items. 
@@ -545,13 +541,12 @@ public function cb_update() {
 	
 	global $wpdb;
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	  
-	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
+	$new_date = $date = preg_replace("([^0-9/-])", "", $_POST['new_value']); 	
 
 	$update_array = array( "record_id"=> $_POST["id"], "name"=> $_POST["name"], "new_value"=>$_POST["new_value"] );	
 	if(isset($_POST["newhour"])){
 		$update_array["newhour"]= filter_var($_POST["newhour"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 	}
-
 
 	$result = $this->update_record( $update_array );		
 
@@ -570,16 +565,16 @@ public function cb_update() {
 		}
  	} else {
  		if ( $_POST["name"] == "last_100_date"  ){
-			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , hours_since_100 ( $result["cid"],  $new_date));				
+			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , $this->hours_since_100 ( $result["cid"],  $new_date));				
 		 } elseif (  $_POST["name"] == "tost_replacement_date" ){
-			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , tost_hook_count ( $result["cid"],  $new_date ));					
+			$this->call_100_hour_s( $_POST["id"],  $_POST["name"], $new_date , $this->tost_hook_count ( $result["cid"],  $new_date ));					
 		} elseif ( $_POST["name"] == "status"  ){ 	
     		$sql = "SELECT title FROM ". $table_status . " WHERE id = '". $new_date ."' ";
     		$astats = $wpdb->get_row( $sql, OBJECT);   	
 			$this->modal_button( $_POST["id"],  $_POST["name"],$new_date , $astats->title);	
 		} elseif( $_POST["name"] == "annual") {
-			$this->cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $new_date , hours_since_100 ( $result["cid"],  $new_date ) );	
-//  			call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		
+			$this->cb_annual(  $_POST["id"],  $_POST["name"],  $result["annual_due_date"] , $_POST["newhour"], $new_date , $this->hours_since_100 ( $result["cid"],  $new_date ) );	
+//  			$this->call_100_hour_s(  $_POST["id"], "last_100_date" ,  $_POST["new_value"], hours_since_100 ( $result["cid"],  $_POST["new_value"] ) );		
 		} else { 	
  			$this->cb_modal_btn( $_POST["id"],  $_POST["name"], $new_date  );		
  		}
@@ -587,7 +582,7 @@ public function cb_update() {
 }
 
 public function cb_update_t() {	 
-	$new_date = $date = preg_replace("([^0-9/])", "", $_POST['new_value']); 	
+	$new_date = $date = preg_replace("([^0-9/-])", "", $_POST['new_value']); 	
 
 	$update_array = array( "record_id"=>$_POST["id"],  "name"=> $_POST["name"] , "new_value"=>$new_date );
 	$result = $this->update_record( $update_array );	
@@ -725,62 +720,47 @@ public function tost_hook_count ( $id, $tost_replacement_date ){
 /* 
 	function to ask to logon to view data. 
 */
-public function cb_not_authorized() {
-
-    echo 'Please login to view this page.';  
-}
-
-public function cb_htmx_status_get(){
-	switch($_GET['function']){
-		case 'cb_modal':
-			cb_modal();
-			break;
-		case 'cb_modal_t':
-			cb_modal_t();
-			break;		
-		case 'cb_status_hr_report':
-			cb_status_hr_report();
-			break;	
-		case 'cb_status_summary':
-			cb_status_summary();
-			break;	
-		case 'cb_status_detail':
-			cb_status_detail();
-			break;									
-		case 'cb_modal_date_hour':
-			cb_modal_date_hour();
-			break;	
-	    default:
-			break;	
-	}
-}
-public function cb_htmx_status_put(){
-	switch($_POST['function']){
-		case 'cb_update':
-			cb_update();
-			break;
-		case 'cb_update_t':
-			cb_update_t();
-			break;										
-	    default:
-			break;	
-	}
-}
-// add action to enable wp_ajax endpoints. 
-// add_action('wp_ajax_cb_update_number', 'cb_update_number');
-// add_action('wp_ajax_cb_update', 'cb_update');
-// add_action('wp_ajax_cb_update_t', 'cb_update_t');
-// add_action('wp_ajax_cb_status_detail', 'cb_status_detail');
-// add_action('wp_ajax_cb_status_summary', 'cb_status_summary');
-// add_action('wp_ajax_cb_status_hr_report', 'cb_status_hr_report');
-// add_action('wp_ajax_cb_modal', 'cb_modal');
-// add_action('wp_ajax_cb_modal_t', 'cb_modal_t');
-// add_action('wp_ajax_cb_modal_date_hour', 'cb_modal_date_hour');
-
-// add_action('wp_ajax_htmx_status_get', 'cb_htmx_status_get');
-// add_action('wp_ajax_htmx_status_put', 'cb_htmx_status_put');
+// public function cb_not_authorized() {
 // 
-// add_action('wp_ajax_nopriv_cb_status_summary', 'cb_not_authorized');
+//     echo 'Please login to view this page.';  
+// }
+// 
+// public function cb_htmx_status_get(){
+// 	switch($_GET['function']){
+// 		case 'cb_modal':
+// 			cb_modal();
+// 			break;
+// 		case 'cb_modal_t':
+// 			cb_modal_t();
+// 			break;		
+// 		case 'cb_status_hr_report':
+// 			cb_status_hr_report();
+// 			break;	
+// 		case 'cb_status_summary':
+// 			cb_status_summary();
+// 			break;	
+// 		case 'cb_status_detail':
+// 			cb_status_detail();
+// 			break;									
+// 		case 'cb_modal_date_hour':
+// 			cb_modal_date_hour();
+// 			break;	
+// 	    default:
+// 			break;	
+// 	}
+// }
+// public function cb_htmx_status_put(){
+// 	switch($_POST['function']){
+// 		case 'cb_update':
+// 			cb_update();
+// 			break;
+// 		case 'cb_update_t':
+// 			cb_update_t();
+// 			break;										
+// 	    default:
+// 			break;	
+// 	}
+// }
 
 
 

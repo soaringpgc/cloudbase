@@ -229,7 +229,7 @@ public function cb_status_detail($request){ //
 			echo ' <div class="table-col">'.$item->annual_due_date.'</div>';
 				echo ' <div class="table-col">'.(int)$item->totalhours + $this->accumulated_hours( $item->compitition_id,  $item->last_annual_date ) .'</div></div>';
 				echo ' <div class="table-col">'.$item->last_100_date.'</div>';
-				echo ' <div class="table-col">'.$item->hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
+				echo ' <div class="table-col">'.$this->hours_since_100( $item->compitition_id, $item->last_100_date ).'</div>';
 			echo ('<div class="table-row-shade"><div class="table-col ">Registration Due</div><div class="table-col ">Transponder Due</div><div class="table-col ">Tost Hook date</div><div class="table-col ">Tost Hook Count</div></div>');
 				echo ' <div class="table-col">'.$item->registration_due_date.'</div>';
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';

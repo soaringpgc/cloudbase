@@ -243,10 +243,21 @@ public function cb_status_detail($request){ //
 // 			echo ' <div >'.$item->comment.'</div></div>';
 			echo '</div></div></div>';
 		}
-// 			echo '<p><sup>*</sup>Total hours is hours at last annual + flight hours since annual date </p>';
-// 			echo ('<br>');
-	}
+		  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment, a.captian_id, s.user_id  FROM {$table_name} a INNER JOIN {$table_squawk} s 
+  		on a.aircraft_id=s.equipment  WHERE a.valid_until is NULL AND s.status != 'COMPLETED' AND a.compitition_id = '" .$item->compitition_id. "' ORDER BY s.date_entered DESC "; 
 
+		$squawks = $wpdb->get_results($sql); 
+		if ( count($squawks) == 0 ){
+			echo '<p> No outstanding Squawks. </p> ';
+		} else {
+			echo('<dis class="table-container">');
+			echo ('<div class="table-row-shade"><div class="table-col" style="width:80%"">Squawk</div><div class="table-col ">Status</div></div>');
+			foreach($squawks as $squawk ){
+				echo  '<div class="table-row"><div class="table-col">'.$squawk->text.'</div><div class="table-col">'.$squawk->status.'</div> </div> ';  				
+			}		
+			echo '</div></div>';
+		}
+	}
  }
 /*
 	produces the vertical report of due dates by menu item. 

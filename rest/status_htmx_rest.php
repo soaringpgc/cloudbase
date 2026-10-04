@@ -192,8 +192,6 @@ public function cb_status_detail($request){ //
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";
 	$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
 
-// 	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
-
 	if (!empty($_GET['record_id'])){
  	$sql = "SELECT *, s.id as id,  s.compitition_id as cid,u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until IS NULL AND  s.aircraft_id = " .$_GET['record_id'] ;				
  	$item = $wpdb->get_row( $sql, OBJECT);	
@@ -219,8 +217,6 @@ public function cb_status_detail($request){ //
  				$this->cb_modal_btn( $item->aircraft_id, "registration", $item->registration_due_date );
  				$this->cb_modal_btn( $item->aircraft_id, "transponder_due", $item->transponder_due );
 				$this->call_100_hour_n(  $item->aircraft_id, "tost_replacement_date", $item->tost_replacement_date, $this->tost_hook_count ($item->compitition_id, $item->tost_replacement_date));
-// 			echo ' </div><div class="table-row-shade"><div class="table-col">Comments:</div>';
-// 			echo ' <div class="table-col-a" >'.$item->comment.'</div></div>';
 			echo '</div>';
 		} else if( current_user_can( 'read' ) ) {	
 			echo('<dis class="table-container">');
@@ -239,8 +235,6 @@ public function cb_status_detail($request){ //
 				echo ' <div class="table-col">'.$item->transponder_due.'</div>';
 				echo ' <div class="table-col">'.$item->tost_replacement_date.'</div>';
 				echo ' <div class="table-col">'. $this->tost_hook_count ($item->compitition_id, $item->tost_replacement_date).'</div></div>';
-// 			echo ' <div class="table-row-shade"><div class="table-col">Comments:</div>';
-// 			echo ' <div >'.$item->comment.'</div></div>';
 			echo '</div></div></div>';
 		}
 		  	$sql = "Select s.squawk_id, a.registration, a.compitition_id, s.date_entered, s.status, s.text, s.comment, a.captian_id, s.user_id  FROM {$table_name} a INNER JOIN {$table_squawk} s 
@@ -268,10 +262,8 @@ public function cb_status_hr_report(){
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";	
  	if (!empty($_GET['hr_report'])){
-//  	$sql = "SELECT *, u.title as astatus FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL"  ;				
 	    $sql = "SELECT *, s.compitition_id as cid, s.aircraft_id as id, u.title as status, u.color as color, s.date_updated as udate FROM {$table_name} s inner join {$table_type} t on s.aircraft_type=t.id inner join {$table_status} u on s.status=u.id  WHERE s.valid_until is NULL AND s.aircraft_type < 3" ;				
  		$items =$wpdb->get_results( $sql, OBJECT);	
-//  		var_dump($items);	
 		switch ($_GET['hr_report'] ){
 			case("100h" ):
 				echo('<div class="table-row"><div class="table-col ">100 Hour</div></div>');
@@ -410,7 +402,6 @@ public function call_100_hour_s( $id, $name, $old_value, $hours100 ){
 	be updated.
 */
 public function cb_modal_date_hour(){
-// 	var_dump($get);
 	$nonce = wp_create_nonce( 'wp_rest' );
 	echo ('<div id="modal"
      			_="on closeModal add .closing
@@ -425,7 +416,6 @@ public function cb_modal_date_hour(){
     		hx-post="'  .   esc_url_raw( rest_url() ). 'cloud_base/v1/equipment_status"       		
     		hx-vals=\'{"function":"cb_update", "id":"' . $_GET['id'] . '", "name":"'. $_GET['name'] .'" ,"old_value": "' .$_GET['old_value']. '" }\'  ';   
 	echo ('hx-headers=\'{"X-WP-Nonce":"' . $nonce . ' "}\'');
-// 	echo 'hx-swap="outerHTML"	hx-target="#A'. $_GET['name'] .'">' ;   
 	echo 'hx-swap="innerHTML"	hx-target="#annualrow">' ;   	
     echo '<div class="table-container"</div><div class="table-row"><div class="table-col"> Last Annual Date</div>'; 	
   	echo '<div class="table-col"><input type="date" id="new_value" name="new_value" value='. $_GET['date'] .' /> </div><div class="table-col"><div class="table-col"></div></div></div>' ; 
@@ -560,9 +550,7 @@ public function cb_update() {
 	if(isset($_POST["newhour"])){
 		$update_array["newhour"]= filter_var($_POST["newhour"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 	}
-
 	$result = $this->update_record( $update_array );		
-
 	if ($result["success"] === false ){
 		if ( $_POST["name"] == "last_100_date" ||   $_POST["name"] == "tost_replacement_date" ){
 			$this->call_100_hour_s(  $_POST["id"],  $_POST["name"], "UPDATE FAILED", $item->tost_releases);
@@ -653,11 +641,9 @@ public function update_record( $values ){
  					default:
  						$item['registration_due_date'] = $values['new_value']; 				
 					}										
-				}	
-// var_dump($item);				
+				}					
 // 	$result["success"] = true ;	
-// 	return $result; 		
-		
+// 	return $result; 				
 		    $update_result = $wpdb->insert($table_name, array(
 		    	'aircraft_id' => $item['aircraft_id'] , 
 		    	'registration' =>  $item['registration'], 

@@ -199,7 +199,6 @@ class Cloud_Base_Public {
      	wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' .  $dateToBePassed  , 'before');				
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-// 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
 			include ('partials/cloudbase-equipment-status.php');
 		$output = ob_get_contents();
 		ob_end_clean();
@@ -273,9 +272,6 @@ class Cloud_Base_Public {
 	 * take off/landing time and tow alitude. 
 	 */
      public function update_aircraft(){ 
-//       exit(var_dump($_POST));
-//     	global $wpdb;
-//	 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	   
 	// NTFS - Note to Future Self  we are accessing the REST interface here.  
      	$retrieved_nonce = $_POST['_wpnonce'];
 		if (!wp_verify_nonce($retrieved_nonce, 'update_aircraft' ) ) die( 'Failed security check' );

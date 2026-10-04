@@ -190,6 +190,8 @@ public function cb_status_detail($request){ //
 	$table_name = $wpdb->prefix . "cloud_base_aircraft";	
 	$table_type = $wpdb->prefix . "cloud_base_aircraft_type";	
 	$table_status = $wpdb->prefix . "cloud_base_aircraft_status";
+	$table_squawk = $wpdb->prefix . 'cloud_base_squawk';
+
 // 	$flightSheet = $wpdb->prefix . "cloud_base_pdp_flight_sheet";	
 
 	if (!empty($_GET['record_id'])){
@@ -200,7 +202,7 @@ public function cb_status_detail($request){ //
 	}		 	 		
  		if( current_user_can( 'cb_edit_maintenance') ) {	 		
 			echo('<div class="table-container">');
-			echo ('<div class="table-row-shade"><div class="table-col ">Registation Due</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
+			echo ('<div class="table-row-shade"><div class="table-col ">Registation</div><div class="table-col ">Comp ID</div><div class="table-col ">Model</div><div class="table-col ">Status</div></div>');
 				echo ' <div class="table-row"> <div class="table-col">'.$item->registration.'</div>';
 				echo ' <div class="table-col">'.$item->compitition_id.'</div>';  
 				echo ' <div class="table-col">'.$item->model.'</div>';	
@@ -641,7 +643,7 @@ public function update_record( $values ){
  						$item['registration_due_date'] = $values['new_value']; 				
 					}										
 				}	
-				
+// var_dump($item);				
 // 	$result["success"] = true ;	
 // 	return $result; 		
 		
@@ -716,52 +718,6 @@ public function tost_hook_count ( $id, $tost_replacement_date ){
 	}
 	return $tost_releases ;
 }
-
-/* 
-	function to ask to logon to view data. 
-*/
-// public function cb_not_authorized() {
-// 
-//     echo 'Please login to view this page.';  
-// }
-// 
-// public function cb_htmx_status_get(){
-// 	switch($_GET['function']){
-// 		case 'cb_modal':
-// 			cb_modal();
-// 			break;
-// 		case 'cb_modal_t':
-// 			cb_modal_t();
-// 			break;		
-// 		case 'cb_status_hr_report':
-// 			cb_status_hr_report();
-// 			break;	
-// 		case 'cb_status_summary':
-// 			cb_status_summary();
-// 			break;	
-// 		case 'cb_status_detail':
-// 			cb_status_detail();
-// 			break;									
-// 		case 'cb_modal_date_hour':
-// 			cb_modal_date_hour();
-// 			break;	
-// 	    default:
-// 			break;	
-// 	}
-// }
-// public function cb_htmx_status_put(){
-// 	switch($_POST['function']){
-// 		case 'cb_update':
-// 			cb_update();
-// 			break;
-// 		case 'cb_update_t':
-// 			cb_update_t();
-// 			break;										
-// 	    default:
-// 			break;	
-// 	}
-// }
-
 
 
 }

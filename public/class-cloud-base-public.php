@@ -115,7 +115,7 @@ class Cloud_Base_Public {
 	}
 	public function register_shortcodes() 
 	{
- 		add_shortcode( 'equipment_status', array( $this, 'equipment_status' ) );
+		add_shortcode( 'equipment_status', array( $this, 'equipment_status' ) );
 		add_shortcode( 'display_status', array( $this, 'display_status' ) );
 		add_shortcode( 'no_fly', array( $this, 'cb_no_fly' ) );
 		add_shortcode( 'display_signoffs', array( $this, 'display_signoffs' ) );
@@ -194,6 +194,12 @@ class Cloud_Base_Public {
 		ob_start();
 	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
 	    	$status_atts = shortcode_atts(array( 'details'=>"false", 'hpage'=>""), $atts, 'display_status');
+
+		$dateToBePassed = array('nonce' => wp_create_nonce( 'wp_rest' ));   	
+     	wp_add_inline_script(  $this->cloud_base, 'const signoff_public_vars = ' .  $dateToBePassed  , 'before');				
+		ob_start();
+	    	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+// 	    	$status_atts = shortcode_atts(array( 'details'=>"false"), $atts, 'display_status');
 			include ('partials/cloudbase-equipment-status.php');
 		$output = ob_get_contents();
 		ob_end_clean();

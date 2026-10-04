@@ -338,6 +338,7 @@ include 'flights-rest.php';
 include 'flight_types-rest.php';
 include 'pilots-rest.php';
 include 'status-rest.php';
+include 'status_htmx_rest.php';
 include 'sign_offs-rest.php';
 include 'sign_offs_types-rest.php';
 include 'event_types_rest.php';

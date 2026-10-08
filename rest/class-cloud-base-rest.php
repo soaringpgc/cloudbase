@@ -148,7 +148,15 @@ class Cloud_Base_Rest extends WP_REST_Controller {
     	// This is a white-listing approach. You could alternatively do this via black-listing, by returning false here and changing the permissions check.	
     	return new \WP_Error( 'rest_forbidden', esc_html__( 'Sorry, you are not authorized for that.', 'my-text-domain' ), array( 'status' => 401 ) );
 	}   
-	   
+	public function cloud_base_maintenance_editor_access_check(){
+	// put your access requirements here. You might have different requirements for each access method. 
+	// can read, at least a subscriber. 
+    	if (  current_user_can( 'cb_edit_maintenance' )) {
+    	    return true;
+     	}
+    	// This is a white-listing approach. You could alternatively do this via black-listing, by returning false here and changing the permissions check.	
+    	return new \WP_Error( 'rest_forbidden', esc_html__( 'Sorry, you are not authorized for that.', 'my-text-domain' ), array( 'status' => 401 ) );
+	}  	   
 	public function cloud_base_private_access_check(){
 	return true;
 	// put your access requirements here. You might have different requirements for each

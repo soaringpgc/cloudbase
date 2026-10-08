@@ -40,7 +40,7 @@ class Cloud_Base_htmx_Status extends Cloud_Base_Rest {
              // Here we register our callback. The callback is fired when this endpoint is matched by the WP_REST_Server class.
             'callback' => array( $this, 'cloud_base_status_htmx_post_callback' ),
             // Here we register our permissions callback. The callback is fired before the main callback to check if the current user can access the endpoint.
-         	'permission_callback' => array($this, 'cloud_base_admin_access_check' ),),       	      	
+         	'permission_callback' => array($this, 'cloud_base_maintenance_editor_access_check' ),),       	      	
       	)
       );	              
     }
